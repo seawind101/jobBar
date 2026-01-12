@@ -1,0 +1,86 @@
+/* Dark-pink aesthetic for the index page
+   - Centers the hero area and the two buttons
+   - Responsive: buttons are side-by-side on wide screens and stacked on small screens
+   - Uses IDs `#free`, `#links` and class `.btn` from `views/index.ejs`
+*/
+
+:root{
+  --bg-a: #2b0b1e; /* deep maroon */
+  --bg-b: #61203a; /* muted plum */
+  --accent: #c81f66; /* dark pink */
+  --accent-2: #e35b8a; /* lighter pink */
+  --muted: #e9dbe6;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(135deg,var(--bg-a) 0%, var(--bg-b) 60%);
+  color:var(--muted);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:3rem 1.25rem;
+  text-align:center;
+}
+
+.site-title{
+  margin:0 0 1.5rem 0;
+  font-size:clamp(1.6rem, 3.5vw, 2.4rem);
+  letter-spacing:0.4px;
+  color: #fff;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.55);
+}
+
+.button-row{
+  display:flex;
+  gap:1rem;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:0;
+  padding:0.85rem 1.6rem;
+  font-size:1rem;
+  border-radius:999px;
+  cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, opacity .12s ease;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+.btn:active{transform:translateY(1px)}
+.btn:focus{outline:3px solid rgba(255,255,255,0.08); outline-offset:3px}
+
+.btn-primary{
+  background: linear-gradient(180deg,var(--accent) 0%, var(--accent-2) 100%);
+  color:#fff;
+  font-weight:600;
+}
+
+/* Make the buttons full-width on small screens */
+@media (max-width:520px){
+  .button-row{flex-direction:column; width:100%; max-width:360px}
+  .btn{width:100%; display:inline-block}
+}
+
+/* small accent underline for headings if desired */
+.site-title::after{
+  content:"";
+  display:block;
+  width:64px;
+  height:4px;
+  margin:12px auto 0;
+  border-radius:4px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+}
