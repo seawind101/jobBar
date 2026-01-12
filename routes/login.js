@@ -2,6 +2,11 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const AUTH_URL = process.env.AUTH_URL || 'localhost:4000/auth';
 const THIS_URL = process.env.THIS_URL || 'http://localhost:3000/login';
+const db = new sqlite3.Database('./database/database.sqlite', (error) => {
+    if (error) {
+        console.log(error);
+    }
+});
 
 router.get('/login', (req, res) => {
     const db = req.app.locals.db; // Get shared database connection

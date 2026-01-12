@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT,
-    fb_id TEXT UNIQUE
+    fb_id TEXT UNIQUE,
+    username TEXT
 );
