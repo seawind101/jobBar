@@ -9,7 +9,7 @@ if (!fs.existsSync(dataFolderPath)) {
 }
 
 // Correct paths
-const dbPath = path.resolve(dataFolderPath, 'database.db'); // Ensure database.db is in the data folder
+const dbPath = path.resolve(dataFolderPath, 'database.sqlite'); // Ensure database.sqlite is in the data folder
 const initSqlPath = path.resolve(dataFolderPath, 'database.sql'); // Ensure database.sql is in the data folder
 
 // Default SQL commands to use when no database.sql exists

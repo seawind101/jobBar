@@ -41,7 +41,7 @@ app.use(session({
 // Routes
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
-const freeRouter = require('./routes/free');
+const freeRouter = require('./routes/freelance');
 const linksRouter = require('./routes/links');
 app.use('/', indexRouter);
 app.use('/', loginRouter);
