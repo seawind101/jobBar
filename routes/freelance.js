@@ -11,7 +11,7 @@ const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
 });
 
 // Free route
-router.get('/free', isAuthenticated, (req, res) => {
+router.get('/freelance', isAuthenticated, (req, res) => {
     db.all('SELECT * FROM companies ORDER BY id DESC', (err, rows) => {
         if (err) {
             console.error('Database error:', err);
@@ -21,7 +21,7 @@ router.get('/free', isAuthenticated, (req, res) => {
             ...r,
             verified : Number(r.verified) || 0
         }));
-        res.render('free', { companies: normalized, user: req.user });
+        res.render('freelance', { companies: normalized, user: req.user });
     });
     
 });
