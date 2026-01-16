@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Job Post</title>
     <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
     <div>
-        <button onclick="location.href='/freelance'">Freelance</button>
+        <button onclick="location.href='/freelance'">Back to Freelance</button>
         <button onclick="location.href='/'">Home</button>
         <button onclick="location.href='/links'">Links</button>
     </div>
     <div>
-        <h1>Post your Company/Add your Link</h1>
-        <form action="/post" method="POST">
+        <h1>Post a Job</h1>
+        <form action="/jobPosts" method="POST">
             <div>
-                <label for="name">Company Name:</label>
-                <input type="text" id="name" name="name" required>
+                <label for="company">Company Name:</label>
+                <input type="text" id="company" name="company" required>
+            </div>
+            <div>
+                <label for="title">Job Title:</label>
+                <input type="text" id="title" name="title" required>
             </div>
             <div>
                 <label for="description">Description:</label>
