@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Links</title>
+    <title>Companies</title>
     <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
     <header>
-        <h1>Classroom Links</h1>
+        <h1>Classroom Companies</h1>
+        <div>
+            <button onclick="location.href='/'">Home</button>
+            <button><a href="/post" style="color: black">Create a Company</a></button>
+        </div>
         <input type="text" id="searchbar" onkeyup="searchResources()" placeholder="Search...">
     </header>
-    <div>
-        <button onclick="location.href='/'">Home</button>
-        <button onclick="location.href='/freelance'">Freelance Page</button>
-        <button><a href="/post" style="color: black">Create a Link</a></button>
-    </div>
     <section>
         <div id="resourceCont">
             <%  if (companies && companies.length > 0) { %>
@@ -29,7 +28,7 @@
                     <% }); %>
                 </ul>
             <% } else { %>
-                <p>No links yet.</p>
+                <p>No companies yet.</p>
             <% } %>
         </div>
     </section>

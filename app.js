@@ -17,7 +17,6 @@ const db = new sqlite3.Database('./database/database.sqlite', (err) => {
         console.log('Connected to database');
     }
 });
-   
 
 // Make database available to other modules
 app.locals.db = db;
@@ -29,7 +28,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 // Parse URL-encoded bodies (HTML form submissions)
 app.use(express.urlencoded({ extended: true }));
-
 
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
@@ -43,14 +41,12 @@ app.use(session({
 // Routes
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
-const freeRouter = require('./routes/freelance');
-const linksRouter = require('./routes/links');
+const companiesRouter = require('./routes/companies');
 const postRouter = require('./routes/post');
 const jobPostsRouter = require('./routes/jobPosts');
 app.use('/', indexRouter);
 app.use('/', loginRouter);
-app.use('/', freeRouter);
-app.use('/', linksRouter);
+app.use('/', companiesRouter);
 app.use('/', postRouter);
 app.use('/', jobPostsRouter);
 
