@@ -10,8 +10,8 @@ const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
     if (err) console.error('Failed to open database in free route:', err);
 });
 
-// Links route
-router.get('/links', isAuthenticated, (req, res) => {
+// Companies route
+router.get('/companies', isAuthenticated, (req, res) => {
     db.all('SELECT * FROM companies ORDER BY id DESC', (err, rows) => {
         if (err) {
             console.error('Database error:', err);
@@ -21,7 +21,7 @@ router.get('/links', isAuthenticated, (req, res) => {
             ...r,
             verified: Number(r.verified) || 0
         }));
-        res.render('links', { companies: normalized, user: req.user });
+        res.render('companies', { companies: normalized, user: req.user });
     });
 });
 module.exports = router;
