@@ -24,7 +24,7 @@ router.post('/post', isAuthenticated, (req, res) => {
             console.error('Database error:', err);
             return res.status(500).send('Internal Server Error');
         }
-        res.redirect('/links');
+        res.redirect('/companies');
     });
 });
 module.exports = router;
