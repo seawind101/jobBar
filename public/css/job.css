@@ -1,0 +1,14 @@
+.jobs-container{max-width:900px;margin:2rem auto;padding:0 1rem}
+      
+.jobs-header{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+      
+.job-card{background: rgba(255,255,255,0.03); padding:1rem;border-radius:8px;margin:0.75rem 0}    
+      
+.job-title{font-weight:600;color:var(--muted)}    
+      
+.job-desc{margin-top:0.5rem;color: #f2eaf0}  
+      
+.nav-row{display:flex;gap:0.5rem;margin-bottom:1rem} 
+      
+.small-btn{padding:0.4rem 0.8rem;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted);cursor:pointer}
+    

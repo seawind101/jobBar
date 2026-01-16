@@ -20,11 +20,13 @@
             <%  if (companies && companies.length > 0) { %>
                 <ul>
                     <% companies.forEach(company => { %>
-                        <li>
+                        <div class="company-item">
                             <strong><%= company.name %></strong>
                             <p><%= company.description %></p>
                             <a href="<%= company.link %>" target="_blank">Visit</a>
-                        </li>
+                            <button onclick="location.href='/job/<%= company.name %>'">View Jobs</button>
+                        </div>
+                        <br>
                     <% }); %>
                 </ul>
             <% } else { %>

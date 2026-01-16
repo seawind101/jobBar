@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= company ? company.name : 'Company' %> — Jobs</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/job.css">
+</head>
+<body>
+  <main class="jobs-container">
+    <div class="nav-row">
+      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
+      <button class="small-btn" onclick="location.href='/'">Home</button>
+    </div>
+
+    <div class="jobs-header">
+      <h1>Company: <%= company ? company.name : 'Not found' %></h1>
+
+    <section aria-labelledby="jobs-list">
+      <h2 id="jobs-list">Open positions</h2>
+      <% if (!jobs || jobs.length === 0) { %>
+        <p>No jobs posted for this company yet.</p>
+      <% } else { %>
+        <% jobs.forEach(function(job){ %>
+          <article class="job-card" role="article">
+            <div class="job-title"><%= job.title %></div>
+            <div class="job-desc"><%= job.description %></div>
+            <% if (job.employee_id) { %>
+              <div class="job-meta">Employee id: <%= job.employee_id %></div>
+            <% } %>
+          </article>
+        <% }) %>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>

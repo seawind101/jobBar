@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const sqlite3 = require('sqlite3').verbose();
 const AUTH_URL = process.env.AUTH_URL || 'localhost:4000/auth';
 const THIS_URL = process.env.THIS_URL || 'http://localhost:3000/login';
+
+//Dont Be Debby
+
 // Use the project's database file (database/database.sqlite). Do not assume a 'data' folder.
 const dbFile = path.resolve(__dirname, '../database/database.sqlite');
 // Create a DB connection when the route is used. This keeps this module independent from app.js
