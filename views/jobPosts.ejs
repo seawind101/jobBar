@@ -5,34 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Post</title>
     <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/post.css">
+
 </head>
 <body>
-    <div>
-        <button onclick="location.href='/freelance'">Back to Freelance</button>
+    <nav class="top-controls">
         <button onclick="location.href='/'">Home</button>
-        <button onclick="location.href='/links'">Links</button>
-    </div>
-    <div>
+        <button onclick="location.href='/companies'">Companies</button>
+    </nav>
+
+    <div class="container">
+      <div class="post-card">
         <h1>Post a Job</h1>
         <form action="/jobPosts" method="POST">
-            <div>
+            <div class="form-row">
                 <label for="company">Company Name:</label>
                 <input type="text" id="company" name="company" required>
             </div>
-            <div>
+            <div class="form-row">
                 <label for="title">Job Title:</label>
                 <input type="text" id="title" name="title" required>
             </div>
-            <div>
+            <div class="form-row">
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" required></textarea>
             </div>
-            <div>
-                <label for="link">Website URL:</label>
-                <input type="url" id="link" name="link" required>
-            </div>
             <button type="submit">Submit</button>
         </form>
+      </div>
     </div>
 
 </body>

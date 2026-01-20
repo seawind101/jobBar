@@ -1,0 +1,92 @@
+:root{
+  --bg-a: #2b0b1e;
+  --bg-b: #61203a;
+  --accent: #c81f66;
+  --accent-2: #e35b8a;
+  --muted: #e9dbe6;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(160deg,var(--bg-a) 0%, var(--bg-b) 65%);
+  color:var(--muted);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+header{
+  max-width:1100px;
+  margin:2.25rem auto 1.25rem;
+  padding:1.25rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+
+header h1{
+  margin:0;
+  font-size:clamp(1.25rem, 2.6vw, 1.9rem);
+  color:#fff;
+  text-shadow:0 6px 18px rgba(0,0,0,0.45);
+}
+
+header > div{
+  display:flex;
+  gap:0.6rem;
+}
+
+button, .small-btn, a.button-link{
+  border:0;
+  padding:0.55rem 0.95rem;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+  background: linear-gradient(180deg,var(--accent) 0%, var(--accent-2) 100%);
+  color:#fff;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+  text-decoration:none;
+}
+
+button a, a.button-link{ color:inherit; }
+
+input#searchbar{
+  display:block;
+  width:100%;
+  max-width:1100px;
+  margin:0.75rem auto 1.5rem;
+  padding:0.85rem 1rem;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color:var(--muted);
+  font-size:1rem;
+}
+
+section{max-width:1100px;margin:0 auto;padding:0 1.25rem 3rem}
+
+#resourceCont ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+
+.company-item{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:12px;
+  padding:1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.company-item:hover{transform:translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.45)}
+
+.company-item strong{display:block;color:#fff;margin-bottom:0.4rem}
+.company-item p{color:#f2eaf0;margin:0 0 0.75rem}
+.company-item a{color:var(--accent-2); font-weight:600; margin-right:0.6rem}
+.company-item button{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);padding:0.45rem 0.7rem;border-radius:8px}
+
+@media (max-width:640px){
+  header{flex-direction:column;align-items:flex-start}
+  header > div{width:100%;justify-content:flex-start}
+  button{padding:0.5rem 0.8rem}
+  input#searchbar{max-width:95%}
+}

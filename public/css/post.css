@@ -1,0 +1,107 @@
+/* Styles for the Post page (dark-pink aesthetic) */
+:root{
+  --bg-a: #2b0b1e;
+  --bg-b: #61203a;
+  --accent: #c81f66;
+  --accent-2: #e35b8a;
+  --muted: #e9dbe6;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(160deg,var(--bg-a) 0%, var(--bg-b) 65%);
+  color:var(--muted);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.container{
+  max-width:900px;
+  margin:0 auto;
+  padding:1.25rem;
+  /* reserve space for fixed nav and center content vertically */
+  padding-top:4.25rem;
+  min-height: calc(100vh - 4.25rem);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+}
+
+/* Pin top controls to the top center and make them slightly larger */
+nav.top-controls{
+  display:flex;
+  gap:0.8rem;
+  align-items:center;
+  justify-content:center;
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  top:18px;
+  z-index:1200;
+}
+nav.top-controls button{
+  background: linear-gradient(180deg,var(--accent) 0%, var(--accent-2) 100%);
+  border:0;
+  color:#fff;
+  padding:0.6rem 1.05rem; /* slightly bigger */
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:800;
+  font-size:1.05rem;
+  box-shadow:0 10px 28px rgba(200,31,102,0.14);
+}
+
+.post-card{
+  /* Remove decorative box while keeping spacing and width; center inner content */
+  background: transparent; /* no boxed background */
+  padding:1.5rem;
+  border-radius:0;
+  box-shadow: none;
+  margin:0 auto;
+  width:680px; /* enforce consistent width across post pages */
+  max-width:90%; /* remain responsive on small screens */
+  text-align:center;
+}
+
+.post-card h1{margin-top:0;color:#fff}
+
+.form-row{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.85rem;align-items:center}
+label{font-weight:600;color:#fff}
+input[type="text"], input[type="url"], textarea{
+  width:100%;
+  padding:0.7rem 0.9rem;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color:var(--muted);
+  font-size:0.98rem;
+  max-width:640px; /* make text boxes a bit wider to match post.ejs sizing */
+  margin:0 auto; /* center inputs within constrained form */
+}
+textarea{min-height:120px;resize:vertical;max-width:640px}
+
+button[type="submit"]{
+  margin-top:0.6rem;
+  border:0;
+  padding:0.75rem 1.1rem;
+  border-radius:999px;
+  background: linear-gradient(180deg,var(--accent) 0%, var(--accent-2) 100%);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow: 0 10px 30px rgba(200,31,102,0.18);
+}
+
+/* Responsive */
+@media (max-width:640px){
+  .container{margin:1.25rem;padding:1rem;padding-top:6rem} /* leave more space for fixed top controls on small screens */
+  .post-card{padding:1rem}
+  nav.top-controls{top:12px}
+  nav.top-controls button{font-size:1rem;padding:0.5rem 0.9rem}
+}
+
+/* Add top spacing to main content to avoid overlap with fixed nav */
+.container{padding-top:4.25rem}

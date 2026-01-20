@@ -5,29 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/post.css">
 </head>
 <body>
-    <div>
+    <nav class="top-controls">
         <button onclick="location.href='/'">Home</button>
         <button onclick="location.href='/companies'">Companies</button>
-    </div>
-    <div>
+    </nav>
+
+    <div class="container">
+      <div class="post-card">
         <h1>Post your Company</h1>
         <form action="/post" method="POST">
-            <div>
+            <div class="form-row">
                 <label for="name">Company Name:</label>
                 <input type="text" id="name" name="name" required>
             </div>
-            <div>
+            <div class="form-row">
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" required></textarea>
             </div>
-            <div>
+            <div class="form-row">
                 <label for="link">Website URL:</label>
                 <input type="url" id="link" name="link" required>
             </div>
             <button type="submit">Submit</button>
         </form>
+      </div>
     </div>
 
 </body>
