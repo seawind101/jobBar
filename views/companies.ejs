@@ -10,10 +10,12 @@
 <body>
     <header>
         <h1>Classroom Companies</h1>
-        <div>
-            <button onclick="location.href='/'">Home</button>
-            <button onclick="location.href='/post'">Create a Company</button>
-        </div>
+                <div>
+                        <button onclick="location.href='/'">Home</button>
+                        <% if (isManager) { %>
+                            <button onclick="location.href='/post'">Create a Company</button>
+                        <% } %>
+                </div>
         <input type="text" id="searchbar" onkeyup="searchResources()" placeholder="Search...">
     </header>
     <section>

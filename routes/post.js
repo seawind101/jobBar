@@ -1,5 +1,6 @@
 require('dotenv').config();
 const router = require('express').Router();
+const { Manager } = require('socket.io-client');
 const isAuthenticated = require('../middleware/isAuthenticated');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
@@ -8,12 +9,25 @@ const dbFile = path.resolve(__dirname, '../database/database.sqlite');
 const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) console.error('Failed to open database in free route:', err);
 });
-// Post route
+
 router.get('/post', isAuthenticated, (req, res) => {
+    // Only managers may access the company creation page
+    if (!res.locals || !res.locals.isManager) {
+        res.redirect('/companies')
+        return;
+    }
+
     res.render('post', { title: 'Post your Company' });
 });
 
+// Post route to create a new company
 router.post('/post', isAuthenticated, (req, res) => {
+    // Only managers may create companies
+    if (!res.locals || !res.locals.isManager) {
+        res.redirect('/companies')
+        return;
+    }
+
     const body = req.body || {};
     const { name, description, link } = body;
     if (!name || !description || !link) {

@@ -10,11 +10,23 @@ const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
 });
 // Post route
 router.get('/jobPosts/:companyName', isAuthenticated, (req, res) => {
+    // Only managers may access the job post creation page
+    if (!res.locals || !res.locals.isManager) {
+        res.redirect('/companies')
+        return;
+    }
+
     const { companyName } = req.params;
     res.render('jobPosts', { title: 'Create a Job Post', company: companyName });
 });
 
 router.post('/jobPosts', isAuthenticated, (req, res) => {
+    // Only managers may create job posts
+    if (!res.locals || !res.locals.isManager) {
+        res.redirect('/companies');
+        return;
+    }
+
     const body = req.body || {};
     const { company, title, description, pay } = body;
     if (!company || !title || !description || !pay) {
