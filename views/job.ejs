@@ -14,6 +14,7 @@
       <button class="small-btn" onclick="location.href='/companies'">All companies</button>
       <button class="small-btn" onclick="location.href='/'">Home</button>
       <a class="small-btn" href="/jobPosts/<%= company ? encodeURIComponent(company.name) : 'Not%20found' %>">Post a Job</a>
+      <button class="small-btn" onclick="location.href='/jobManager/<%= company ? encodeURIComponent(company.name) : 'Not%20found' %>'">Manage Jobs</button>
     </div>
 
     <div class="jobs-header">
@@ -25,13 +26,13 @@
         <p>No jobs posted for this company yet.</p>
       <% } else { %>
         <% jobs.forEach(function(job){ %>
+          <% if (job.employee_id) { %>
+          <% } else { %>
           <article class="job-card" role="article">
             <div class="job-title"><%= job.title %></div>
             <div class="job-desc"><%= job.description %></div>
             <div class="job-pay">Pay: <%= job.pay %></div>
-            <% if (job.employee_id) { %>
-              <div class="job-meta taken">Taken</div>
-            <% } else { %>
+              <!-- <div class="job-meta taken">Taken</div> -->
               <form action="/job/<%= job.id %>/apply" method="POST">
                 <button type="submit" class="apply-btn">Apply</button>
               </form>
