@@ -1,6 +1,5 @@
 require('dotenv').config();
 const router = require('express').Router();
-const { Manager } = require('socket.io-client');
 const isAuthenticated = require('../middleware/isAuthenticated');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
