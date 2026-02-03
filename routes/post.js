@@ -17,7 +17,7 @@ router.get('/post', isAuthenticated, (req, res) => {
         return;
     }
 
-    res.render('post', { title: 'Post your Company' });
+    res.render('post', { title: 'Post your Company', fb_id: req.session.fb_id });
 });
 
 // Post route to create a new company
@@ -29,11 +29,11 @@ router.post('/post', isAuthenticated, (req, res) => {
     }
 
     const body = req.body || {};
-    const { name, description, link } = body;
-    if (!name || !description || !link) {
+    const { name, description, link, owner_id } = body;
+    if (!name || !description || !link || !owner_id) {
         return res.status(400).send('All fields are required.');
     }
-    db.run('INSERT INTO companies (name, description, link) VALUES (?, ?, ?)', [name, description, link], function(err) {
+    db.run('INSERT INTO companies (name, description, link, owner_id) VALUES (?, ?, ?, ?)', [name, description, link, owner_id], function(err) {
         if (err) {
             console.error('Database error:', err);
             return res.status(500).send('Internal Server Error');

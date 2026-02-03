@@ -62,33 +62,5 @@ router.post('/api/digipogs/transfer', (req, res) => {
     });
 });
 
-function purchase(price, reason, pin, amount) {
-    fetch('/api/digipogs/transfer', {
-        method: 'POST',
-        // credentials include to send cookies
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            price: price,
-            reason: `Pogglebar - ${reason}`,
-            pin: pin
-        })
-    }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // add purchased item effect here
-                implement(price, reason, amount);
-                save();
-                alert(`Purchase successful! (-${price} Digipogs)`);
-            } else {
-                alert(`Purchase failed: ${data.message}`);
-            }
-        })
-        .catch(err => {
-            console.error("Error during purchase:", err);
-        })
-    };
 
 module.exports = router;

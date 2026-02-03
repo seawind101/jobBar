@@ -38,7 +38,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-// Parse managers from environment (accept formats like: [ 43, 48 ] or "43,48")
+// Parse managers from environment
 const rawManagers = process.env.managers || process.env.MANAGERS || '';
 let parsedManagers = [];
 try {
@@ -63,6 +63,46 @@ app.use((req, res, next) => {
     const fb = req.session && req.session.fb_id;
     res.locals.fb_id = fb || null;
     res.locals.isManager = fb ? parsedManagers.includes(String(fb)) : false;
+    next();
+});
+// expose helpers to check company ownership/permission
+app.use((req, res, next) => {
+    const fb = req.session && req.session.fb_id ? String(req.session.fb_id) : null;
+
+    // Promise-based check: resolves true if fb is 1 (super user) or matches company owner_id
+    req.canManageCompany = (companyId) => {
+        return new Promise((resolve, reject) => {
+            if (!fb) return resolve(false);
+            if (fb === '1') return resolve(true);
+            if (!companyId) return resolve(false);
+
+            const id = String(companyId).replace(/^\/|\/$/g, ''); // normalize if a path slipped in
+            db.get('SELECT owner_id FROM companies WHERE id = ?', [id], (err, row) => {
+                if (err) return reject(err);
+                if (!row) return resolve(false);
+                resolve(String(row.owner_id) === fb);
+            });
+        });
+    };
+
+    // convenience middleware helper for routes/views (note: this is async and should be awaited in routes)
+    req.ensureCanManageCompany = async (companyId) => {
+        const ok = await req.canManageCompany(companyId).catch(() => false);
+        if (!ok) {
+            const err = new Error('Forbidden');
+            err.status = 403;
+            throw err;
+        }
+    };
+
+    // expose a non-async hint to views (best-effort; actual checks should use req.canManageCompany in routes)
+    res.locals.canManageCompanyHint = (companyId) => {
+        if (!fb) return false;
+        if (fb === '1') return true;
+        // unknown until checked against DB, so return null to indicate "unknown"
+        return null;
+    };
+
     next();
 });
 

@@ -9,6 +9,7 @@
   </title>
   <link rel="stylesheet" href="/css/index.css">
   <link rel="stylesheet" href="/css/job.css">
+  <script src="/js/jobManager.js"></script>
 
 </head>
 
@@ -17,9 +18,6 @@
     <div class="nav-row">
       <button class="small-btn" onclick="location.href='/companies'">All companies</button>
       <button class="small-btn" onclick="location.href='/'">Home</button>
-      <button class="small-btn"
-        onclick="location.href='/job/<%= company ? encodeURIComponent(company.name) : 'Not%20found' %>'">Job
-        Page</button>
     </div>
 
     <div>
@@ -44,7 +42,9 @@
                   </div>
                   <div class="job-meta taken">
                     Taken by <%= job.employee_name %>
-                      <button class="complete-button" data-job-id="<%= job.id %>">Mark As Complete</button>
+                      
+                    <button class="complete-button" data-job-id="<%= job.id %>" data-employee-id="<%= job.employee_id %>" data-pay="<%= job.pay %>" data-title="<%= job.title %>">Mark As Complete</button>
+                      
                   </div>
                 </article>
               <% } else { %>
@@ -79,58 +79,6 @@
     </div>
   </main>
 </body>
-<script>
-  // Get the modal element
-  let popup = document.getElementById("custom-popup");
 
-  // Get the <span> element that closes the modal
-  let closeBtn = document.getElementsByClassName("close-btn")[0];
-
-  // Get the form within the modal
-  let form = document.getElementById("popup-form");
-
-  let currentJobId = null; // Store the job ID for completion
-
-  document.addEventListener("DOMContentLoaded", function () {
-    // Attach event listeners to all "Mark As Complete" buttons
-    let completeButtons = document.querySelectorAll(".complete-button");
-    completeButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        let jobId = this.getAttribute("data-job-id");
-        openCompletePopup(jobId);
-      });
-    });
-  });
-
-  // Function to open the popup for a specific job
-  function openCompletePopup(jobId) {
-    currentJobId = jobId;
-    popup.style.display = "flex"; // Use 'flex' to center the modal content
-  }
-
-  // When the user clicks on <span> (x), close the modal
-  closeBtn.onclick = function () {
-    popup.style.display = "none";
-  }
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function (event) {
-    if (event.target == popup) {
-      popup.style.display = "none";
-    }
-  }
-
-  // Handle the form submission
-  form.addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    let pin = document.getElementById("pin").value;
-
-    // Close the pop-up after submission
-    popup.style.display = "none";
-    form.reset(); // Reset form fields
-  });
-
-</script>
 
 </html>

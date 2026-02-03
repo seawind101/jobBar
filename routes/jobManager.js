@@ -50,3 +50,20 @@ router.get('/jobManager/:companyName', isAuthenticated, (req, res) => {
 });
 
 module.exports = router;
+
+// Mark a job as complete (called after successful transfer)
+router.post('/job/:id/complete', isAuthenticated, (req, res) => {
+    // only managers are allowed
+    if (!res.locals || !res.locals.isManager) {
+        return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    const db = req.app.locals.db;
+    const jobId = req.params.id;
+    db.run('DELETE FROM jobs WHERE id = ?', [jobId], function(err) {
+        if (err) {
+            console.error('Failed to mark job complete:', err);
+            return res.status(500).json({ success: false, message: 'DB error' });
+        }
+        return res.json({ success: true });
+    });
+});
