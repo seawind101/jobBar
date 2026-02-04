@@ -60,7 +60,7 @@ router.post('/jobPosts', isAuthenticated, (req, res) => {
             console.error('Database error:', err);
             return res.status(500).send('Internal Server Error');
         }
-        res.redirect(`/job/${company}`); // Redirect to the job page for the specific company
+        res.redirect(`/job/${encodeURIComponent(company)}`); // Redirect to the job page for the specific company
         });
     });
 });
