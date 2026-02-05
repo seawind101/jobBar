@@ -66,19 +66,25 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
                 return res.status(409).send('Job is no longer available'); // Added return
             }
 
-            // Get the company name to redirect back to the correct page
+            // Get the company name to decide fallback redirect
             db.get('SELECT company FROM jobs WHERE id = ?', [jobId], (err, job) => {
                 if (err) {
                     console.error('Error fetching job:', err);
-                    return res.redirect('/'); // Added return
+                    return res.redirect('/');
                 }
-                
+
                 if (!job) {
-                    return res.redirect('/'); // Added return
+                    return res.redirect('/');
                 }
-                
-                // Redirect back to the company's job page
-                return res.redirect(`/job/${encodeURIComponent(job.company)}`); // Added return
+
+                // Prefer redirecting back to the referring page (so apply from /allJobs returns there).
+                // Fall back to the company's job page if no referer is present.
+                const referer = req.get('Referer') || req.get('referer') || null;
+                if (referer) {
+                    return res.redirect(referer);
+                }
+
+                return res.redirect(`/job/${encodeURIComponent(job.company)}`);
             });
         }
     );
