@@ -40,18 +40,19 @@ header > div{
 }
 
 button, .small-btn, a.button-link{
-  border:0;
-  padding:0.55rem 0.95rem;
-  border-radius:999px;
+  padding:0.6rem 1.2rem;
+  border-radius:8px;
+  border:none;  /* Remove border */
+  background:linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);  /* Add gradient back */
+  color:#fff;  /* White text */
   cursor:pointer;
-  font-weight:600;
-  background: linear-gradient(180deg,var(--accent) 0%, var(--accent-2) 100%);
-  color:#fff;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.35);
-  text-decoration:none;
+  font-weight:700;  /* Bolder text */
+  transition:transform 0.2s ease;
 }
 
-button a, a.button-link{ color:inherit; }
+button:hover, .small-btn:hover, a.button-link:hover{
+  transform:translateY(-2px);
+}
 
 input#searchbar{
   display:block;
@@ -101,7 +102,23 @@ section{max-width:1100px;margin:0 auto;}
 .company-item strong{display:block;color:#fff;margin-bottom:0.4rem}
 .company-item p{color:#f2eaf0;margin:0 0 0.75rem}
 .company-item a{color:var(--accent-2); font-weight:600; margin-right:0.6rem}
-.company-item button{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.06);padding:0.45rem 0.7rem;border-radius:8px}
+.company-item button{color:var(--muted);border:1px solid rgba(255,255,255,0.06);padding:0.45rem 0.7rem;border-radius:8px}
+
+#resourceCont a{
+  display:inline-block;
+  padding:0.3rem 0.6rem;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:700;
+  text-align:center;
+  transition:all 0.3s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+
+#resourceCont a:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 16px rgba(0,0,0,0.3);
+}
 
 @media (max-width:640px){
   header{flex-direction:column;align-items:flex-start}

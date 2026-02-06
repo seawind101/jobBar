@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= company ? company.name : 'Company' %> — Jobs</title>
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/job.css">
-    <script defer src="/js/job.js">
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= company ? company.name : 'Company' %> — Jobs
+  </title>
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/job.css">
+  <script defer src="/js/job.js">
+  </script>
 </head>
-<body>
+
+<body
+  style="
+  background: <%= company ? 'linear-gradient(180deg, ' + company.pColor + ', ' + company.sColor + ')' : 'transparent' %>;
+  color: <%= company.bpColor %>;
+  --pColor: <%= company.pColor %>;
+  --sColor: <%= company.sColor %>;
+  --bpColor: <%= company.bpColor %>;
+  --bsColor: <%= company.bsColor %>;
+  ">
   <main class="jobs-container">
     <% 
       // compute owner-based permissions and precompute URLs server-side
@@ -19,43 +31,50 @@
       const jobPostsUrl = company ? ('/jobPosts/' + encodeURIComponent(company.name)) : '/jobPosts/Not%20found';
       const jobManagerUrl = company ? ('/jobManager/' + encodeURIComponent(company.name)) : '/jobManager/Not%20found';
     %>
-    <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
-      <button class="small-btn" onclick="location.href='/'">Home</button>
-      <% if (canManage) { %>
-        <a class="small-btn" href="<%= jobPostsUrl %>">Post a Job</a>
-        <button class="small-btn" onclick="location.href='<%= jobManagerUrl %>'">Manage Jobs</button>
-      <% } %>
-    </div>
+      <div class="nav-row">
+        <button class="small-btn" onclick="location.href='/companies'">All companies</button>
+        <button class="small-btn" onclick="location.href='/'">Home</button>
+        <% if (canManage) { %>
+          <a class="small-btn" href="<%= jobPostsUrl %>">Post a Job</a>
+          <button class="small-btn" onclick="location.href='<%= jobManagerUrl %>'">Manage Jobs</button>
+          <% } %>
+      </div>
 
-    <div class="jobs-header">
-      <h1>Company: <%= company ? company.name : 'Not found' %></h1>
-    </div>
+      <div class="jobs-header">
+        <h1>Company: <%= company ? company.name : 'Not found' %>
+        </h1>
+      </div>
 
-    <section aria-labelledby="jobs-list">
-      <h2 id="jobs-list">Open positions</h2>
-      <% 
-        // Filter for available jobs (no employee assigned)
-        const availableJobs = jobs ? jobs.filter(job => !job.employee_id) : [];
-      %>
-      
-      <% if (availableJobs.length === 0) { %>
-        <p>No jobs available for this company.</p>
-      <% } else { %>
-        <div class="jobs-grid">
-          <% availableJobs.forEach(function(job){ %>
-            <article class="job-card" role="article">
-              <div class="job-title"><%= job.title %></div>
-              <div class="job-desc"><%= job.description %></div>
-              <div class="job-pay">Pay: <%= job.pay %></div>
-              <form action="/job/<%= job.id %>/apply" method="POST">
-                <button type="submit" class="apply-btn">Apply</button>
-              </form>
-            </article>
-          <% }) %>
-        </div>
-      <% } %>
-    </section>
+      <section aria-labelledby="jobs-list">
+        <h2 id="jobs-list">Open positions</h2>
+        <% 
+          // Filter for available jobs (no employee assigned)
+          const availableJobs = jobs ? jobs.filter(job => !job.employee_id) : [];
+        %>
+
+          <% if (availableJobs.length === 0) { %>
+            <p>No jobs available for this company.</p>
+            <% } else { %>
+              <div class="jobs-grid">
+                <% availableJobs.forEach(function(job){ %>
+                  <article class="job-card" role="article">
+                    <div class="job-title">
+                      <%= job.title %>
+                    </div>
+                    <div class="job-desc">
+                      <%= job.description %>
+                    </div>
+                    <div class="job-pay">Pay: <%= job.pay %>
+                    </div>
+                    <form action="/job/<%= job.id %>/apply" method="POST">
+                      <button type="submit" class="apply-btn">Apply</button>
+                    </form>
+                  </article>
+                  <% }) %>
+              </div>
+              <% } %>
+      </section>
   </main>
 </body>
+
 </html>

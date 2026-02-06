@@ -19,5 +19,9 @@ CREATE TABLE IF NOT EXISTS companies (
     name TEXT,
     description TEXT,
     link TEXT,
-    owner_id INTEGER
+    owner_id INTEGER,
+    pColor TEXT DEFAULT '#000000',
+    sColor TEXT DEFAULT '#ffffff',
+    bpColor TEXT DEFAULT '#ffffff',
+    bsColor TEXT DEFAULT '#000000'
 );

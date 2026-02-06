@@ -116,8 +116,22 @@ body{
 .job-pay{margin-top:0.75rem;font-weight:500;color:var(--muted)}
       
 .nav-row{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap} 
-      
-.small-btn{padding:0.4rem 0.8rem;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted);cursor:pointer;text-decoration:none}
+
+.small-btn{
+    display:inline-block;  /* Add this for <a> tags */
+    padding:0.4rem 0.8rem;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.06);
+    background:var(--sColor);
+    color:var(--bsColor);
+    cursor:pointer;
+    text-decoration:none;
+    font-size:1rem;
+    font-weight:600;
+    font-family:inherit;  /* Add this to match button font */
+    line-height:normal;  /* Add this for consistent height */
+    vertical-align:middle;  /* Add this for alignment */
+}
 
 .apply-btn{
     border:0;
