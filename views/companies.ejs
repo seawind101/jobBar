@@ -6,17 +6,19 @@
     <title>Companies</title>
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/companies.css">
+    <script defer src="/js/searchJobs.js"></script>
 </head>
 <body>
     <header>
         <h1>Classroom Companies</h1>
                 <div>
                         <button onclick="location.href='/'">Home</button>
+                        <button onclick="location.href='/allJobs'">All Jobs</button>
                         <% if (isManager) { %>
                             <button onclick="location.href='/post'">Create a Company</button>
                         <% } %>
                 </div>
-        <input type="text" id="searchbar" onkeyup="searchResources()" placeholder="Search...">
+                <input type="text" id="searchbar" placeholder="Search...">
     </header>
     <section>
         <div id="resourceCont">
@@ -37,26 +39,9 @@
         </div>
     </section>
 </body>
-<script>
-    function searchResources() {
-        const input = document.getElementById('searchbar');
-        const filter = input.value.toLowerCase();
-        const ul = document.querySelector('#resourceCont ul');
-        if (!ul) return;
-        const li = ul.getElementsByTagName('li');
-
-        for (let i = 0; i < li.length; i++) {
-            const title = li[i].getElementsByTagName('strong')[0];
-            const description = li[i].getElementsByTagName('p')[0];
-            const titleText = title ? (title.textContent || title.innerText) : '';
-            const descriptionText = description ? (description.textContent || description.innerText) : '';
-
-            if (titleText.toLowerCase().indexOf(filter) > -1 || descriptionText.toLowerCase().indexOf(filter) > -1) {
-                li[i].style.display = '';
-            } else {
-                li[i].style.display = 'none';
-            }
-        }
-    }
-</script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                if (window.jobSearchInit) window.jobSearchInit('searchbar', { selector: '.company-item' });
+            });
+        </script>
 </html>
