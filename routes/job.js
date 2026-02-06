@@ -30,13 +30,56 @@ router.get('/job/:companyName', isAuthenticated, (req, res) => {
                 console.error(err2);
                 return res.status(500).send('Internal Server Error');
             }
-
             // find the selected company object by name (case-insensitive)
             const selectedCompany = companies.find(c => String(c.name).toLowerCase() === String(companyName).toLowerCase()) || null;
 
-            // render job view — the template expects `company` (singular), so pass that
-            // pass current session user info so template can show apply buttons
-            res.render('job', { companies, company: selectedCompany, jobs, user: req.session.user, fb_id: req.session.fb_id });
+            // Ensure job_applications table exists, then fetch application info for these jobs
+            const jobIds = (jobs || []).map(j => j.id).filter(Boolean);
+            if (jobIds.length === 0) {
+                // no jobs, render directly
+                return res.render('job', { companies, company: selectedCompany, jobs, user: req.session.user, fb_id: req.session.fb_id });
+            }
+
+            db.run(`CREATE TABLE IF NOT EXISTS job_applications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id INTEGER NOT NULL,
+                fb_id TEXT NOT NULL,
+                applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(job_id, fb_id)
+            )`, (createErr) => {
+                if (createErr) {
+                    console.error('Failed to ensure job_applications table:', createErr);
+                    // continue without application info
+                    return res.render('job', { companies, company: selectedCompany, jobs, user: req.session.user, fb_id: req.session.fb_id });
+                }
+
+                const placeholders = jobIds.map(_ => '?').join(',');
+                db.all(`SELECT job_id, fb_id FROM job_applications WHERE job_id IN (${placeholders})`, jobIds, (aErr, appRows) => {
+                    if (aErr) {
+                        console.error('Error fetching applications:', aErr);
+                        return res.render('job', { companies, company: selectedCompany, jobs, user: req.session.user, fb_id: req.session.fb_id });
+                    }
+
+                    // build lookup maps
+                    const counts = {};
+                    const youAppliedSet = new Set();
+                    const yourFb = req.session && req.session.fb_id ? String(req.session.fb_id) : null;
+                    (appRows || []).forEach(r => {
+                        const jid = String(r.job_id);
+                        counts[jid] = (counts[jid] || 0) + 1;
+                        if (yourFb && String(r.fb_id) === yourFb) youAppliedSet.add(jid);
+                    });
+
+                    // attach meta to jobs
+                    jobs.forEach(j => {
+                        const jid = String(j.id);
+                        j.applicants_count = counts[jid] || 0;
+                        j.you_applied = youAppliedSet.has(jid);
+                    });
+
+                    return res.render('job', { companies, company: selectedCompany, jobs, user: req.session.user, fb_id: req.session.fb_id });
+                });
+            });
         });
     });
 });
@@ -51,22 +94,30 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
         return res.status(400).send('User not identified'); // Added return
     }
 
-    // Atomically set employee_id to the fb_id only if it's currently NULL (not taken)
+
+    // Ensure the applications table exists and insert an application for this user/job.
     db.run(
-        'UPDATE jobs SET employee_id = ?, status = ? WHERE id = ? AND (employee_id IS NULL OR employee_id = 0)',
-        [fbId, 'taken', jobId],
-        function (updateErr) {
-            if (updateErr) {
-                console.error('DB error updating job:', updateErr);
-                return res.status(500).send('Internal Server Error'); // Added return
+        `CREATE TABLE IF NOT EXISTS job_applications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            job_id INTEGER NOT NULL,
+            fb_id TEXT NOT NULL,
+            applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(job_id, fb_id)
+        )`
+    , (createErr) => {
+        if (createErr) {
+            console.error('Failed to ensure job_applications table:', createErr);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        // Insert the application (or ignore if already exists)
+        db.run('INSERT OR IGNORE INTO job_applications (job_id, fb_id) VALUES (?, ?)', [jobId, fbId], function(insertErr) {
+            if (insertErr) {
+                console.error('Failed to insert application:', insertErr);
+                return res.status(500).send('Internal Server Error');
             }
 
-            if (this.changes === 0) {
-                // Job was already taken or doesn't exist
-                return res.status(409).send('Job is no longer available'); // Added return
-            }
-
-            // Get the company name to decide fallback redirect
+            // Redirect back to referrer when possible, otherwise company job page
             db.get('SELECT company FROM jobs WHERE id = ?', [jobId], (err, job) => {
                 if (err) {
                     console.error('Error fetching job:', err);
@@ -77,17 +128,13 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
                     return res.redirect('/');
                 }
 
-                // Prefer redirecting back to the referring page (so apply from /allJobs returns there).
-                // Fall back to the company's job page if no referer is present.
                 const referer = req.get('Referer') || req.get('referer') || null;
-                if (referer) {
-                    return res.redirect(referer);
-                }
-
+                if (referer) return res.redirect(referer);
                 return res.redirect(`/job/${encodeURIComponent(job.company)}`);
             });
-        }
-    );
+        });
+    });
+
 });
 
 module.exports = router;

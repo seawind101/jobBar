@@ -42,16 +42,22 @@
       <% } else { %>
         <div class="jobs-grid">
           <% jobs.forEach(function(job){ %>
-            <% if (!job.employee_id) { %>
-              <article class="job-card" role="article">
-                <div class="job-title"><%= job.title %></div>
-                <div class="job-desc"><%= job.description %></div>
-                <div class="job-pay">Pay: <%= job.pay %></div>
-                <form action="/job/<%= job.id %>/apply" method="POST">
-                  <button type="submit" class="apply-btn">Apply</button>
-                </form>
-              </article>
-            <% } %>
+            <article class="job-card" role="article">
+              <div class="job-title"><%= job.title %></div>
+              <div class="company-desc"><%= company ? company.name : '' %></div>
+              <div class="job-desc"><%= job.description %></div>
+              <div class="job-pay">Pay: <%= job.pay %></div>
+              <div style="margin-top:0.6rem">
+                <% if (job.you_applied) { %>
+                  <span class="job-meta taken">You applied</span>
+                <% } else { %>
+                  <form action="/job/<%= job.id %>/apply" method="POST">
+                    <button type="submit" class="apply-btn">Apply</button>
+                  </form>
+                <% } %>
+                
+              </div>
+            </article>
           <% }) %>
         </div>
       <% } %>

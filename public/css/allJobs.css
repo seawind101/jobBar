@@ -26,10 +26,8 @@
     max-height: calc(100vh - 160px); /* allow for header/nav space */
     overflow-y: auto; /* only show scroll when content too tall */
     -webkit-overflow-scrolling: touch;
-}
 
-/* Grid layout inside the scroll box */
-.jobs-list {
+    /* Grid layout inside the scroll box */
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap:1rem;
@@ -58,6 +56,22 @@
 .job-desc{margin-top:0.5rem;color:#f2eaf0;flex-grow:1;overflow:hidden}
 
 .job-pay{margin-top:0.75rem;font-weight:700;color:var(--muted)}
+
+/* Job title (present in job.css) */
+.job-title{font-weight:600;color:var(--muted)}
+
+/* job-meta badges (taken/available/completed) */
+.job-meta{
+    display:inline-block;
+    padding:0.4rem 0.65rem;
+    border-radius:6px;
+    background:rgba(255,255,255,0.04);
+    font-weight:700;
+    margin-top:0.75rem;
+}
+.job-meta.taken{color:rgb(252, 229, 155)}
+.job-meta.available{color:rgb(173, 247, 185)}
+.job-meta.completed{color:rgb(188, 165, 235)}
 
 .apply-btn{border:0;padding:0.45rem 0.9rem;border-radius:8px;background:linear-gradient(180deg, var(--accent) 0%, #d95a8e 100%);color:#fff;cursor:pointer;font-weight:700}
 

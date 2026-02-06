@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Jobs</title>
     <link rel="stylesheet" href="/css/index.css">
-        <link rel="stylesheet" href="/css/allJobs.css">
+    <link rel="stylesheet" href="/css/allJobs.css">
     <script defer src="/js/job.js"></script>
     <script defer src="/js/searchJobs.js"></script>
 </head>
@@ -37,8 +38,8 @@
                         <div class="job-desc"><%= job.description %></div>
                         <div class="job-pay">Pay: <%= job.pay %></div>
                         <div style="margin-top:0.6rem">
-                            <% if (job.employee_id) { %>
-                                <span class="job-meta taken">Taken by <%= job.employee_name || job.employee_id %></span>
+                            <% if (job.you_applied) { %>
+                                <span class="job-meta taken">You applied</span>
                             <% } else { %>
                                 <form action="/job/<%= job.id %>/apply" method="POST" style="display:inline">
                                     <button type="submit" class="apply-btn">Apply</button>

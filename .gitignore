@@ -1,4 +1,4 @@
 node_modules/
 .env
-database.sqlite
-database.db 
+database/database.sqlite
+database/database.db
