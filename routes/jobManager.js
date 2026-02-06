@@ -99,12 +99,6 @@ router.post('/job/:jobId/complete', isAuthenticated, (req, res) => {
         });
     });
 });
-
-
-
-
-
-
 // Mark a job as complete (called after successful transfer)
 router.post('/job/:id/complete', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;

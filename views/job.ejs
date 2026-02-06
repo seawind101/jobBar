@@ -28,7 +28,6 @@
         <button class="small-btn" onclick="location.href='<%= jobManagerUrl %>'">Manage Jobs</button>
       <% } %>
       <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin-left:1rem;flex:1;min-width:180px;padding:0.4rem;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"/>
-
     </div>
 
     <div class="jobs-header">
@@ -37,8 +36,13 @@
 
     <section aria-labelledby="jobs-list">
       <h2 id="jobs-list">Open positions</h2>
-      <% if (!jobs || jobs.length === 0) { %>
-        <p>No jobs posted for this company yet.</p>
+      <% 
+        // Filter for available jobs (no employee assigned)
+        const availableJobs = jobs ? jobs.filter(job => !job.employee_id) : [];
+      %>
+      
+      <% if (availableJobs.length === 0) { %>
+        <p>No jobs available for this company.</p>
       <% } else { %>
         <div class="jobs-grid">
           <% jobs.forEach(function(job){ %>
