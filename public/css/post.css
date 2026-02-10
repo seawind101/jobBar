@@ -95,6 +95,17 @@ button[type="submit"]{
   box-shadow: 0 10px 30px rgba(200,31,102,0.18);
 }
 
+/* New color row class for color selection in post creation */
+.color-row{
+  display:flex;
+  flex-direction:row;
+  gap:0.6rem;
+  margin-bottom:1.5rem;  /* Increased from 0.85rem */
+  align-items:center;
+  justify-content: center;
+  flex-wrap:wrap;
+}
+
 /* Responsive */
 @media (max-width:640px){
   .container{margin:1.25rem;padding:1rem;padding-top:6rem} /* leave more space for fixed top controls on small screens */

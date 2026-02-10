@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/post.css">
 </head>
+
 <body>
     <nav class="top-controls">
         <button onclick="location.href='/'">Home</button>
@@ -14,29 +16,85 @@
     </nav>
 
     <div class="container">
-      <div class="post-card">
-        <h1>Post your Company</h1>
-                <% if (typeof error !== 'undefined' && error) { %>
-                    <div class="form-error" style="color:#ffd1d9;margin-bottom:0.75rem;font-weight:700;"><%= error %></div>
+        <div class="post-card">
+            <h1>Post your Company</h1>
+            <% if (typeof error !=='undefined' && error) { %>
+                <div class="form-error" style="color:#ffd1d9;margin-bottom:0.75rem;font-weight:700;">
+                    <%= error %>
+                </div>
                 <% } %>
-        <form action="/post" method="POST">
-            <div class="form-row">
-                <label for="name">Company Name:</label>
-                                <input type="text" id="name" name="name" required value="<%= form && form.name ? form.name : '' %>">
-            </div>
-            <div class="form-row">
-                <label for="description">Description:</label>
-                                <textarea id="description" name="description" required><%= form && form.description ? form.description : '' %></textarea>
-            </div>
-            <div class="form-row">
-                <label for="link">Website URL:</label>
-                                <input type="url" id="link" name="link" required value="<%= form && form.link ? form.link : '' %>">
-            </div>
-                                <input type="hidden" name="owner_id" value="<%= fb_id %>">
-            <button type="submit">Submit</button>
-        </form>
-      </div>
+                    <form action="/post" method="POST">
+                        <div class="form-row">
+                            <label for="name">Company Name:</label>
+                            <input type="text" id="name" name="name" required
+                                value="<%= form && form.name ? form.name : '' %>">
+                        </div>
+                        <div class="form-row">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description"
+                                required><%= form && form.description ? form.description : '' %></textarea>
+                        </div>
+                        <div class="form-row">
+                            <label for="link">Website URL:</label>
+                            <input type="url" id="link" name="link" required
+                                value="<%= form && form.link ? form.link : '' %>">
+                        </div>
+                        <div class="color-row">
+                            <label for="pColor">Primary Color:</label>
+                            <input type="color" id="pColor" name="pColor"
+                                value="<%= form && form.pColor ? form.pColor : '#000000' %>" class="color-input">
+                        </div>
+                        <div class="color-row">
+                            <label for="sColor">Secondary Color:</label>
+                            <input type="color" id="sColor" name="sColor"
+                                value="<%= form && form.sColor ? form.sColor : '#ffffff' %>" class="color-input">
+                        </div>
+                        <input type="hidden" name="owner_id" value="<%= fb_id %>">
+                        <input type="hidden" id="bpColor" name="bpColor" value="#ffffff">
+                        <input type="hidden" id="bsColor" name="bsColor" value="#000000">
+                        <button type="submit">Submit</button>
+                    </form>
+        </div>
     </div>
 </body>
-</html>
+<script>
+    // Function to calculate brightness and return appropriate text color
+    function getTextColor(hexColor) {
+        // Remove # if present
+        const hex = hexColor.replace('#', '');
 
+        // Convert to RGB
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+
+        // Calculate relative luminance (perceived brightness)
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+        // Return black for bright colors, white for dark colors
+        return brightness > 128 ? '#000000' : '#ffffff';
+    }
+
+    // Update text color based on background color
+    function updateTextColor(colorInputId, textColorInputId) {
+        const colorInput = document.getElementById(colorInputId);
+        const textColorInput = document.getElementById(textColorInputId);
+        const color = colorInput.value;
+        textColorInput.value = getTextColor(color);
+    }
+
+    // Event listeners for color inputs
+    document.getElementById('pColor').addEventListener('input', function () {
+        updateTextColor('pColor', 'bpColor');
+    });
+
+    document.getElementById('sColor').addEventListener('input', function () {
+        updateTextColor('sColor', 'bsColor');
+    });
+
+    // Initialize text colors on page load
+    updateTextColor('pColor', 'bpColor');
+    updateTextColor('sColor', 'bsColor');
+</script>
+
+</html>

@@ -29,8 +29,8 @@ router.post('/post', isAuthenticated, (req, res) => {
     }
 
     const body = req.body || {};
-    const { name, description, link, owner_id } = body;
-    if (!name || !description || !link || !owner_id) {
+    const { name, description, link, owner_id, pColor, sColor, bpColor, bsColor } = body;
+    if (!name || !description || !link || !owner_id || !pColor || !sColor || !bpColor || !bsColor) {
         return res.status(400).send('All fields are required.');
     }
 
@@ -48,7 +48,7 @@ router.post('/post', isAuthenticated, (req, res) => {
         // determine owner from session (server-side) so clients can't spoof owner_id
         const ownerId = req.session && req.session.fb_id ? req.session.fb_id : null;
 
-        db.run('INSERT INTO companies (name, description, link, owner_id) VALUES (?, ?, ?, ?)', [name, description, link, ownerId], function(err) {
+        db.run('INSERT INTO companies (name, description, link, owner_id, pColor, sColor, bpColor, bsColor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [name, description, link, ownerId, pColor, sColor, bpColor, bsColor], function(err) {
         if (err) {
             console.error('Database error:', err);
             return res.status(500).send('Internal Server Error');

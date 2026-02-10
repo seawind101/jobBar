@@ -25,11 +25,11 @@
             <%  if (companies && companies.length > 0) { %>
                 <ul>
                     <% companies.forEach(company => { %>
-                        <div class="company-item">
+                        <div class="company-item" style="background-color: <%= company.pColor %>; color: <%= company.bpColor %>;">
                             <strong><%= company.name %></strong>
                             <p><%= company.description %></p>
-                            <a href="<%= company.link %>" target="_blank">Visit</a>
-                            <button onclick="location.href='/job/<%= company.name %>'">View Jobs</button>
+                            <a href="<%= company.link %>" target="_blank" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>;">Visit</a>
+                            <a href="/job/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>">View Jobs</a>
                         </div>
                     <% }); %>
                 </ul>

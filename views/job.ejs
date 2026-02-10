@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,16 @@
     <script defer src="/js/job.js"></script>
     <script defer src="/js/searchJobs.js"></script>
 </head>
-<body>
+
+<body
+  style="
+  background: <%= company ? 'linear-gradient(180deg, ' + company.pColor + ', ' + company.sColor + ')' : 'transparent' %>;
+  color: <%= company.bpColor %>;
+  --pColor: <%= company.pColor %>;
+  --sColor: <%= company.sColor %>;
+  --bpColor: <%= company.bpColor %>;
+  --bsColor: <%= company.bsColor %>;
+  ">
   <main class="jobs-container">
     <% 
       // compute owner-based permissions and precompute URLs server-side
@@ -30,9 +40,10 @@
       <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin-left:1rem;flex:1;min-width:180px;padding:0.4rem;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#fff"/>
     </div>
 
-    <div class="jobs-header">
-      <h1>Company: <%= company ? company.name : 'Not found' %></h1>
-    </div>
+      <div class="jobs-header">
+        <h1>Company: <%= company ? company.name : 'Not found' %>
+        </h1>
+      </div>
 
     <section aria-labelledby="jobs-list">
       <h2 id="jobs-list">Open positions</h2>
@@ -73,4 +84,5 @@
     });
   </script>
 </body>
+
 </html>
