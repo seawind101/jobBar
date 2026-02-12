@@ -34,7 +34,12 @@ router.post('/transfer/complete', isAuthenticated, async (req, res) => {
 		const authUrl = AUTH_URL.replace(/\/$/, '');
 		const transferUrl = authUrl ? `${authUrl}/api/digipogs/transfer` : '/api/digipogs/transfer';
 
-		const transferBody = { from: requesterFb, to, amount, reason: reason || `Completed ${row.title || row.id}`, pin };
+		const transferBody = { from: requesterFb,
+                               to: to,
+                               amount: amount,
+                               reason: reason || `Completed ${row.title || row.id}`,
+                               pin: pin
+        };
 
 		const resp = await fetch(transferUrl, {
 			method: 'POST',
@@ -66,19 +71,6 @@ router.post('/transfer/complete', isAuthenticated, async (req, res) => {
 
 
 // --- Paid actions ---------------------------------------------------------
-// Helper to POST to AUTH transfer endpoint
-async function doTransfer(from, to, amount, reason, pin) {
-	const authUrl = AUTH_URL.replace(/\/$/, '');
-	const transferUrl = authUrl ? `${authUrl}/api/digipogs/transfer` : '/api/digipogs/transfer';
-	const resp = await fetch(transferUrl, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ from, to, amount, reason, pin })
-	});
-	const data = await resp.json().catch(() => ({}));
-	return { ok: resp.ok, data };
-}
-
 // POST /transfer/company - charge user to create a company (flat CPOST)
 router.post('/transfer/company', isAuthenticated, async (req, res) => {
 	const db = req.app.locals.db;
@@ -96,9 +88,26 @@ router.post('/transfer/company', isAuthenticated, async (req, res) => {
 		const existing = await new Promise((resolve, reject) => db.get('SELECT id FROM companies WHERE name = ? COLLATE NOCASE', [name], (e, r) => e ? reject(e) : resolve(r)));
 		if (existing) return res.status(409).json({ success: false, message: 'Company name already taken' });
 
-		// Perform transfer from payer -> pool
-		const { ok, data } = await doTransfer(payer, pool, amount, `Company creation: ${name}`, pin);
-		if (!ok && !(data && data.success)) return res.status(502).json({ success: false, message: 'Transfer failed', details: data });
+		// Perform transfer from payer -> pool (inline)
+		try {
+			const authUrl = AUTH_URL.replace(/\/$/, '');
+			const transferUrl = authUrl ? `${authUrl}/api/digipogs/transfer` : '/api/digipogs/transfer';
+			const resp = await fetch(transferUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ from: payer,
+                                       to: pool,
+                                       amount, 
+                                       reason: `Company creation: ${name}`, 
+                                       pin: pin,
+                                       pool: true })
+			});
+			var data = await resp.json().catch(() => ({}));
+			if (!resp.ok && !(data && data.success)) return res.status(502).json({ success: false, message: 'Transfer failed', details: data });
+		} catch (err) {
+			console.error('Transfer error:', err);
+			return res.status(502).json({ success: false, message: 'Transfer failed', details: err.message || String(err) });
+		}
 
 		// Payment succeeded — return success to client so client can POST to /post to create the company
 		return res.json({ success: true, transfer: data });
@@ -128,9 +137,26 @@ router.post('/transfer/job', isAuthenticated, async (req, res) => {
 		const ownerFb = companyRow.owner_id !== undefined && companyRow.owner_id !== null ? String(companyRow.owner_id) : null;
 		if (payer !== ownerFb && payer !== '1') return res.status(403).json({ success: false, message: 'Forbidden: only company owner may post jobs with payment' });
 
-		// Perform transfer from payer -> pool
-		const { ok, data } = await doTransfer(payer, pool, amount, `Job post: ${title} @ ${company}`, pin);
-		if (!ok && !(data && data.success)) return res.status(502).json({ success: false, message: 'Transfer failed', details: data });
+		// Perform transfer from payer -> pool (inline)
+		try {
+			const authUrl = AUTH_URL.replace(/\/$/, '');
+			const transferUrl = authUrl ? `${authUrl}/api/digipogs/transfer` : '/api/digipogs/transfer';
+			const resp = await fetch(transferUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ from: payer, 
+                                       to: pool, 
+                                       amount: amount, 
+                                       reason: `Job post: ${title} @ ${company}`, 
+                                       pin: pin,
+                                       pool: true })
+			});
+			var data = await resp.json().catch(() => ({}));
+			if (!resp.ok && !(data && data.success)) return res.status(502).json({ success: false, message: 'Transfer failed', details: data });
+		} catch (err) {
+			console.error('Transfer error:', err);
+			return res.status(502).json({ success: false, message: 'Transfer failed', details: err.message || String(err) });
+		}
 
 		// Payment succeeded — return success to client so client can POST to /jobPosts to create the job
 		return res.json({ success: true, transfer: data });
