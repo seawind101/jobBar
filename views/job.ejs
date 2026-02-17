@@ -62,10 +62,9 @@
         <p>No jobs available for this company.</p>
       <% } else { %>
         <div class="jobs-grid">
-          <% jobs.forEach(function(job){ %>
+          <% availableJobs.forEach(function(job){ %>
             <article class="job-card" role="article">
               <div class="job-title"><%= job.title %></div>
-              <div class="company-desc"><%= company ? company.name : '' %></div>
               <div class="job-desc"><%= job.description %></div>
               <div class="job-pay">Pay: <%= job.pay %></div>
               <div style="margin-top:0.6rem">
