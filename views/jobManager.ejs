@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Manager - <%= company.name %></title>
   <link rel="stylesheet" href="/css/index.css">
-  <link rel="stylesheet" href="/css/post.css">
+  <link rel="stylesheet" href="/css/job.css">
 </head>
 
 <body style="
@@ -19,8 +19,8 @@
 ">
   <main class="jobs-container">
     <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
       <button class="small-btn" onclick="location.href='/'">Home</button>
+      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
       <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'">Job Page</button>
       <button class="small-btn" onclick="location.href='/jobPosts/<%= encodeURIComponent(company.name) %>'">Post a Job</button>
       <button class="small-btn" onclick="location.href='/edit/company'">Edit Company</button>
@@ -40,6 +40,7 @@
               <article class="job-card">
                 <div class="job-title"><b><%= job.title %></b></div>
                 <div class="job-desc"><%= job.description %></div>
+                <div class="job-link"><a href="<%= job.link %>" target="_blank">View Issue</a></div>
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta available">Available</div>
               </article>

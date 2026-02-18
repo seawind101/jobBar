@@ -115,7 +115,15 @@ body{
 .job-desc{margin-top:0.5rem;color:var(--bpColor);flex-grow:1}
 
 .job-pay{margin-top:0.75rem;font-weight:500;color:var(--bpColor)}
-      
+.job-link a{
+    color:var(--bpColor);
+    font-weight:500;
+    margin-top:0.5rem;
+    margin-top: 1rem;
+}
+.job-link {
+    margin-top: 1rem;
+}
 .nav-row{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap} 
 
 .small-btn{

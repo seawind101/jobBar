@@ -36,8 +36,8 @@ router.get('/jobPosts/:companyName', isAuthenticated, (req, res) => {
 
 router.post('/jobPosts', isAuthenticated, (req, res) => {
     const body = req.body || {};
-    const { company, title, description, pay } = body;
-    if (!company || !title || !description || !pay) {
+    const { company, title, description, link, pay } = body;
+    if (!company || !title || !description || !link || !pay) {
         return res.status(400).send('All fields are required.');
     }
 
@@ -55,7 +55,7 @@ router.post('/jobPosts', isAuthenticated, (req, res) => {
             return res.status(403).send('Forbidden: only the company owner may post jobs');
         }
 
-        db.run('INSERT INTO jobs (company, title, description, pay) VALUES (?, ?, ?, ?)', [company, title, description, pay], function(err) {
+        db.run('INSERT INTO jobs (company, title, description, link, pay) VALUES (?, ?, ?, ?, ?)', [company, title, description, link, pay], function(err) {
         if (err) {
             console.error('Database error:', err);
             return res.status(500).send('Internal Server Error');

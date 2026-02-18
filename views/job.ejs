@@ -43,7 +43,7 @@
         <a class="small-btn" href="<%= jobPostsUrl %>">Post a Job</a>
         <button class="small-btn" onclick="location.href='<%= jobManagerUrl %>'">Manage Jobs</button>
       <% } %>
-      <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin-left:1rem;flex:1;min-width:180px;padding:0.4rem;border-radius:8px;border:1px solid var(--bsColor);background:transparent;color:var(--bpColor)"/>
+      <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin-left:1rem;flex:1;min-width:180px;padding:0.4rem;border-radius:8px;border:1px solid var(--bpColor);background:transparent;color:var(--bpColor)"/>
     </div>
 
       <div class="jobs-header">
@@ -64,9 +64,10 @@
         <div class="jobs-grid">
           <% availableJobs.forEach(function(job){ %>
             <article class="job-card" role="article">
-              <div class="job-title"><%= job.title %></div>
-              <div class="job-desc"><%= job.description %></div>
-              <div class="job-pay">Pay: <%= job.pay %></div>
+              <div class="job-title"><b>Job Title:</b> <%= job.title %></div>
+              <div class="job-desc"><b>Description:</b> <%= job.description %></div>
+              <div class="job-link"><a href="<%= job.link %>" target="_blank">View Issue</a></div>
+              <div class="job-pay"><b>Pay:</b> <%= job.pay %></div>
               <div style="margin-top:0.6rem">
                 <% if (job.you_applied) { %>
                   <span class="job-meta taken">You applied</span>
