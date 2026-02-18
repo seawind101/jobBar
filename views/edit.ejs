@@ -1,60 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EDIT</title>
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/post.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit</title>
+        <link rel="stylesheet" href="/css/index.css">
+        <link rel="stylesheet" href="/css/post.css">
+        <style>
+            /* Small local tweak to ensure labels align like other post pages */
+            .post-card h1, .post-card h2 { margin-top: 0; }
+        </style>
 </head>
-<body>
-    <h1>Edit</h1>
-
-    <% if (type === 'company' && company) { %>
-        <h2>Edit Company: <%= company.name %></h2>
-        <form action="/edit/company" method="POST">
-            <div>
-                <label for="name">Company Name</label>
-                <input id="name" name="name" type="text" required value="<%= company.name %>">
-            </div>
-            <div>
-                <label for="description">Description</label>
-                <textarea id="description" name="description" required><%= company.description %></textarea>
-            </div>
-            <div>
-                <label for="link">Website</label>
-                <input id="link" name="link" type="url" value="<%= company.link %>">
-            </div>
-            <div>
-                <label for="pColor">Primary Color</label>
-                <input id="pColor" name="pColor" type="color" value="<%= company.pColor || '#000000' %>">
-            </div>
-            <div>
-                <label for="sColor">Secondary Color</label>
-                <input id="sColor" name="sColor" type="color" value="<%= company.sColor || '#ffffff' %>">
-            </div>
-            <button type="submit">Save Company</button>
-        </form>
-    <% } else if (type === 'job' && job) { %>
-        <h2>Edit Job: <%= job.title %></h2>
-        <form action="/edit/job/<%= job.id %>" method="POST">
-            <input type="hidden" name="company" value="<%= job.company %>">
-            <div>
-                <label for="title">Job Title</label>
-                <input id="title" name="title" type="text" required value="<%= job.title %>">
-            </div>
-            <div>
-                <label for="description">Description</label>
-                <textarea id="description" name="description" required><%= job.description %></textarea>
-            </div>
-            <div>
-                <label for="pay">Pay</label>
-                <input id="pay" name="pay" type="number" required value="<%= job.pay %>">
-            </div>
-            <button type="submit">Save Job</button>
-        </form>
-    <% } else { %>
-        <p>Nothing to edit.</p>
+<body
+    class="<%= type === 'company' ? 'create-company-page' : (type === 'job' ? 'post-job-page' : '') %>"
+    <% if (type === 'job' && company) { %>
+        style="background: linear-gradient(180deg, <%= company.pColor %>, <%= company.sColor %>); color: <%= company.bpColor %>; --pColor: <%= company.pColor %>; --sColor: <%= company.sColor %>; --bpColor: <%= company.bpColor %>; --bsColor: <%= company.bsColor %>;"
     <% } %>
+>
+    <nav class="top-controls">
+        <button onclick="location.href='/'">Home</button>
+        <button onclick="location.href='/companies'">Companies</button>
+    </nav>
+
+    <div class="container">
+        <div class="post-card">
+            <% if (type === 'company' && company) { %>
+                <h1>Edit Company</h1>
+                <h2><%= company.name %></h2>
+                <form id="company-form" action="/edit/company" method="POST">
+                    <div class="form-row">
+                        <label for="name">Company Name:</label>
+                        <input type="text" id="name" name="name" required value="<%= company.name %>">
+                    </div>
+                    <div class="form-row">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" required><%= company.description || '' %></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label for="link">Website URL:</label>
+                        <input type="url" id="link" name="link" required value="<%= company.link || '' %>">
+                    </div>
+                    <div class="color-row">
+                        <label for="pColor">Primary Color:</label>
+                        <input type="color" id="pColor" name="pColor" value="<%= company.pColor || '#000000' %>" class="color-input">
+                        <label for="sColor">Secondary Color:</label>
+                        <input type="color" id="sColor" name="sColor" value="<%= company.sColor || '#ffffff' %>" class="color-input">
+                    </div>
+                    <input type="hidden" name="owner_id" value="<%= fb_id %>">
+                    <input type="hidden" id="bpColor" name="bpColor" value="<%= company.bpColor || '#ffffff' %>">
+                    <input type="hidden" id="bsColor" name="bsColor" value="<%= company.bsColor || '#000000' %>">
+                    <button type="submit">Submit</button>
+                </form>
+
+                <script>
+                    // mirror post.ejs behavior: update bpColor/bsColor based on selected colors
+                    (function(){
+                        function getTextColor(hexColor) {
+                            const hex = String(hexColor).replace('#','');
+                            const r = parseInt(hex.substring(0,2),16);
+                            const g = parseInt(hex.substring(2,4),16);
+                            const b = parseInt(hex.substring(4,6),16);
+                            const brightness = (r*299 + g*587 + b*114) / 1000;
+                            return brightness > 128 ? '#000000' : '#ffffff';
+                        }
+                        function updateTextColor(colorInputId, textColorInputId) {
+                            const colorInput = document.getElementById(colorInputId);
+                            const textColorInput = document.getElementById(textColorInputId);
+                            if (!colorInput || !textColorInput) return;
+                            const color = colorInput.value;
+                            textColorInput.value = getTextColor(color);
+                        }
+                        const p = document.getElementById('pColor');
+                        const s = document.getElementById('sColor');
+                        if (p) p.addEventListener('input', ()=> updateTextColor('pColor','bpColor'));
+                        if (s) s.addEventListener('input', ()=> updateTextColor('sColor','bsColor'));
+                        // init
+                        if (p) updateTextColor('pColor','bpColor');
+                        if (s) updateTextColor('sColor','bsColor');
+                    })();
+                </script>
+
+            <% } else if (type === 'job' && job) { %>
+                <h1>Edit Job</h1>
+                <form id="jobpost-form" action="/edit/job/<%= job.id %>" method="POST">
+                    <input type="hidden" name="company" value="<%= company && company.name ? company.name : job.company %>">
+                    <div class="form-row">
+                        <label for="title">Job Title:</label>
+                        <input type="text" id="title" name="title" maxlength="100" required value="<%= job.title %>">
+                    </div>
+                    <div class="form-row">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" maxlength="200" required><%= job.description %></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label for="link">GitHub Issue Link:</label>
+                        <input type="url" id="link" name="link" value="<%= job.link || '' %>" placeholder="https://github.com/owner/repo/issues/123">
+                    </div>
+                    <div class="form-row">
+                        <label for="pay">Pay:</label>
+                        <input type="number" id="pay" name="pay" required value="<%= job.pay %>">
+                    </div>
+                    <input type="hidden" name="status" value="available">
+                    <button type="submit" style="background-color: <%= (company && company.pColor) ? company.pColor : '#333' %>; color: <%= (company && company.bpColor) ? company.bpColor : '#fff' %>; border: 1px solid <%= (company && company.bpColor) ? company.bpColor : '#fff' %>;">Submit</button>
+                </form>
+
+            <% } else { %>
+                <p>Nothing to edit.</p>
+            <% } %>
+        </div>
+    </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ const isAuthenticated = require('../middleware/isAuthenticated');
 router.get('/edit/company', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const fb_id = req.session.fb_id;
+    const userFb = fb_id ? String(fb_id) : null;
     if (!fb_id) {
         return res.status(403).send('Forbidden: You must be logged in to edit a company');
     }
@@ -43,6 +44,7 @@ router.post('/edit/company', isAuthenticated, (req, res) => {
 router.get('/edit/job/:jobId', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const fb_id = req.session.fb_id;
+    const userFb = fb_id ? String(fb_id) : null;
     const jobId = req.params.jobId;
     if (!fb_id) {
         return res.status(403).send('Forbidden: You must be logged in to edit a job');
@@ -55,12 +57,25 @@ router.get('/edit/job/:jobId', isAuthenticated, (req, res) => {
         if (!job) {
             return res.status(404).send('Job not found');
         }
-        const ownerFb = job.owner_id !== undefined && job.owner_id !== null ? String(job.owner_id) : null;
-        if (fb_id !== ownerFb && fb_id !== '1') {
-            return res.status(403).send('Forbidden: You do not own this job');
+        // ensure the session user is the owner of the company that the job belongs to (or admin '1')
+        const companyOwnerFb = job.owner_id != null ? String(job.owner_id) : null;
+        // if the job isn't associated with any company, only allow admin (fb '1') to proceed
+        if (!companyOwnerFb && userFb !== '1') {
+            return res.status(403).send('Forbidden: Job is not associated with a company you own');
         }
-        // render shared edit page with job context
-        res.render('edit', { type: 'job', job });
+        // require that the current user matches the company owner (unless admin)
+        if (userFb !== '1' && companyOwnerFb !== userFb) {
+            return res.status(403).send("Forbidden: You do not own this job's company");
+        }
+        // fetch company details for styling/hidden fields on the job edit page
+        const compQuery = `SELECT * FROM companies WHERE name = ?`;
+        db.get(compQuery, [job.company], (err2, company) => {
+            if (err2) {
+                return res.status(500).send('Internal Server Error');
+            }
+            // render shared edit page with job + company context
+            res.render('edit', { type: 'job', job, company: company || null });
+        });
     });
 });
 
@@ -71,12 +86,14 @@ router.post('/edit/job/:jobId', isAuthenticated, (req, res) => {
     if (!fb_id) {
         return res.status(403).send('Forbidden: You must be logged in to edit a job');
     }
-    const { title, description, pay } = req.body;
+    const { title, description, pay, link } = req.body;
     if (!title || !description || !pay) {
-        return res.status(400).send('All fields are required.');
+        return res.status(400).send('Title, description, and pay are required.');
     }
-    const query = `UPDATE jobs SET title = ?, description = ?, pay = ? WHERE id = ?`;
-    db.run(query, [title, description, pay, jobId], function(err) {
+    // accept link as optional (store empty string if missing)
+    const safeLink = typeof link !== 'undefined' && link !== null ? String(link) : '';
+    const query = `UPDATE jobs SET title = ?, description = ?, pay = ?, link = ? WHERE id = ?`;
+    db.run(query, [title, description, pay, safeLink, jobId], function(err) {
         if (err) {
             return res.status(500).send('Internal Server Error');
         }

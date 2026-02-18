@@ -43,6 +43,7 @@
                 <div class="job-link"><a href="<%= job.link %>" target="_blank">View Issue</a></div>
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta available">Available</div>
+                <button onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
               </article>
             <% }) %>
           <% } else { %>
@@ -77,6 +78,7 @@
                       <% }) %>
                     </ul>
                   <% } %>
+                  <button onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
                 </div>
               </article>
             <% }) %>
