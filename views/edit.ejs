@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDIT</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/post.css">
+</head>
+<body>
+    <h1>Edit</h1>
+
+    <% if (type === 'company' && company) { %>
+        <h2>Edit Company: <%= company.name %></h2>
+        <form action="/edit/company" method="POST">
+            <div>
+                <label for="name">Company Name</label>
+                <input id="name" name="name" type="text" required value="<%= company.name %>">
+            </div>
+            <div>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required><%= company.description %></textarea>
+            </div>
+            <div>
+                <label for="link">Website</label>
+                <input id="link" name="link" type="url" value="<%= company.link %>">
+            </div>
+            <div>
+                <label for="pColor">Primary Color</label>
+                <input id="pColor" name="pColor" type="color" value="<%= company.pColor || '#000000' %>">
+            </div>
+            <div>
+                <label for="sColor">Secondary Color</label>
+                <input id="sColor" name="sColor" type="color" value="<%= company.sColor || '#ffffff' %>">
+            </div>
+            <button type="submit">Save Company</button>
+        </form>
+    <% } else if (type === 'job' && job) { %>
+        <h2>Edit Job: <%= job.title %></h2>
+        <form action="/edit/job/<%= job.id %>" method="POST">
+            <input type="hidden" name="company" value="<%= job.company %>">
+            <div>
+                <label for="title">Job Title</label>
+                <input id="title" name="title" type="text" required value="<%= job.title %>">
+            </div>
+            <div>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required><%= job.description %></textarea>
+            </div>
+            <div>
+                <label for="pay">Pay</label>
+                <input id="pay" name="pay" type="number" required value="<%= job.pay %>">
+            </div>
+            <button type="submit">Save Job</button>
+        </form>
+    <% } else { %>
+        <p>Nothing to edit.</p>
+    <% } %>
+</body>
+</html>

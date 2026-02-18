@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Manager - <%= company.name %></title>
   <link rel="stylesheet" href="/css/index.css">
-  <link rel="stylesheet" href="/css/job.css">
+  <link rel="stylesheet" href="/css/post.css">
 </head>
 
 <body style="
@@ -23,6 +23,7 @@
       <button class="small-btn" onclick="location.href='/'">Home</button>
       <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'">Job Page</button>
       <button class="small-btn" onclick="location.href='/jobPosts/<%= encodeURIComponent(company.name) %>'">Post a Job</button>
+      <button class="small-btn" onclick="location.href='/edit/company'">Edit Company</button>
     </div>
 
     <div class="jobs-header">

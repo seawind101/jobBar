@@ -63,6 +63,9 @@ app.use((req, res, next) => {
     const fb = req.session && req.session.fb_id;
     res.locals.fb_id = fb || null;
     res.locals.isManager = fb ? parsedManagers.includes(String(fb)) : false;
+    // expose configured payment amounts to views
+    res.locals.CPOST = Number(process.env.CPOST || 300);
+    res.locals.JPOST = Number(process.env.JPOST || 100);
     next();
 });
 // expose helpers to check company ownership/permission
@@ -116,6 +119,10 @@ const jobRouter = require('./routes/job');
 const payRouter = require('./routes/payment');
 const jobManagerRouter = require('./routes/jobManager');
 const allJobsRouter = require('./routes/allJobs');
+const editRouter = require('./routes/edit');
+
+// Register routes
+app.use('/', editRouter);
 app.use('/', indexRouter);
 app.use('/', loginRouter);
 app.use('/', companiesRouter);
@@ -125,6 +132,7 @@ app.use('/', allJobsRouter);
 app.use('/', jobRouter);
 app.use('/', payRouter);
 app.use('/', jobManagerRouter);
+
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

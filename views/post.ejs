@@ -70,7 +70,7 @@
 
                     <div id="pin-modal">
                         <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
-                            <h3 id="pin-modal-title">Cost: 300</h3>
+                                    <h3 id="pin-modal-title">Cost: <%= typeof CPOST !== 'undefined' ? CPOST : 300 %></h3>
                             <h3 id="pin-modal-title">Enter your PIN</h3>
                             <input id="pin-input" type="password" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="••••••" autocomplete="one-time-code" />
                             <div class="pin-actions">
