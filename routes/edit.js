@@ -2,15 +2,15 @@ require('dotenv').config();
 const router = require('express').Router();
 const isAuthenticated = require('../middleware/isAuthenticated');
 
-router.get('/edit/company', isAuthenticated, (req, res) => {
+router.get('/edit/company/:companyId', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const fb_id = req.session.fb_id;
     const userFb = fb_id ? String(fb_id) : null;
     if (!fb_id) {
         return res.status(403).send('Forbidden: You must be logged in to edit a company');
     }
-    const query = `SELECT * FROM companies WHERE owner_id = ? COLLATE NOCASE`;
-    db.get(query, [fb_id], (err, company) => {
+    const query = `SELECT * FROM companies WHERE id = ? COLLATE NOCASE`;
+    db.get(query, [req.params.companyId], (err, company) => {
         if (err) {
             return res.status(500).send('Internal Server Error');
         }
@@ -22,7 +22,7 @@ router.get('/edit/company', isAuthenticated, (req, res) => {
     });
 });
 
-router.post('/edit/company', isAuthenticated, (req, res) => {
+router.post('/edit/company/:companyId', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const fb_id = req.session.fb_id;
     if (!fb_id) {
