@@ -54,15 +54,15 @@ router.post('/transfer/complete', isAuthenticated, async (req, res) => {
 			return res.status(502).json({ success: false, message: 'Transfer failed', details: data });
 		}
 
-		// On successful transfer, mark job complete (delete the job)
-		const delResult = await new Promise((resolve, reject) => {
-			db.run('DELETE FROM jobs WHERE id = ?', [jobId], function(err) {
+		// On successful transfer, mark job as completed (keep record in DB)
+		const updResult = await new Promise((resolve, reject) => {
+			db.run('UPDATE jobs SET status = ? WHERE id = ?', ['completed', jobId], function(err) {
 				if (err) return reject(err);
 				resolve({ changes: this.changes });
 			});
 		});
 
-		return res.json({ success: true, transfer: data, deleted: delResult.changes });
+		return res.json({ success: true, transfer: data, updated: updResult.changes });
 	} catch (err) {
 		console.error('Payment/transfer error:', err);
 		return res.status(500).json({ success: false, message: 'Server error' });

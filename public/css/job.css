@@ -43,8 +43,8 @@ body{
 
 /* Job Manager page - 3 column layout */
 .jobs-columns{
-    display:grid;
-    grid-template-columns:repeat(4, 1fr);
+    display:flex;
+    justify-content: center;
     gap:1rem;
     height:calc(100vh - 150px);  /* Takes remaining viewport height */
 }
@@ -52,8 +52,16 @@ body{
 .jobs-column{
     display:flex;
     flex-direction:column;
+    width: 30%;
     min-height:0;
     overflow:hidden;  /* Prevent column overflow */
+}
+
+.VL {
+    border: 1px solid var(--bpColor);
+    height: 100%;
+    margin: 0 0.5rem;
+    width: 1px;
 }
 
 .jobs-column h2{
@@ -63,6 +71,7 @@ body{
     text-align:center;
     flex-shrink:0;  /* Prevent header from shrinking */
 }
+
 
 .jobs-scroll{
     overflow-y:auto;
@@ -123,6 +132,20 @@ body{
 }
 .job-link {
     margin-top: 1rem;
+}
+
+.job-edit {
+    margin-top:0.75rem;
+    padding:0.4rem 0.8rem;
+    border-radius:6px;
+    border:1px solid var(--bsColor);
+    background:var(--sColor);
+    color:var(--bsColor);
+    cursor:pointer;
+    text-decoration:none;
+    font-size:1rem;
+    font-weight:600;
+    width: 30%;
 }
 .nav-row{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap} 
 

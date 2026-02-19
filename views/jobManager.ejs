@@ -19,7 +19,6 @@
 ">
   <main class="jobs-container">
     <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/'">Home</button>
       <button class="small-btn" onclick="location.href='/companies'">All companies</button>
       <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'">Job Page</button>
       <button class="small-btn" onclick="location.href='/jobPosts/<%= encodeURIComponent(company.name) %>'">Post a Job</button>
@@ -43,7 +42,7 @@
                 <div class="job-link"><a href="<%= job.link %>" target="_blank">View Issue</a></div>
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta available">Available</div>
-                <button onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
+                <button class="job-edit" onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
               </article>
             <% }) %>
           <% } else { %>
@@ -51,7 +50,7 @@
           <% } %>
         </div>
       </section>
-
+      <div class="VL"></div>
       <!-- Applied For Column -->
       <section class="jobs-column">
         <h2>Applied For</h2>
@@ -78,8 +77,8 @@
                       <% }) %>
                     </ul>
                   <% } %>
-                  <button onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
                 </div>
+                <button class="job-edit" onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
               </article>
             <% }) %>
           <% } else { %>
@@ -87,7 +86,7 @@
           <% } %>
         </div>
       </section>
-
+      <div class="VL"></div>
       <!-- In Progress Column -->
       <section class="jobs-column">
         <h2>In Progress</h2>
@@ -116,7 +115,7 @@
           <% } %>
         </div>
       </section>
-
+      <div class="VL"></div>
       <!-- Completed Jobs Column -->
       <section class="jobs-column">
         <h2>Completed</h2>
