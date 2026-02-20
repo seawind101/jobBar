@@ -17,8 +17,8 @@
   --bsColor: <%= company.bsColor %>;
   " class="post-job-page">
     <nav class="top-controls">
-        <button onclick="location.href='/'" style="border: 1px solid <%= company.bsColor %>;">Home</button>
         <button onclick="location.href='/companies'" style="border: 1px solid <%= company.bsColor %>;">Companies</button>
+        <button onclick="location.href='/allJobs'" style="border: 1px solid <%= company.bsColor %>;">All Jobs</button>
         <button onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'" style="border: 1px solid <%= company.bsColor %>;">Job Page</button>
     </nav>
 

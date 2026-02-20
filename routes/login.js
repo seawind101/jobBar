@@ -45,7 +45,7 @@ router.get('/login', (req, res) => {
                     });
             } else {
                 db.close();
-                return res.redirect('/');
+                return res.redirect('/companies');
             }
         });
     } else {

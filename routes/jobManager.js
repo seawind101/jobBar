@@ -217,11 +217,11 @@ router.post('/jobManager/complete', isAuthenticated, async (req, res) => {
             });
         });
 
-        // Delete the job (mark as complete by removing it)
+        // Mark the job as completed (keep record in DB)
         await new Promise((resolve, reject) => {
-            db.run('DELETE FROM jobs WHERE id = ?', [jobId], (err) => {
-                if (err) reject(err);
-                else resolve();
+            db.run('UPDATE jobs SET status = ? WHERE id = ?', ['completed', jobId], function(err) {
+                if (err) return reject(err);
+                resolve(this.changes);
             });
         });
 

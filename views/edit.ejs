@@ -18,8 +18,9 @@
     <% } %>
 >
     <nav class="top-controls">
-        <button onclick="location.href='/'">Home</button>
-        <button onclick="location.href='/companies'">Companies</button>
+        <button class="small-btn" onclick="location.href='/companies'" style="border: 1px solid <%= company.bsColor %>;">Companies</button>
+        <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'" style="border: 1px solid <%= company.bsColor %>;">Job Page</button>
+        <button class="small-btn" onclick="location.href='/jobManager/<%= encodeURIComponent(company.name) %>'" style="border: 1px solid <%= company.bsColor %>;">Manager Page</button>
     </nav>
 
     <div class="container">
