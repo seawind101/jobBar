@@ -233,6 +233,60 @@ router.post('/jobManager/complete', isAuthenticated, async (req, res) => {
     }
 });
 
+router.post('/jobManager/fire/:jobId', isAuthenticated, async (req, res) => {
+    const db = req.app.locals.db;
+    const { jobId } = req.params;
+    const ownerId = req.session.fb_id;
+
+    if (!jobId) {
+        return res.status(400).send('Missing required fields');
+    }
+
+    try {
+        // Get job details to verify ownership
+        const job = await new Promise((resolve, reject) => {
+            db.get('SELECT * FROM jobs WHERE id = ?', [jobId], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+
+        if (!job) {
+            return res.status(404).send('Job not found');
+        }
+
+        // Verify company ownership
+        const company = await new Promise((resolve, reject) => {
+            db.get('SELECT * FROM companies WHERE name = ? COLLATE NOCASE', [job.company], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+
+        if (!company || company.owner_id !== ownerId) {
+            return res.status(403).send('You do not own this company');
+        }
+
+        // Only allow firing if the job is currently in_progress
+        if (job.status !== 'in_progress') {
+            return res.status(400).send('Can only fire employees for in-progress jobs');
+        }
+
+        // Fire the employee: return the job to available state and clear employee assignment
+        await new Promise((resolve, reject) => {
+            db.run('UPDATE jobs SET status = ?, employee_id = NULL WHERE id = ?', ['available', jobId], (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+
+        res.redirect('/jobManager/' + encodeURIComponent(company.name));
+    } catch (error) {
+        console.error('Error firing employee:', error);
+        res.status(500).send('Internal server error');
+    }
+});
+
 module.exports = router;
 
 

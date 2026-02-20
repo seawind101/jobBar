@@ -93,19 +93,22 @@
         <h2>In Progress</h2>
         <div class="jobs-scroll">
           <% if (jobs && jobs.length > 0) { %>
-            <% jobs.filter(job => job.employee_id && job.status !== 'completed').forEach(function(job){ %>
+            <% jobs.filter(job => job.employee_id && job.status === 'in_progress').forEach(function(job){ %>
               <article class="job-card">
                 <div class="job-title"><b><%= job.title %></b></div>
                 <div class="job-desc"><%= job.description %></div>
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta taken">
                   Assigned to <%= job.employee_name %>
-      <button class="complete-button" 
-        data-job-id="<%= job.id %>"
-        data-employee-id="<%= job.employee_id %>"
-        data-pay="<%= job.pay %>"
-        data-status="<%= job.status || '' %>"
-        data-title="<%= job.title %>">
+                  <form action="/jobManager/fire/<%= job.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Fire this employee?');">
+                    <button type="submit" class="fire">Fire</button>
+                  </form>
+                  <button class="complete-button" 
+                    data-job-id="<%= job.id %>"
+                    data-employee-id="<%= job.employee_id %>"
+                    data-pay="<%= job.pay %>"
+                    data-status="<%= job.status || '' %>"
+                    data-title="<%= job.title %>">
                     Mark As Complete
                   </button>
                 </div>
