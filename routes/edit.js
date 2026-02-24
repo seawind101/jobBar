@@ -67,6 +67,11 @@ router.get('/edit/job/:jobId', isAuthenticated, (req, res) => {
         if (userFb !== '1' && companyOwnerFb !== userFb) {
             return res.status(403).send("Forbidden: You do not own this job's company");
         }
+        // If the job is already in progress or completed, prevent editing and redirect back to manager
+        if (job.status === 'in_progress' || job.status === 'completed') {
+            const companyName = job.company || '';
+            return res.redirect('/jobManager/' + encodeURIComponent(companyName) + '?error=' + encodeURIComponent('Too late to edit this job.'));
+        }
         // fetch company details for styling/hidden fields on the job edit page
         const compQuery = `SELECT * FROM companies WHERE name = ?`;
         db.get(compQuery, [job.company], (err2, company) => {
