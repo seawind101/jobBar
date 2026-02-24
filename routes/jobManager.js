@@ -77,10 +77,13 @@ router.get('/jobManager/:companyName', isAuthenticated, (req, res) => {
             });
 
             Promise.all(jobPromises).then(jobsWithApplicants => {
+                // pass any query error message through to the template so it can be displayed
+                const message = req.query && req.query.error ? String(req.query.error) : null;
                 res.render('jobManager', { 
                     company, 
                     jobs: jobsWithApplicants, 
-                    fb_id: req.session.fb_id 
+                    fb_id: req.session.fb_id,
+                    message
                 });
             });
         });

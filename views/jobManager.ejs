@@ -27,6 +27,11 @@
 
     <div class="jobs-header">
       <h1>Manage Jobs: <%= company ? company.name : 'Not found' %></h1>
+      <% if (typeof message !== 'undefined' && message) { %>
+        <div class="form-error" style="color:#ffd1d9;margin:0.5rem 0;padding:0.6rem;border-radius:6px;background:rgba(200,30,70,0.06);font-weight:700;">
+          <%= message %>
+        </div>
+      <% } %>
     </div>
 
     <div class="jobs-columns">
