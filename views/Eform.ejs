@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply for Job</title>
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/post.css">
+</head>
+<body class="create-company-page">
+  <nav class="top-controls">
+    <button onclick="location.href='/'">Home</button>
+    <button onclick="location.href='/companies'">Companies</button>
+  </nav>
+
+  <div class="container">
+    <div class="post-card">
+      <h1>Apply for: <%= job ? job.title : 'Job' %></h1>
+      <% if (company) { %>
+        <h3>Company: <%= company.name %></h3>
+      <% } %>
+
+      <form id="eform" action="/eform" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="jobId" value="<%= job ? job.id : '' %>">
+
+        <div class="form-row">
+          <label for="first_name">First name</label>
+          <input id="first_name" name="first_name" type="text" required>
+        </div>
+
+        <div class="form-row">
+          <label for="last_name">Last name</label>
+          <input id="last_name" name="last_name" type="text" required>
+        </div>
+
+        <div class="form-row">
+          <label for="resume">Resume (PDF preferred)</label>
+          <input id="resume" name="resume" type="file" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+        </div>
+
+        <div class="form-row">
+          <label for="portfolio">Portfolio (zip or PDF)</label>
+          <input id="portfolio" name="portfolio" type="file" accept="application/pdf,application/zip">
+        </div>
+
+        <div class="form-row">
+          <label for="cover_letter">Cover Letter (PDF)</label>
+          <input id="cover_letter" name="cover_letter" type="file" accept="application/pdf">
+        </div>
+
+        <div style="text-align:center;margin-top:0.6rem;">
+          <button type="submit">Submit Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -120,10 +120,12 @@ const payRouter = require('./routes/payment');
 const jobManagerRouter = require('./routes/jobManager');
 const allJobsRouter = require('./routes/allJobs');
 const editRouter = require('./routes/edit');
+const eformRouter = require('./routes/Eform');
 
 // Register routes
 app.use('/', editRouter);
 app.use('/', indexRouter);
+app.use('/', eformRouter);
 app.use('/', loginRouter);
 app.use('/', companiesRouter);
 app.use('/', postRouter);

@@ -35,3 +35,26 @@ CREATE TABLE IF NOT EXISTS job_applications (
     applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(job_id, fb_id)
 );
+
+CREATE TABLE IF NOT EXISTS company_applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER NOT NULL,
+    fb_id TEXT NOT NULL,
+    applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(company_id, fb_id)
+);
+
+CREATE TABLE IF NOT EXISTS company_application_files (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        application_id INTEGER NOT NULL,
+        field TEXT,
+        path TEXT,
+        original_name TEXT
+);
+
+CREATE TABLE IF NOT EXISTS company_employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    company_id INTEGER NOT NULL,
+    fb_id TEXT NOT NULL,
+    UNIQUE(company_id, fb_id)
+);
