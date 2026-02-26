@@ -52,6 +52,7 @@
         </div>
       </section>
       <div class="VL"></div>
+
       <!-- Applied For Column -->
       <section class="jobs-column">
         <h2>Applied For</h2>
@@ -69,7 +70,8 @@
                       <% job.applicants.forEach(applicant => { %>
                         <li>
                           <%= applicant.name %>
-                          <form action="/jobManager/accept" method="POST" style="display:inline;" onsubmit="return confirm('Accept this applicant for the job?');">
+                          <form action="/jobManager/accept" method="POST" style="display:inline;"
+                            onsubmit="return confirm('Accept this applicant for the job?');">
                             <input type="hidden" name="jobId" value="<%= job.id %>">
                             <input type="hidden" name="applicantId" value="<%= applicant.fb_id %>">
                             <button type="submit" class="accept">Accept</button>
@@ -88,6 +90,7 @@
         </div>
       </section>
       <div class="VL"></div>
+
       <!-- In Progress Column -->
       <section class="jobs-column">
         <h2>In Progress</h2>
@@ -100,12 +103,11 @@
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta taken">
                   Assigned to <%= job.employee_name %>
-      <button class="complete-button" 
-        data-job-id="<%= job.id %>"
-        data-employee-id="<%= job.employee_id %>"
-        data-pay="<%= job.pay %>"
-        data-status="<%= job.status || '' %>"
-        data-title="<%= job.title %>">
+                  <button class="complete-button" 
+                    data-job-id="<%= job.id %>"
+                    data-employee-id="<%= job.employee_id %>" 
+                    data-pay="<%= job.pay %>"
+                    data-title="<%= job.title %>">
                     Mark As Complete
                   </button>
                 </div>
@@ -117,6 +119,7 @@
         </div>
       </section>
       <div class="VL"></div>
+
       <!-- Completed Jobs Column -->
       <section class="jobs-column">
         <h2>Completed</h2>
@@ -138,195 +141,169 @@
     </div>
   </main>
 
-       <div id="pin-modal">
-      <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
-        <h3 id="pin-cost">Pay them: 300</h3>
-        <h3 id="pin-modal-title">Enter your PIN</h3>
-                <input id="pin-input" type="password" maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" autocomplete="one-time-code" />
-                <div class="pin-actions">
-                    <button id="pin-cancel" type="button">Cancel</button>
-                    <button id="pin-confirm" type="button">Confirm</button>
-                </div>
+  <!-- PIN Modal -->
+  <div id="pin-modal">
+    <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
+      <h3 id="pin-modal-title">Enter your PIN</h3>
+      <input id="pin-input" type="password" maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]*"
+        placeholder="••••" autocomplete="one-time-code" />
+      <div class="pin-actions">
+        <button id="pin-cancel" type="button">Cancel</button>
+        <button id="pin-confirm" type="button">Confirm</button>
+      </div>
+    </div>
   </div>
-  </div>
 
-     <script>
-            (function(){
-                const form = document.getElementById('jobpost-form');
-                if (!form) return;
+  <!-- Single consolidated script for Mark As Complete functionality -->
+  <script>
+  (function(){
+    const modal = document.getElementById('pin-modal');
+    if (!modal) return;
 
-                const modal = document.getElementById('pin-modal');
-                const pinInput = document.getElementById('pin-input');
-                const btnCancel = document.getElementById('pin-cancel');
-                const btnConfirm = document.getElementById('pin-confirm');
+    const pinInput = document.getElementById('pin-input');
+    const btnCancel = document.getElementById('pin-cancel');
+    const btnConfirm = document.getElementById('pin-confirm');
 
-                // allow Enter key in PIN field to confirm
-                pinInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); btnConfirm.click(); } });
+    // Get company name from the page
+    const companyName = '<%= company.name %>';
 
-                let bypass = false;
+    let currentJobData = null;
 
-                function showModal(){ pinInput.value = ''; modal.style.display = 'flex'; setTimeout(()=> pinInput.focus(), 50); }
-                function hideModal(){ modal.style.display = 'none'; }
+    // Allow Enter key in PIN field to confirm
+    if (pinInput) {
+      pinInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') { e.preventDefault(); btnConfirm.click(); }
+      });
+    }
 
-                async function awaitConfirm(){
-                    return new Promise((resolve)=>{
-                        const cleanup = ()=>{
-                            btnConfirm.removeEventListener('click', onConfirm);
-                            btnCancel.removeEventListener('click', onCancel);
-                            modal.removeEventListener('click', onOverlay);
-                        };
-                        const onConfirm = ()=>{ cleanup(); resolve(true); };
-                        const onCancel = ()=>{ cleanup(); resolve(false); };
-                        const onOverlay = (e)=>{ if (e.target === modal) { cleanup(); resolve(false); } };
-                        btnConfirm.addEventListener('click', onConfirm);
-                        btnCancel.addEventListener('click', onCancel);
-                        modal.addEventListener('click', onOverlay);
-                    });
-                }
+    function showModal(){
+      if (pinInput) pinInput.value = '';
+      modal.style.display = 'flex';
+      setTimeout(() => { if (pinInput) pinInput.focus(); }, 50);
+    }
 
-                form.addEventListener('submit', async function(e){
-                    if (bypass) return; // allow normal submit when bypass is true
-                    e.preventDefault();
+    function hideModal(){
+      modal.style.display = 'none';
+      if (btnConfirm) {
+        btnConfirm.disabled = false;
+        btnConfirm.textContent = 'Confirm';
+      }
+    }
 
-                    showModal();
-                    const ok = await awaitConfirm();
-                    if (!ok) { hideModal(); return; }
+    function redirectToJobManager(message){
+      if (message) alert(message);
+      window.location.href = '/jobManager/' + encodeURIComponent(companyName);
+    }
 
-                    const pin = pinInput.value.trim();
-                    if (!pin) { alert('Please enter your PIN'); return; }
+    async function awaitConfirm(){
+      return new Promise((resolve) => {
+        const cleanup = () => {
+          btnConfirm.removeEventListener('click', onConfirm);
+          btnCancel.removeEventListener('click', onCancel);
+          modal.removeEventListener('click', onOverlay);
+        };
+        const onConfirm = () => { cleanup(); resolve(true); };
+        const onCancel = () => { cleanup(); resolve(false); };
+        const onOverlay = (e) => { if (e.target === modal) { cleanup(); resolve(false); } };
+        btnConfirm.addEventListener('click', onConfirm);
+        btnCancel.addEventListener('click', onCancel);
+        modal.addEventListener('click', onOverlay);
+      });
+    }
 
-                    const fd = new FormData(form);
-                    const payload = {
-                        company: fd.get('company'),
-                        title: fd.get('title'),
-                        description: fd.get('description'),
-                        pay: fd.get('pay'),
-                        pin: pin
-                    };
+    // Handle "Mark As Complete" button clicks
+    document.querySelectorAll('.complete-button').forEach(button => {
+      button.addEventListener('click', function () {
+        currentJobData = {
+          jobId: this.getAttribute('data-job-id'),
+          employeeId: this.getAttribute('data-employee-id'),
+          pay: this.getAttribute('data-pay'),
+          title: this.getAttribute('data-title')
+        };
+        showModal();
+      });
+    });
 
-                    try {
-                        btnConfirm.disabled = true;
-                        btnConfirm.textContent = 'Processing...';
-                        const res = await fetch('/transfer/job', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'same-origin',
-                            body: JSON.stringify(payload)
-                        });
-                        const data = await res.json().catch(()=>({}));
-                        if (res.ok && data && data.success) {
-                            // proceed to submit the original form to /jobPosts to persist the job
-                            bypass = true;
-                            hideModal();
-                            form.submit();
-                        } else {
-                            alert('Payment failed: ' + (data && data.message ? data.message : 'unknown'));
-                        }
-                    } catch(err) {
-                        console.error('Payment error', err);
-                        alert('Payment failed');
-                    } finally {
-                        btnConfirm.disabled = false;
-                        btnConfirm.textContent = 'Confirm';
-                    }
-                    });
-                  })();
-                </script>
+    // Handle cancel button
+    if (btnCancel) {
+      btnCancel.addEventListener('click', function() {
+        hideModal();
+      });
+    }
 
-              <!-- Job Manager: wire Mark As Complete buttons to the shared PIN modal -->
-              <script>
-              (function(){
-                const modal = document.getElementById('pin-modal');
-                if (!modal) { console.warn('JobManager: pin-modal not found'); return; }
-                const pinInput = document.getElementById('pin-input');
-                const btnCancel = document.getElementById('pin-cancel');
-                const btnConfirm = document.getElementById('pin-confirm');
+    // Handle confirm button
+    if (btnConfirm) {
+      btnConfirm.addEventListener('click', async function() {
+        const pin = pinInput ? pinInput.value.trim() : '';
+        if (!pin) { 
+          alert('Please enter your PIN'); 
+          return; 
+        }
 
-                function showModal(){
-                  if (!pinInput) return;
-                  pinInput.value = '';
-                  modal.style.display = 'flex';
-                  setTimeout(()=> pinInput.focus(), 40);
-                }
-                function hideModal(){ modal.style.display = 'none'; }
+        if (!currentJobData) {
+          alert('No job data available');
+          return;
+        }
 
-                function awaitConfirm(){
-                  return new Promise((resolve)=>{
-                    const cleanup = ()=>{
-                      btnConfirm.removeEventListener('click', onConfirm);
-                      btnCancel.removeEventListener('click', onCancel);
-                      modal.removeEventListener('click', onOverlay);
-                    };
-                    const onConfirm = ()=>{ cleanup(); resolve(true); };
-                    const onCancel = ()=>{ cleanup(); resolve(false); };
-                    const onOverlay = (e)=>{ if (e.target === modal) { cleanup(); resolve(false); } };
-                    btnConfirm.addEventListener('click', onConfirm);
-                    btnCancel.addEventListener('click', onCancel);
-                    modal.addEventListener('click', onOverlay);
-                  });
-                }
+        try {
+          btnConfirm.disabled = true;
+          btnConfirm.textContent = 'Processing...';
 
-                // Delegate clicks for complete buttons
-                document.addEventListener('click', async function(ev){
-                  const btn = ev.target.closest && ev.target.closest('.complete-button');
-                  if (!btn) return;
-                  ev.preventDefault();
+          // Step 1: Process payment/transfer
+          const paymentResponse = await fetch('/transfer/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              jobId: currentJobData.jobId,
+              to: currentJobData.employeeId,
+              amount: currentJobData.pay,
+              reason: `Completed: ${currentJobData.title}`,
+              pin: pin
+            })
+          });
 
-                  const jobId = btn.getAttribute('data-job-id');
-                  const employeeId = btn.getAttribute('data-employee-id');
-                  const pay = btn.getAttribute('data-pay');
-                  const status = btn.getAttribute('data-status') || '';
-                  const title = btn.getAttribute('data-title') || '';
+          const paymentResult = await paymentResponse.json().catch(() => ({ success: false, message: 'Invalid response from payment server' }));
 
-                  // Only allow completing jobs that are officially in_progress (owner must accept applicant first)
-                  if (status !== 'in_progress') { alert('Only in-progress jobs can be marked complete.'); return; }
-                  if (!jobId || !employeeId) { alert('Missing job info. Refresh and try again.'); return; }
+          // If payment fails, redirect without completing job
+          if (!paymentResponse.ok || !paymentResult.success) {
+            let errorMsg = 'Payment failed. Job was not marked as complete.\n\n';
+            if (paymentResult.message) errorMsg += paymentResult.message;
+            if (paymentResult.details && paymentResult.details.message) {
+              errorMsg += '\n' + paymentResult.details.message;
+            }
+            return redirectToJobManager(errorMsg);
+          }
 
-                  // update cost display to reflect this job's pay
-                  try {
-                    const costEl = document.getElementById('pin-cost');
-                    if (costEl) costEl.textContent = 'Complete Job Cost: ' + (pay || '0');
-                  } catch (e) { /* ignore */ }
+          // Step 2: Mark job as complete ONLY if payment succeeded
+          const completeResponse = await fetch('/jobManager/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              jobId: currentJobData.jobId,
+              paymentVerified: 'true' // Security token
+            })
+          });
 
-                  showModal();
-                  const ok = await awaitConfirm();
-                  if (!ok) { hideModal(); return; }
+          const completeResult = await completeResponse.json().catch(() => ({ success: false, message: 'Invalid response from server' }));
 
-                  const pin = pinInput ? pinInput.value.trim() : '';
-                  if (!pin) { alert('Please enter your PIN'); return; }
+          if (!completeResponse.ok || !completeResult.success) {
+            // Payment succeeded but database update failed
+            return redirectToJobManager('Payment processed but job completion failed: ' + (completeResult.message || 'Unknown error') + '\nPlease contact support.');
+          }
 
-                  // disable confirm while processing
-                  btnConfirm.disabled = true;
-                  const prevText = btnConfirm.textContent;
-                  btnConfirm.textContent = 'Processing...';
+          // Success
+          redirectToJobManager('Job marked as complete!');
 
-                  try {
-                    const res = await fetch('/transfer/complete', {
-                      method: 'POST',
-                      credentials: 'same-origin',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ jobId: jobId, to: employeeId, amount: pay, reason: `Completed ${title}`, pin })
-                    });
-                    const data = await res.json().catch(()=>({}));
-                    if (res.ok && data && data.success) {
-                      hideModal();
-                      window.location.reload();
-                    } else {
-                      alert('Transfer failed: ' + (data && data.message ? data.message : 'unknown'));
-                      // show modal again so user can retry
-                      showModal();
-                    }
-                  } catch(err) {
-                    console.error('Transfer error', err);
-                    alert('Transfer error');
-                    showModal();
-                  } finally {
-                    btnConfirm.disabled = false;
-                    btnConfirm.textContent = prevText;
-                  }
-                });
-              })();
-              </script>
+        } catch (err) {
+          console.error('Error completing job:', err);
+          redirectToJobManager('Network error occurred. Job was not marked as complete.\nPlease check your connection and try again.');
+        }
+      });
+    }
+  })();
+  </script>
 </body>
 
 </html>
