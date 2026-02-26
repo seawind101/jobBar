@@ -28,7 +28,7 @@
             <% if (type === 'company' && company) { %>
                 <h1>Edit Company</h1>
                 <h2><%= company.name %></h2>
-                <form id="company-form" action="/edit/company" method="POST">
+                <form id="company-form" action="/edit/company/<%= company.id %>" method="POST">
                     <div class="form-row">
                         <label for="name">Company Name:</label>
                         <input type="text" id="name" name="name" required value="<%= company.name %>">

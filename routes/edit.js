@@ -2,15 +2,15 @@ require('dotenv').config();
 const router = require('express').Router();
 const isAuthenticated = require('../middleware/isAuthenticated');
 
-router.get('/edit/company', isAuthenticated, (req, res) => {
+router.get('/edit/company/:companyId', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const fb_id = req.session.fb_id;
     const userFb = fb_id ? String(fb_id) : null;
     if (!fb_id) {
         return res.status(403).send('Forbidden: You must be logged in to edit a company');
     }
-    const query = `SELECT * FROM companies WHERE owner_id = ? COLLATE NOCASE`;
-    db.get(query, [fb_id], (err, company) => {
+    const query = `SELECT * FROM companies WHERE id = ? COLLATE NOCASE`;
+    db.get(query, [req.params.companyId], (err, company) => {
         if (err) {
             return res.status(500).send('Internal Server Error');
         }
@@ -22,7 +22,7 @@ router.get('/edit/company', isAuthenticated, (req, res) => {
     });
 });
 
-router.post('/edit/company', isAuthenticated, (req, res) => {
+router.post('/edit/company/:companyId', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const fb_id = req.session.fb_id;
     if (!fb_id) {
@@ -66,6 +66,11 @@ router.get('/edit/job/:jobId', isAuthenticated, (req, res) => {
         // require that the current user matches the company owner (unless admin)
         if (userFb !== '1' && companyOwnerFb !== userFb) {
             return res.status(403).send("Forbidden: You do not own this job's company");
+        }
+        // If the job is already in progress or completed, prevent editing and redirect back to manager
+        if (job.status === 'in_progress' || job.status === 'completed') {
+            const companyName = job.company || '';
+            return res.redirect('/jobManager/' + encodeURIComponent(companyName) + '?error=' + encodeURIComponent('Too late to edit this job.'));
         }
         // fetch company details for styling/hidden fields on the job edit page
         const compQuery = `SELECT * FROM companies WHERE name = ?`;
