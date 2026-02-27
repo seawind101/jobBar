@@ -14,6 +14,8 @@
         color: var(--bpColor);
         opacity: 0.7;
       }
+      .job-tags { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
+      .job-tag { background: rgba(255,255,255,0.06); padding:4px 8px; border-radius:12px; font-size:12px; }
     </style>
 </head>
 
@@ -32,16 +34,15 @@
       const ownerId = company && (company.owner_id !== undefined && company.owner_id !== null) ? String(company.owner_id) : null;
       const requesterId = typeof fb_id !== 'undefined' && fb_id !== null ? String(fb_id) : null;
       const canManage = requesterId && ownerId && requesterId === ownerId;
-      const jobPostsUrl = company ? ('/jobPosts/' + encodeURIComponent(company.name)) : '/jobPosts/Not%20found';
-      const jobManagerUrl = company ? ('/jobManager/' + encodeURIComponent(company.name)) : '/jobManager/Not%20found';
+        const jobPostsUrl = company ? ('/jobPosts/' + encodeURIComponent(company.name)) : '/jobPosts/Not%20found';
+        const positionManagerUrl = company ? ('/positionManager/' + encodeURIComponent(company.name)) : '/positionManager/Not%20found';
     %>
     <div class="nav-row">
       <button class="small-btn" onclick="location.href='/companies'">All Companies</button>
       <button class="small-btn" onclick="location.href='/allJobs'">All Open Issues</button>
-      <button class="small-btn" onclick="location.href='/eJob/<%= company ? company.name : 'Not found' %>'">Open Positions</button>
       <% if (canManage) { %>
-        <a class="small-btn" href="<%= jobPostsUrl %>">Post an Issue</a>
-        <button class="small-btn" onclick="location.href='<%= jobManagerUrl %>'">Manage Issues</button>
+        <a class="small-btn" href="/ePost/<%= encodeURIComponent(company.name) %>">Create Position</a>
+          <button class="small-btn" onclick="location.href='<%= positionManagerUrl %>'">Manage Positions</button>
       <% } %>
       <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin-left:1rem;flex:1;min-width:180px;padding:0.4rem;border-radius:8px;border:1px solid var(--bpColor);background:transparent;color:var(--bpColor)"/>
     </div>
@@ -66,13 +67,18 @@
             <article class="job-card" role="article">
               <div class="job-title"><b>Job Title:</b> <%= job.title %></div>
               <div class="job-desc"><b>Description:</b> <%= job.description %></div>
-              <div class="job-link"><a href="<%= job.link %>" target="_blank">View Github Repo</a></div>
-              <div class="job-pay"><b>Pay:</b> <%= job.pay %></div>
+              <% if (job.tags && job.tags.length) { %>
+                <div class="job-tags">
+                  <% job.tags.forEach(function(tag){ %>
+                    <span class="job-tag"><%= tag %></span>
+                  <% }) %>
+                </div>
+              <% } %>
               <div style="margin-top:0.6rem">
                 <% if (job.you_applied) { %>
                   <span class="job-meta taken">You applied</span>
                 <% } else { %>
-                  <form action="/job/<%= job.id %>/apply" method="POST">
+                  <form action="/position/<%= job.id %>/apply" method="POST">
                     <button type="submit" class="apply-btn">Apply</button>
                   </form>
                 <% } %>

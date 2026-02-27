@@ -15,13 +15,15 @@
 
   <div class="container">
     <div class="post-card">
-      <h1>Apply for: <%= job ? job.title : 'Job' %></h1>
-      <% if (company) { %>
-        <h3>Company: <%= company.name %></h3>
+      <% const JOB = (typeof job !== 'undefined') ? job : null; const POS = (typeof position !== 'undefined') ? position : null; const COMP = (typeof company !== 'undefined') ? company : null; %>
+      <h1>Apply for: <%= JOB ? JOB.title : (POS ? POS.title : 'Job') %></h1>
+      <% if (COMP) { %>
+        <h3>Company: <%= COMP.name %></h3>
       <% } %>
 
       <form id="eform" action="/eform" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="jobId" value="<%= job ? job.id : '' %>">
+        <input type="hidden" name="jobId" value="<%= JOB ? JOB.id : '' %>">
+        <input type="hidden" name="positionId" value="<%= POS ? POS.id : '' %>">
 
         <div class="form-row">
           <label for="first_name">First name</label>
@@ -39,8 +41,17 @@
         </div>
 
         <div class="form-row">
-          <label for="portfolio">Portfolio (zip or PDF)</label>
-          <input id="portfolio" name="portfolio" type="file" accept="application/pdf,application/zip">
+          <label for="portfolio">Portfolio</label>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div>
+              <strong>Upload PNG images</strong>
+              <input id="portfolio_files" name="portfolio" type="file" accept="image/png" multiple>
+            </div>
+            <div>
+              <strong>Or provide links to your work (comma-separated)</strong>
+              <input id="portfolio_links" name="portfolio_links" type="text" placeholder="https://example.com, https://behance.net/..." style="width:100%">
+            </div>
+          </div>
         </div>
 
         <div class="form-row">
@@ -54,5 +65,70 @@
       </form>
     </div>
   </div>
+    <script>
+      (function(){
+        const form = document.getElementById('eform');
+        const resumeInput = document.getElementById('resume');
+        const coverInput = document.getElementById('cover_letter');
+        const portfolioFiles = document.getElementById('portfolio_files');
+        const portfolioLinks = document.getElementById('portfolio_links');
+
+        function fileIsPdfOrPng(file) {
+          if (!file) return false;
+          const t = file.type || '';
+          const n = file.name || '';
+          return t === 'application/pdf' || t === 'image/png' || /\.pdf$/i.test(n) || /\.png$/i.test(n);
+        }
+
+        function portfolioFileIsPng(file) {
+          if (!file) return false;
+          const t = file.type || '';
+          const n = file.name || '';
+          return t === 'image/png' || /\.png$/i.test(n);
+        }
+
+        form.addEventListener('submit', function(e){
+          // Validate resume
+          if (resumeInput && resumeInput.files && resumeInput.files[0]) {
+            if (!fileIsPdfOrPng(resumeInput.files[0])) {
+              e.preventDefault();
+              alert('Resume must be a PDF or PNG file.');
+              return false;
+            }
+          }
+          // Validate cover letter
+          if (coverInput && coverInput.files && coverInput.files[0]) {
+            if (!fileIsPdfOrPng(coverInput.files[0])) {
+              e.preventDefault();
+              alert('Cover letter must be a PDF or PNG file.');
+              return false;
+            }
+          }
+
+          // Validate portfolio: either links or PNG files
+          const linksVal = portfolioLinks && portfolioLinks.value && portfolioLinks.value.trim();
+          const hasFiles = portfolioFiles && portfolioFiles.files && portfolioFiles.files.length > 0;
+          if (!linksVal && !hasFiles) {
+            // portfolio optional
+          } else if (hasFiles) {
+            for (const f of portfolioFiles.files) {
+              if (!portfolioFileIsPng(f)) {
+                e.preventDefault();
+                alert('Portfolio uploads must be PNG images only.');
+                return false;
+              }
+            }
+          } else if (linksVal) {
+            const parts = linksVal.split(',').map(s => s.trim()).filter(Boolean);
+            const bad = parts.find(p => !/^https?:\/\//i.test(p));
+            if (bad) {
+              e.preventDefault();
+              alert('Portfolio links must be full URLs (start with http:// or https://).');
+              return false;
+            }
+          }
+        });
+      })();
+    </script>
 </body>
 </html>

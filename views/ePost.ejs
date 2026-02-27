@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create Position - <%= company ? company.name : '' %></title>
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/post.css">
+</head>
+<body
+  style="
+  background: <%= company ? 'linear-gradient(180deg, ' + company.pColor + ', ' + company.sColor + ')' : 'transparent' %>;
+  color: <%= company ? company.bpColor : '#fff' %>;
+  ">
+  <div class="container">
+    <div class="post-card">
+      <h1>Create Position for <%= company.name %></h1>
+      <form id="epost-form" action="/ePost" method="POST">
+        <input type="hidden" name="company" value="<%= company.name %>">
+
+        <div class="form-row">
+          <label for="title">Position Title</label>
+          <input id="title" name="title" type="text" maxlength="120" required>
+        </div>
+
+        <div class="form-row">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" maxlength="1000" required></textarea>
+        </div>
+
+
+        <div class="form-row">
+          <label>Tags</label>
+          <div id="tags-root">
+            <div id="tag-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>
+            <div style="display:flex;gap:6px">
+              <input id="tag-input" type="text" placeholder="Add a tag (e.g. frontend developer)" style="flex:1;padding:0.5rem;border-radius:8px;border:1px solid rgba(0,0,0,0.08)">
+              <button id="add-tag" type="button">Add</button>
+            </div>
+          </div>
+          <input type="hidden" name="tags" id="tags-hidden" value="">
+        </div>
+
+        <div style="margin-top:1rem;display:flex;gap:0.5rem;justify-content:flex-end">
+          <button type="submit" style="background-color: <%= company.pColor %>; color: <%= company.bpColor %>; border: 1px solid <%= company.bpColor %>;">Create Position</button>
+          <button type="button" onclick="location.href='/eJob/' + encodeURIComponent('<%= company.name %>')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const input = document.getElementById('tag-input');
+      const btn = document.getElementById('add-tag');
+      const list = document.getElementById('tag-list');
+      const hidden = document.getElementById('tags-hidden');
+
+      function getTags(){
+        return hidden.value ? hidden.value.split(',').map(s=>s.trim()).filter(Boolean) : [];
+      }
+      function setTags(arr){ hidden.value = arr.join(','); }
+
+      function render(){
+        list.innerHTML = '';
+        getTags().forEach(t => {
+          const chip = document.createElement('span');
+          chip.textContent = t;
+          chip.style.padding = '6px 8px';
+          chip.style.borderRadius = '12px';
+          chip.style.background = 'rgba(0,0,0,0.06)';
+          chip.style.cursor = 'default';
+          chip.style.display = 'inline-flex';
+          chip.style.alignItems = 'center';
+          chip.style.gap = '6px';
+
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.textContent = '×';
+          remove.style.border = 'none';
+          remove.style.background = 'transparent';
+          remove.style.cursor = 'pointer';
+          remove.addEventListener('click', ()=>{
+            const arr = getTags().filter(x => x !== t);
+            setTags(arr);
+            render();
+          });
+
+          chip.appendChild(remove);
+          list.appendChild(chip);
+        })
+      }
+
+      btn.addEventListener('click', ()=>{
+        const v = input.value.trim();
+        if (!v) return;
+        const arr = getTags();
+        // avoid duplicates (case-insensitive)
+        if (!arr.map(a=>a.toLowerCase()).includes(v.toLowerCase())) {
+          arr.push(v);
+          setTags(arr);
+          render();
+        }
+        input.value = '';
+        input.focus();
+      });
+
+      // allow enter to add
+      input.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') { e.preventDefault(); btn.click(); } });
+
+      // initial render
+      render();
+    })();
+  </script>
+</body>
+</html>

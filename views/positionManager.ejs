@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Position Manager - <%= company.name %></title>
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="/css/job.css">
+</head>
+
+<body style="
+  background: <%= company ? 'linear-gradient(180deg, ' + company.pColor + ', ' + company.sColor + ')' : 'transparent' %>;
+  color: <%= company.bpColor %>;
+  --pColor: <%= company.pColor %>;
+  --sColor: <%= company.sColor %>;
+  --bpColor: <%= company.bpColor %>;
+  --bsColor: <%= company.bsColor %>;
+">
+  <main class="jobs-container">
+    <div class="nav-row">
+      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
+      <button class="small-btn" onclick="location.href='/allJobs'">All Jobs</button>
+      <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'">Job Page</button>
+      <button class="small-btn" onclick="location.href='/eJob/<%= encodeURIComponent(company.name) %>'">View Positions</button>
+      <button class="small-btn" onclick="location.href='/ePost/<%= encodeURIComponent(company.name) %>'">Create Position</button>
+      <button class="small-btn" onclick="location.href='/edit/company/<%= company.id %>'">Edit Company</button>
+      
+    </div>
+
+    <div class="jobs-header">
+      <h1>Manage Positions: <%= company ? company.name : 'Not found' %></h1>
+      <% if (typeof message !== 'undefined' && message) { %>
+        <div class="form-error" style="color:#ffd1d9;margin:0.5rem 0;padding:0.6rem;border-radius:6px;background:rgba(200,30,70,0.06);font-weight:700;">
+          <%= message %>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="jobs-columns">
+      <!-- Available Positions Column -->
+      <section class="jobs-column">
+        <h2>Available</h2>
+        <div class="jobs-scroll">
+          <% if (positions && positions.length > 0) { %>
+            <% positions.filter(pos => !pos.employee_id && !pos.has_applications).forEach(function(pos){ %>
+              <article class="job-card">
+                <div class="job-title"><b><%= pos.title %></b></div>
+                <div class="job-desc"><%= pos.description %></div>
+                <% if (pos.tags && pos.tags.length) { %>
+                  <div class="job-tags">
+                    <% pos.tags.forEach(function(tag){ %>
+                      <span class="job-tag"><%= tag %></span>
+                    <% }) %>
+                  </div>
+                <% } %>
+                
+                <div class="job-meta available">Available</div>
+                <button class="job-edit" onclick="location.href='/edit/job/<%= pos.id %>'">Edit</button>
+              </article>
+            <% }) %>
+          <% } else { %>
+            <p>No available positions</p>
+          <% } %>
+        </div>
+      </section>
+      <div class="VL"></div>
+      <!-- Applied Column -->
+      <section class="jobs-column">
+        <h2>Applied</h2>
+        <div class="jobs-scroll">
+          <% if (positions && positions.length > 0) { %>
+            <% positions.filter(pos => pos.has_applications && !pos.employee_id).forEach(function(pos){ %>
+              <article class="job-card">
+                <div class="job-title"><b><%= pos.title %></b></div>
+                <div class="job-desc"><%= pos.description %></div>
+                <% if (pos.tags && pos.tags.length) { %>
+                  <div class="job-tags">
+                    <% pos.tags.forEach(function(tag){ %>
+                      <span class="job-tag"><%= tag %></span>
+                    <% }) %>
+                  </div>
+                <% } %>
+                
+                <div class="job-meta taken">
+                  <%= pos.applicants_count %> applicant(s)
+                  <% if (pos.applicants && pos.applicants.length > 0) { %>
+                      <ul class="applicants-list">
+                        <% pos.applicants.forEach(applicant => { %>
+                          <li class="applicant-item">
+                            <div class="applicant-row">
+                              <button class="applicant-toggle" aria-expanded="false" title="Show files">▾</button>
+                              <span class="applicant-name"><%= applicant.name %></span>
+                              <form action="/positionManager/accept" method="POST" style="display:inline;margin-left:8px;" onsubmit="return confirm('Accept this applicant for the position?');">
+                                <input type="hidden" name="positionId" value="<%= pos.id %>">
+                                <input type="hidden" name="applicantId" value="<%= applicant.fb_id %>">
+                                <button type="submit" class="accept">Accept</button>
+                              </form>
+                            </div>
+
+                            <div class="files-panel" hidden>
+                              <% if (applicant.files && applicant.files.length > 0) { %>
+                                <% applicant.files.forEach(file => { %>
+                                  <% const ext = (file.original_name || '').split('.').pop().toLowerCase(); %>
+                                  <div class="file-entry">
+                                    <% if (file.field === 'resume') { %>
+                                      <div class="file-label">Resume:</div>
+                                    <% } else if (file.field === 'cover_letter') { %>
+                                      <div class="file-label">Cover Letter:</div>
+                                    <% } else if (file.field === 'portfolio') { %>
+                                      <div class="file-label">Portfolio:</div>
+                                    <% } else { %>
+                                      <div class="file-label"><%= (file.field || 'File').replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase()) %>:</div>
+                                    <% } %>
+                                    <div class="file-item" data-file-id="<%= file.id %>" data-filename="<%= file.original_name %>" data-file-ext="<%= ext %>" data-file-field="<%= file.field %>">
+                                        <a href="/files/<%= file.id %>" target="_blank" class="file-link">📎 <%= file.original_name %></a>
+                                        <button class="file-preview-trigger" type="button">Preview</button>
+                                    </div>
+                                  </div>
+                                <% }) %>
+                              <% } else { %>
+                                <div class="no-files">No files submitted</div>
+                              <% } %>
+                              <% if (applicant.portfolio_link) { %>
+                                <div class="file-entry">
+                                  <div class="file-label">Portfolio:</div>
+                                  <div class="file-item link-item" data-link="<%= applicant.portfolio_link %>">
+                                    <button class="link-button" type="button" data-link="<%= applicant.portfolio_link %>">Open Link</button>
+                                    <button class="file-preview-trigger" type="button">Preview</button>
+                                  </div>
+                                </div>
+                              <% } %>
+                            </div>
+                          </li>
+                        <% }) %>
+                      </ul>
+                  <% } %>
+                </div>
+                <button class="job-edit" onclick="location.href='/edit/job/<%= pos.id %>'">Edit</button>
+              </article>
+            <% }) %>
+          <% } else { %>
+            <p>No applications yet</p>
+          <% } %>
+        </div>
+      </section>
+      <div class="VL"></div>
+      <!-- Employee Column -->
+      <section class="jobs-column">
+        <h2>Employee</h2>
+        <div class="jobs-scroll">
+          <% if (positions && positions.length > 0) { %>
+            <% positions.filter(pos => pos.employee_id).forEach(function(pos){ %>
+              <article class="job-card">
+                <div class="job-title"><b><%= pos.title %></b></div>
+                <div class="job-desc"><%= pos.description %></div>
+                <% if (pos.tags && pos.tags.length) { %>
+                  <div class="job-tags">
+                    <% pos.tags.forEach(function(tag){ %>
+                      <span class="job-tag"><%= tag %></span>
+                    <% }) %>
+                  </div>
+                <% } %>
+                
+                <div class="job-meta taken">
+                  Assigned to <%= pos.employee_name %>
+                  <form action="/positionManager/fire/<%= pos.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Fire this employee?');">
+                    <button type="submit" class="fire">Fire</button>
+                  </form>
+                </div>
+              </article>
+            <% }) %>
+          <% } else { %>
+            <p>No positions in progress</p>
+          <% } %>
+        </div>
+      </section>
+      
+    </div>
+  </main>
+
+  <div id="file-preview" aria-hidden="true">
+    <div id="file-preview-inner"></div>
+  </div>
+
+  <style>
+    .applicants-list { list-style: none; padding-left: 0; margin: 0; }
+    .applicant-item { margin: 0.6rem 0; border-bottom: 1px dashed rgba(255,255,255,0.06); padding-bottom:0.6rem; }
+    .applicant-row { display:flex; align-items:center; gap:8px; }
+    .applicant-toggle { 
+      background: rgba(255,255,255,0.02); 
+      border: 1px solid rgba(255,255,255,0.06); 
+      color: inherit; 
+      cursor: pointer; 
+      font-size:14px; 
+      width:28px; height:22px; display:inline-flex; align-items:center; justify-content:center; border-radius:4px; 
+    }
+    .applicant-toggle:hover { background: rgba(255,255,255,0.04); }
+    .files-panel { margin-top:8px; padding-left:26px; }
+  .file-item { display:flex; align-items:center; gap:8px; margin:4px 0; }
+  .file-link { color:inherit; text-decoration:none; }
+  .link-button { background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); color:inherit; padding:4px 8px; border-radius:6px; cursor:pointer; }
+  .file-preview-trigger { font-size:12px; color:rgba(255,255,255,0.6); cursor:pointer; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.02); }
+  .portfolio-thumb { max-width:120px; max-height:80px; border:1px solid rgba(255,255,255,0.06); border-radius:4px; display:block; margin-left:8px; }
+  .portfolio-thumb-wrap { margin-left:8px; }
+
+    /* preview popup */
+    #file-preview { position:fixed; z-index:9999; top:10%; right:10%; width:420px; max-width:80%; max-height:70%; background:rgba(0,0,0,0.85); border:1px solid rgba(255,255,255,0.06); padding:8px; display:none; overflow:auto; border-radius:6px; }
+    #file-preview img { max-width:100%; height:auto; display:block; }
+    #file-preview iframe { width:100%; height:480px; border:0; }
+    .job-tags { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
+    .job-tag { background: rgba(255,255,255,0.06); padding:4px 8px; border-radius:12px; font-size:12px; }
+    .file-entry { margin: 6px 0; }
+    .file-label { font-size:12px; color: rgba(255,255,255,0.6); margin-bottom:4px; }
+  </style>
+
+  <script>
+    (function(){
+      // Toggle files panel
+      document.querySelectorAll('.applicant-toggle').forEach(btn => {
+        btn.addEventListener('click', function(){
+          const expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', String(!expanded));
+          const li = this.closest('.applicant-item');
+          if (!li) return;
+          const panel = li.querySelector('.files-panel');
+          if (!panel) return;
+          if (expanded) { panel.hidden = true; } else { panel.hidden = false; }
+        });
+      });
+
+      const preview = document.getElementById('file-preview');
+      const previewInner = document.getElementById('file-preview-inner');
+      // close button for locked previews
+      const previewCloseBtn = document.createElement('button'); previewCloseBtn.textContent = '✕'; previewCloseBtn.style.cssText = 'position:absolute;top:6px;right:8px;background:transparent;border:0;color:#fff;font-size:18px;cursor:pointer;display:none;'; preview.appendChild(previewCloseBtn);
+
+      let previewLocked = false;
+      let currentPreviewKey = null; // 'file:ID' or 'link:URL'
+
+      function showPreviewForFileId(fileId, ext) {
+        if (!fileId) return;
+        const url = '/files/' + encodeURIComponent(fileId) + '?inline=1';
+        previewInner.innerHTML = '';
+        if (ext === 'png' || ext === 'jpg' || ext === 'jpeg') {
+          const img = document.createElement('img'); img.src = url; previewInner.appendChild(img);
+        } else if (ext === 'pdf') {
+          const iframe = document.createElement('iframe'); iframe.src = url; previewInner.appendChild(iframe);
+        } else {
+          const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.textContent = 'Open file in new tab'; a.style.color = '#fff'; previewInner.appendChild(a);
+        }
+        preview.style.display = 'block';
+        currentPreviewKey = 'file:' + fileId;
+        updatePreviewCloseVisibility();
+      }
+
+      function showPreviewForLink(href) {
+        previewInner.innerHTML = '';
+        const iframe = document.createElement('iframe'); iframe.src = href; previewInner.appendChild(iframe);
+        preview.style.display = 'block';
+        currentPreviewKey = 'link:' + href;
+        updatePreviewCloseVisibility();
+      }
+
+      function hidePreview(){
+        preview.style.display = 'none';
+        previewInner.innerHTML = '';
+        currentPreviewKey = null;
+        previewLocked = false;
+        updatePreviewCloseVisibility();
+      }
+
+      function updatePreviewCloseVisibility(){
+        previewCloseBtn.style.display = previewLocked ? 'block' : 'none';
+      }
+
+      // Hover + click handlers for file items and link items
+      document.querySelectorAll('.file-item').forEach(item => {
+        const trigger = item.querySelector('.file-preview-trigger');
+        if (!trigger) return;
+        const fileId = item.getAttribute('data-file-id');
+        const ext = (item.getAttribute('data-file-ext') || '').toLowerCase();
+        const link = item.getAttribute('data-link');
+
+        // hover shows preview (unless locked)
+        trigger.addEventListener('mouseenter', function(e){
+          if (previewLocked) return;
+          if (link) { showPreviewForLink(link); return; }
+          showPreviewForFileId(fileId, ext);
+        });
+        trigger.addEventListener('mouseleave', function(e){ if (!previewLocked) hidePreview(); });
+
+        // click toggles lock (if clicked while showing this preview -> lock; if locked and same -> unlock)
+        trigger.addEventListener('click', function(e){
+          const key = link ? ('link:' + link) : ('file:' + fileId);
+          if (previewLocked && currentPreviewKey === key) { hidePreview(); return; }
+          // show and lock
+          if (link) showPreviewForLink(link); else showPreviewForFileId(fileId, ext);
+          previewLocked = true;
+          updatePreviewCloseVisibility();
+        });
+      });
+
+      // link-button quick open (also opens in new tab)
+      document.querySelectorAll('.link-button').forEach(btn => {
+        btn.addEventListener('click', function(){ const href = this.getAttribute('data-link'); window.open(href, '_blank'); });
+      });
+
+      // clicking inside preview toggles locked state (if unlocked -> lock), but do not close immediately
+      previewInner.addEventListener('click', function(e){
+        if (!currentPreviewKey) return;
+        previewLocked = true;
+        updatePreviewCloseVisibility();
+      });
+
+      // close button
+      previewCloseBtn.addEventListener('click', function(e){ hidePreview(); });
+
+      // Also hide preview when clicking elsewhere (only if not locked)
+      document.addEventListener('click', function(e){ if (!previewLocked && !e.target.closest('#file-preview')) hidePreview(); });
+    })();
+  </script>
+
+       <div id="pin-modal">
+      <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
+        <h3 id="pin-cost" style="display:none;"></h3>
+        <h3 id="pin-modal-title">Enter your PIN</h3>
+                <input id="pin-input" type="password" maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" autocomplete="one-time-code" />
+                <div class="pin-actions">
+                    <button id="pin-cancel" type="button">Cancel</button>
+                    <button id="pin-confirm" type="button">Confirm</button>
+                </div>
+  </div>
+  </div>
+
+     <script>
+            (function(){
+                const form = document.getElementById('jobpost-form');
+                if (!form) return;
+
+                const modal = document.getElementById('pin-modal');
+                const pinInput = document.getElementById('pin-input');
+                const btnCancel = document.getElementById('pin-cancel');
+                const btnConfirm = document.getElementById('pin-confirm');
+
+                // allow Enter key in PIN field to confirm
+                pinInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); btnConfirm.click(); } });
+
+                let bypass = false;
+
+                function showModal(){ pinInput.value = ''; modal.style.display = 'flex'; setTimeout(()=> pinInput.focus(), 50); }
+                function hideModal(){ modal.style.display = 'none'; }
+
+                async function awaitConfirm(){
+                    return new Promise((resolve)=>{
+                        const cleanup = ()=>{
+                            btnConfirm.removeEventListener('click', onConfirm);
+                            btnCancel.removeEventListener('click', onCancel);
+                            modal.removeEventListener('click', onOverlay);
+                        };
+                        const onConfirm = ()=>{ cleanup(); resolve(true); };
+                        const onCancel = ()=>{ cleanup(); resolve(false); };
+                        const onOverlay = (e)=>{ if (e.target === modal) { cleanup(); resolve(false); } };
+                        btnConfirm.addEventListener('click', onConfirm);
+                        btnCancel.addEventListener('click', onCancel);
+                        modal.addEventListener('click', onOverlay);
+                    });
+                }
+
+                form.addEventListener('submit', async function(e){
+                    if (bypass) return; // allow normal submit when bypass is true
+                    e.preventDefault();
+
+                    showModal();
+                    const ok = await awaitConfirm();
+                    if (!ok) { hideModal(); return; }
+
+                    const pin = pinInput.value.trim();
+                    if (!pin) { alert('Please enter your PIN'); return; }
+
+                    const fd = new FormData(form);
+                    const payload = {
+                        company: fd.get('company'),
+                        title: fd.get('title'),
+                        description: fd.get('description'),
+                        pay: fd.get('pay'),
+                        pin: pin
+                    };
+
+                    try {
+                        btnConfirm.disabled = true;
+                        btnConfirm.textContent = 'Processing...';
+                        const res = await fetch('/transfer/job', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(payload)
+                        });
+                        const data = await res.json().catch(()=>({}));
+                        if (res.ok && data && data.success) {
+                            // proceed to submit the original form to /jobPosts to persist the job
+                            bypass = true;
+                            hideModal();
+                            form.submit();
+                        } else {
+                            alert('Payment failed: ' + (data && data.message ? data.message : 'unknown'));
+                        }
+                    } catch(err) {
+                        console.error('Payment error', err);
+                        alert('Payment failed');
+                    } finally {
+                        btnConfirm.disabled = false;
+                        btnConfirm.textContent = 'Confirm';
+                    }
+                    });
+                  })();
+                </script>
+
+              
+</body>
+
+</html>
