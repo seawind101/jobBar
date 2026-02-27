@@ -34,6 +34,7 @@
                             <div class="company-desc" style="color:#ddd;margin:0.4rem 0;font-size:0.95rem"><%= job.company_description %></div>
                         <% } %>
                         <div class="job-desc"><%= job.description %></div>
+                        <div class="job-link"><a href="<%= job.link %>" target="_blank">View Issue</a></div>
                         <div class="job-pay">Pay: <%= job.pay %></div>
                         <div style="margin-top:0.6rem">
                             <% if (job.you_applied) { %>

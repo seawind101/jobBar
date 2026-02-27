@@ -56,22 +56,77 @@
 
                     <!-- PIN modal -->
                     <style>
-                    /* minimal modal styles kept local to this template */
-                    #pin-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
-                    .pin-modal-content { background: linear-gradient(180deg,var(--bg-b),#3a1224); padding: 1.25rem; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.6); width: 360px; max-width: 92%; color: var(--muted); text-align: center; }
-                    .pin-modal-content h3{ margin: 0 0 0.5rem 0; }
-                    .pin-modal-content input { font-size: 1.15rem; padding: 0.6rem; width: 100%; margin: 0.6rem 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: var(--muted); }
-                    .pin-actions{ display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.5rem }
-                    .pin-actions button{ padding:0.45rem 0.8rem; border-radius:8px; border:none; cursor:pointer }
-                    #pin-cancel{ background: transparent; color: var(--muted); border: 1px solid rgba(255,255,255,0.04); }
-                    #pin-confirm{ background: var(--accent); color: #fff; }
+                        /* minimal modal styles kept local to this template */
+                        #pin-modal {
+                            position: fixed;
+                            inset: 0;
+                            background: rgba(0, 0, 0, 0.6);
+                            display: none;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 2000;
+                        }
+
+                        .pin-modal-content {
+                            background: linear-gradient(180deg, var(--bg-b), #3a1224);
+                            padding: 1.25rem;
+                            border-radius: 12px;
+                            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+                            width: 360px;
+                            max-width: 92%;
+                            color: var(--muted);
+                            text-align: center;
+                        }
+
+                        .pin-modal-content h3 {
+                            margin: 0 0 0.5rem 0;
+                        }
+
+                        .pin-modal-content input {
+                            font-size: 1.15rem;
+                            padding: 0.6rem;
+                            width: 100%;
+                            margin: 0.6rem 0;
+                            border-radius: 8px;
+                            border: 1px solid rgba(255, 255, 255, 0.06);
+                            background: rgba(255, 255, 255, 0.02);
+                            color: var(--muted);
+                        }
+
+                        .pin-actions {
+                            display: flex;
+                            gap: 0.5rem;
+                            justify-content: flex-end;
+                            margin-top: 0.5rem
+                        }
+
+                        .pin-actions button {
+                            padding: 0.45rem 0.8rem;
+                            border-radius: 8px;
+                            border: none;
+                            cursor: pointer
+                        }
+
+                        #pin-cancel {
+                            background: transparent;
+                            color: var(--muted);
+                            border: 1px solid rgba(255, 255, 255, 0.04);
+                        }
+
+                        #pin-confirm {
+                            background: var(--accent);
+                            color: #fff;
+                        }
                     </style>
 
                     <div id="pin-modal">
-                        <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
-                                    <h3 id="pin-modal-title">Cost: <%= typeof CPOST !== 'undefined' ? CPOST : 300 %></h3>
+                        <div class="pin-modal-content" role="dialog" aria-modal="true"
+                            aria-labelledby="pin-modal-title">
+                            <h3 id="pin-modal-title">Cost: <%= typeof CPOST !=='undefined' ? CPOST : 300 %>
+                            </h3>
                             <h3 id="pin-modal-title">Enter your PIN</h3>
-                            <input id="pin-input" type="password" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="••••••" autocomplete="one-time-code" />
+                            <input id="pin-input" type="password" maxlength="6" inputmode="numeric" pattern="[0-9]*"
+                                placeholder="••••••" autocomplete="one-time-code" />
                             <div class="pin-actions">
                                 <button id="pin-cancel" type="button">Cancel</button>
                                 <button id="pin-confirm" type="button">Confirm</button>
@@ -80,7 +135,7 @@
                     </div>
 
                     <script>
-                        (function(){
+                        (function () {
                             const form = document.getElementById('company-form');
                             if (!form) return;
 
@@ -90,39 +145,38 @@
                             const btnConfirm = document.getElementById('pin-confirm');
 
                             // allow Enter key in PIN field to confirm
-                            pinInput.addEventListener('keydown', function(e){
+                            pinInput.addEventListener('keydown', function (e) {
                                 if (e.key === 'Enter') { e.preventDefault(); btnConfirm.click(); }
                             });
 
-                            let bypass = false;
-
-                            function showModal(){
+                            function showModal() {
                                 pinInput.value = '';
                                 modal.style.display = 'flex';
-                                setTimeout(()=> pinInput.focus(), 50);
+                                setTimeout(() => pinInput.focus(), 50);
                             }
-                            function hideModal(){
+                            function hideModal() {
                                 modal.style.display = 'none';
+                                btnConfirm.disabled = false;
+                                btnConfirm.textContent = 'Confirm';
                             }
 
-                            async function awaitConfirm(){
-                                return new Promise((resolve)=>{
-                                    const cleanup = ()=>{
+                            async function awaitConfirm() {
+                                return new Promise((resolve) => {
+                                    const cleanup = () => {
                                         btnConfirm.removeEventListener('click', onConfirm);
                                         btnCancel.removeEventListener('click', onCancel);
                                         modal.removeEventListener('click', onOverlay);
                                     };
-                                    const onConfirm = ()=>{ cleanup(); resolve(true); };
-                                    const onCancel = ()=>{ cleanup(); resolve(false); };
-                                    const onOverlay = (e)=>{ if (e.target === modal) { cleanup(); resolve(false); } };
+                                    const onConfirm = () => { cleanup(); resolve(true); };
+                                    const onCancel = () => { cleanup(); resolve(false); };
+                                    const onOverlay = (e) => { if (e.target === modal) { cleanup(); resolve(false); } };
                                     btnConfirm.addEventListener('click', onConfirm);
                                     btnCancel.addEventListener('click', onCancel);
                                     modal.addEventListener('click', onOverlay);
                                 });
                             }
 
-                            form.addEventListener('submit', async function(e){
-                                if (bypass) return; // allow normal submit when bypass is true
+                            form.addEventListener('submit', async function (e) {
                                 e.preventDefault();
 
                                 showModal();
@@ -130,40 +184,91 @@
                                 if (!ok) { hideModal(); return; }
 
                                 const pin = pinInput.value.trim();
-                                if (!pin) { alert('Please enter your PIN'); return; }
+                                if (!pin) {
+                                    alert('Please enter your PIN');
+                                    hideModal();
+                                    return;
+                                }
 
                                 const fd = new FormData(form);
                                 const payload = {
                                     name: fd.get('name'),
                                     description: fd.get('description'),
                                     link: fd.get('link'),
+                                    pColor: fd.get('pColor'),
+                                    sColor: fd.get('sColor'),
+                                    bpColor: fd.get('bpColor'),
+                                    bsColor: fd.get('bsColor'),
                                     pin: pin
                                 };
 
                                 try {
                                     btnConfirm.disabled = true;
                                     btnConfirm.textContent = 'Processing...';
-                                    const res = await fetch('/transfer/company', {
+
+                                    // Step 1: Process payment
+                                    const paymentResponse = await fetch('/transfer/company', {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         credentials: 'same-origin',
                                         body: JSON.stringify(payload)
                                     });
-                                    const data = await res.json().catch(()=>({}));
-                                    if (res.ok && data && data.success) {
-                                        // proceed to submit the original form to /post to persist company
-                                        bypass = true;
-                                        hideModal();
-                                        form.submit();
-                                    } else {
-                                        alert('Payment failed: ' + (data && data.message ? data.message : 'unknown'));
+
+                                    const paymentResult = await paymentResponse.json().catch(() => ({ success: false, message: 'Invalid response from payment server' }));
+
+                                    // If payment fails, redirect to /companies without creating company
+                                    if (!paymentResponse.ok || !paymentResult.success) {
+                                        let errorMsg = 'Payment failed. Company was not created.\n';
+                                        if (paymentResult.message) {
+                                            errorMsg += paymentResult.message;
+                                        }
+                                        if (paymentResult.details) {
+                                            errorMsg += '\nDetails: ' + JSON.stringify(paymentResult.details);
+                                        }
+                                        alert(errorMsg);
+
+                                        // Redirect to companies page (company NOT created)
+                                        window.location.href = '/companies';
+                                        return;
                                     }
-                                } catch(err) {
-                                    console.error('Payment error', err);
-                                    alert('Payment failed');
-                                } finally {
-                                    btnConfirm.disabled = false;
-                                    btnConfirm.textContent = 'Confirm';
+
+                                    // Step 2: Create company ONLY if payment succeeded
+                                    // Add paymentVerified flag to prove payment was successful
+                                    const createResponse = await fetch('/post', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        credentials: 'same-origin',
+                                        body: JSON.stringify({
+                                            name: payload.name,
+                                            description: payload.description,
+                                            link: payload.link,
+                                            pColor: payload.pColor,
+                                            sColor: payload.sColor,
+                                            bpColor: payload.bpColor,
+                                            bsColor: payload.bsColor,
+                                            paymentVerified: 'true' // Security token
+                                        })
+                                    });
+
+                                    const createResult = await createResponse.json().catch(() => ({ success: false, message: 'Invalid response from server' }));
+
+                                    if (!createResponse.ok || !createResult.success) {
+                                        // Payment succeeded but company creation failed
+                                        alert('Payment processed but company creation failed: ' + (createResult.message || 'Unknown error') + '\nPlease contact support for refund.');
+                                        window.location.href = '/companies';
+                                        return;
+                                    }
+
+                                    // Success - redirect to companies page
+                                    alert('Company created successfully!');
+                                    window.location.href = '/companies';
+
+                                } catch (err) {
+                                    console.error('Error creating company:', err);
+                                    alert('Network error occurred. Company was not created.\nPlease check your connection and try again.');
+
+                                    // Redirect to companies page on network error
+                                    window.location.href = '/companies';
                                 }
                             });
                         })();

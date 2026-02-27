@@ -10,51 +10,79 @@ const db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
 });
 
 router.get('/post', isAuthenticated, (req, res) => {
-    // Only managers may access the company creation page
-    if (!res.locals || !res.locals.isManager) {
-        res.redirect('/companies')
-        return;
-    }
-
-    // provide default form/error values so template can render safely
-    res.render('post', { title: 'Post your Company', fb_id: req.session.fb_id, form: {}, error: null });
+    res.render('post', { 
+        title: 'Post your Company', 
+        fb_id: req.session.fb_id, 
+        error: null, 
+        form: {} 
+    });
 });
 
-// Post route to create a new company
-router.post('/post', isAuthenticated, (req, res) => {
-    // Only managers may create companies
-    if (!res.locals || !res.locals.isManager) {
-        res.redirect('/companies')
-        return;
-    }
-
+// create a company (only after payment succeeds)
+router.post('/post', isAuthenticated, async (req, res) => {
+    const db = req.app.locals.db;
     const body = req.body || {};
-    const { name, description, link, owner_id, pColor, sColor, bpColor, bsColor } = body;
-    if (!name || !description || !link || !owner_id || !pColor || !sColor || !bpColor || !bsColor) {
-        return res.status(400).send('All fields are required.');
+
+    // Manager check
+    if (!res.locals || !res.locals.isManager) {
+        return res.status(403).json({ success: false, message: 'Forbidden: not a manager' });
     }
 
-    // Check if a company with the same name already exists (case-insensitive)
-    db.get('SELECT id FROM companies WHERE name = ? COLLATE NOCASE', [name], (err, existing) => {
-        if (err) {
-            console.error('DB error checking company name:', err);
-            return res.status(500).send('Internal Server Error');
-        }
+    const { name, description, link, pColor, sColor, bpColor, bsColor, paymentVerified } = body;
+    
+    // Validate required fields
+    if (!name || !description || !link || !pColor || !sColor || !bpColor || !bsColor) {
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    // Security check: Only allow company creation if payment was verified
+    // This token is only sent by the client after successful payment
+    if (paymentVerified !== 'true') {
+        return res.status(402).json({ 
+            success: false, 
+            message: 'Payment required. Company creation requires successful payment.' 
+        });
+    }
+
+    try {
+        // Check for duplicate company name (case-insensitive)
+        const existing = await new Promise((resolve, reject) => {
+            db.get('SELECT id FROM companies WHERE name = ? COLLATE NOCASE', [name], (err, row) => {
+                if (err) return reject(err);
+                resolve(row);
+            });
+        });
+
         if (existing) {
-            // render the form again with an error message and preserve entered values
-            return res.render('post', { title: 'Post your Company', fb_id: req.session.fb_id, error: 'Name taken — please choose a different company name.', form: { name, description, link } });
+            return res.status(409).json({ 
+                success: false, 
+                message: 'Name taken — please choose a different company name.' 
+            });
         }
 
         // determine owner from session (server-side) so clients can't spoof owner_id
         const ownerId = req.session && req.session.fb_id ? req.session.fb_id : null;
-
-        db.run('INSERT INTO companies (name, description, link, owner_id, pColor, sColor, bpColor, bsColor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [name, description, link, ownerId, pColor, sColor, bpColor, bsColor], function(err) {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).send('Internal Server Error');
+        if (!ownerId) {
+            return res.status(403).json({ success: false, message: 'No owner ID in session' });
         }
-        res.redirect('/companies');
+
+        // Insert company into database
+        await new Promise((resolve, reject) => {
+            db.run(
+                'INSERT INTO companies (name, description, link, owner_id, pColor, sColor, bpColor, bsColor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [name, description, link, ownerId, pColor, sColor, bpColor, bsColor],
+                function(err) {
+                    if (err) return reject(err);
+                    resolve({ id: this.lastID });
+                }
+            );
         });
-    });
+
+        return res.json({ success: true, message: 'Company created successfully' });
+    } catch (err) {
+        console.error('Error creating company:', err);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 });
+
 module.exports = router;
