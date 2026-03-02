@@ -28,7 +28,6 @@
           <textarea id="description" name="description" maxlength="1000" required></textarea>
         </div>
 
-
         <div class="form-row">
           <label>Tags</label>
           <div id="tags-root">
@@ -49,8 +48,23 @@
     </div>
   </div>
 
+  <!-- PIN Modal -->
+  <div id="pin-modal">
+    <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
+      <h3 id="pin-modal-title">Cost: <%= process.env.EPOST || 5 %></h3>
+      <h3 id="pin-modal-title">Enter your PIN</h3>
+      <input id="pin-input" type="password" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+        placeholder="••••" autocomplete="one-time-code" />
+      <div class="pin-actions">
+        <button id="pin-cancel" type="button">Cancel</button>
+        <button id="pin-confirm" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function(){
+      // Tag management
       const input = document.getElementById('tag-input');
       const btn = document.getElementById('add-tag');
       const list = document.getElementById('tag-list');
@@ -95,7 +109,6 @@
         const v = input.value.trim();
         if (!v) return;
         const arr = getTags();
-        // avoid duplicates (case-insensitive)
         if (!arr.map(a=>a.toLowerCase()).includes(v.toLowerCase())) {
           arr.push(v);
           setTags(arr);
@@ -105,11 +118,145 @@
         input.focus();
       });
 
-      // allow enter to add
       input.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') { e.preventDefault(); btn.click(); } });
 
-      // initial render
       render();
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const form = document.getElementById('epost-form');
+      if (!form) return;
+
+      const modal = document.getElementById('pin-modal');
+      const pinInput = document.getElementById('pin-input');
+      const btnCancel = document.getElementById('pin-cancel');
+      const btnConfirm = document.getElementById('pin-confirm');
+
+      const companyName = '<%= company.name %>';
+
+      // Allow Enter key in PIN field to confirm
+      pinInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') { e.preventDefault(); btnConfirm.click(); }
+      });
+
+      function showModal(){
+        pinInput.value = '';
+        modal.style.display = 'flex';
+        setTimeout(()=> pinInput.focus(), 50);
+      }
+
+      function hideModal(){
+        modal.style.display = 'none';
+        btnConfirm.disabled = false;
+        btnConfirm.textContent = 'Confirm';
+      }
+
+      async function awaitConfirm(){
+        return new Promise((resolve)=>{
+          const cleanup = ()=>{
+            btnConfirm.removeEventListener('click', onConfirm);
+            btnCancel.removeEventListener('click', onCancel);
+            modal.removeEventListener('click', onOverlay);
+          };
+          const onConfirm = ()=>{ cleanup(); resolve(true); };
+          const onCancel = ()=>{ cleanup(); resolve(false); };
+          const onOverlay = (e)=>{ if (e.target === modal) { cleanup(); resolve(false); } };
+          btnConfirm.addEventListener('click', onConfirm);
+          btnCancel.addEventListener('click', onCancel);
+          modal.addEventListener('click', onOverlay);
+        });
+      }
+
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+
+        showModal();
+        const ok = await awaitConfirm();
+        if (!ok) { hideModal(); return; }
+
+        const pin = pinInput.value.trim();
+        if (!pin) { 
+          alert('Please enter your PIN'); 
+          hideModal();
+          return; 
+        }
+
+        const fd = new FormData(form);
+        const payload = {
+          company: companyName,
+          title: fd.get('title'),
+          description: fd.get('description'),
+          tags: fd.get('tags'),
+          pin: pin
+        };
+
+        try {
+          btnConfirm.disabled = true;
+          btnConfirm.textContent = 'Processing...';
+
+          // Step 1: Process payment
+          const paymentResponse = await fetch('/transfer/position', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload)
+          });
+
+          const paymentResult = await paymentResponse.json().catch(()=>({ success: false, message: 'Invalid response from payment server' }));
+
+          // If payment fails, redirect to eJob page without creating position
+          if (!paymentResponse.ok || !paymentResult.success) {
+            let errorMsg = 'Payment failed. Position was not created.\n\n';
+            if (paymentResult.message) {
+              errorMsg += paymentResult.message;
+            }
+            if (paymentResult.details && paymentResult.details.message) {
+              errorMsg += '\n' + paymentResult.details.message;
+            }
+            alert(errorMsg);
+            
+            // Redirect to eJob page (position NOT created)
+            window.location.href = '/eJob/' + encodeURIComponent(companyName);
+            return;
+          }
+
+          // Step 2: Create position ONLY if payment succeeded
+          const createResponse = await fetch('/ePost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+              company: payload.company,
+              title: payload.title,
+              description: payload.description,
+              tags: payload.tags,
+              paymentVerified: 'true' // Security token
+            })
+          });
+
+          const createResult = await createResponse.json().catch(()=>({ success: false, message: 'Invalid response from server' }));
+
+          if (!createResponse.ok || !createResult.success) {
+            // Payment succeeded but position creation failed
+            alert('Payment processed but position creation failed: ' + (createResult.message || 'Unknown error') + '\nPlease contact support for refund.');
+            window.location.href = '/eJob/' + encodeURIComponent(companyName);
+            return;
+          }
+
+          // Success - redirect to eJob page
+          alert('Position created successfully!');
+          window.location.href = '/eJob/' + encodeURIComponent(companyName);
+
+        } catch(err) {
+          console.error('Error creating position:', err);
+          alert('Network error occurred. Position was not created.\nPlease check your connection and try again.');
+          
+          // Redirect to eJob page on network error
+          window.location.href = '/eJob/' + encodeURIComponent(companyName);
+        }
+      });
     })();
   </script>
 </body>

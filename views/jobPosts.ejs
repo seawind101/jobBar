@@ -44,8 +44,8 @@
                     <input type="url" id="link" name="link" required>
                 </div>
                 <div class="form-row">
-                    <label for="pay">Pay:</label>
-                    <input type="number" id="pay" name="pay" required>
+                    <label for="pay">Pay (minimum 10 DigiPogs):</label>
+                    <input type="number" id="pay" name="pay" min="10" required>
                 </div>
                 <input type="hidden" name="status" value="available">
                 <button type="submit"
@@ -53,77 +53,13 @@
             </form>
 
             <!-- PIN modal -->
-            <style>
-                /* minimal modal styles kept local to this template */
-                #pin-modal {
-                    position: fixed;
-                    inset: 0;
-                    background: rgba(0, 0, 0, 0.6);
-                    display: none;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 2000;
-                }
-
-                .pin-modal-content {
-                    background: linear-gradient(180deg, var(--bg-b), #3a1224);
-                    padding: 1.25rem;
-                    border-radius: 12px;
-                    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
-                    width: 360px;
-                    max-width: 92%;
-                    color: var(--muted);
-                    text-align: center;
-                }
-
-                .pin-modal-content h3 {
-                    margin: 0 0 0.5rem 0;
-                }
-
-                .pin-modal-content input {
-                    font-size: 1.15rem;
-                    padding: 0.6rem;
-                    width: 100%;
-                    margin: 0.6rem 0;
-                    border-radius: 8px;
-                    border: 1px solid rgba(255, 255, 255, 0.06);
-                    background: rgba(255, 255, 255, 0.02);
-                    color: var(--muted);
-                }
-
-                .pin-actions {
-                    display: flex;
-                    gap: 0.5rem;
-                    justify-content: flex-end;
-                    margin-top: 0.5rem
-                }
-
-                .pin-actions button {
-                    padding: 0.45rem 0.8rem;
-                    border-radius: 8px;
-                    border: none;
-                    cursor: pointer
-                }
-
-                #pin-cancel {
-                    background: transparent;
-                    color: var(--muted);
-                    border: 1px solid rgba(255, 255, 255, 0.04);
-                }
-
-                #pin-confirm {
-                    background: var(--accent);
-                    color: #fff;
-                }
-            </style>
-
             <div id="pin-modal">
                 <div class="pin-modal-content" role="dialog" aria-modal="true" aria-labelledby="pin-modal-title">
                     <h3 id="pin-modal-title">Cost: <%= typeof JPOST !=='undefined' ? JPOST : 100 %>
                     </h3>
                     <h3 id="pin-modal-title">Enter your PIN</h3>
-                    <input id="pin-input" type="password" maxlength="6" inputmode="numeric" pattern="[0-9]*"
-                        placeholder="••••••" autocomplete="one-time-code" />
+                    <input id="pin-input" type="password" maxlength="4" inputmode="numeric" pattern="[0-9]*"
+                        placeholder="••••" autocomplete="one-time-code" />
                     <div class="pin-actions">
                         <button id="pin-cancel" type="button">Cancel</button>
                         <button id="pin-confirm" type="button">Confirm</button>
@@ -178,6 +114,15 @@
 
                     form.addEventListener('submit', async function (e) {
                         e.preventDefault();
+
+                        // Validate pay amount before showing modal
+                        const payInput = document.getElementById('pay');
+                        const payValue = Number(payInput.value);
+                        if (isNaN(payValue) || payValue < 10) {
+                            alert('Pay must be at least 10 DigiPogs');
+                            payInput.focus();
+                            return;
+                        }
 
                         showModal();
                         const ok = await awaitConfirm();

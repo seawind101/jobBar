@@ -48,6 +48,12 @@ router.post('/jobPosts', isAuthenticated, async (req, res) => {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
+    // Validate minimum pay
+    const payAmount = Number(pay);
+    if (isNaN(payAmount) || payAmount < 10) {
+        return res.status(400).json({ success: false, message: 'Pay must be at least 10 DigiPogs' });
+    }
+
     // Security check: Only allow job creation if payment was verified
     // This token is only sent by the client after successful payment
     if (paymentVerified !== 'true') {
