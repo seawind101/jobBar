@@ -49,6 +49,12 @@
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta available">Available</div>
                 <button class="job-edit" onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
+                <% if (!job.status || (job.status !== 'in_progress' && job.status !== 'completed')) { %>
+                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                  <input type="hidden" name="jobId" value="<%= job.id %>">
+                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                </form>
+                <% } %>
               </article>
             <% }) %>
           <% } else { %>
@@ -87,6 +93,12 @@
                   <% } %>
                 </div>
                 <button class="job-edit" onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
+                <% if (!job.status || (job.status !== 'in_progress' && job.status !== 'completed')) { %>
+                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                  <input type="hidden" name="jobId" value="<%= job.id %>">
+                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                </form>
+                <% } %>
               </article>
             <% }) %>
           <% } else { %>
@@ -120,6 +132,12 @@
                     Mark As Complete
                   </button>
                 </div>
+                <% if (!job.status || (job.status !== 'in_progress' && job.status !== 'completed')) { %>
+                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                  <input type="hidden" name="jobId" value="<%= job.id %>">
+                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                </form>
+                <% } %>
               </article>
             <% }) %>
           <% } else { %>
@@ -140,6 +158,10 @@
                 <div class="job-desc"><%= job.description %></div>
                 <div class="job-pay">Pay: <%= job.pay %></div>
                 <div class="job-meta completed">Completed by <%= job.employee_name %></div>
+                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                  <input type="hidden" name="jobId" value="<%= job.id %>">
+                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                </form>
               </article>
             <% }) %>
           <% } else { %>

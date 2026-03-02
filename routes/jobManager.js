@@ -290,6 +290,54 @@ router.post('/jobManager/fire/:jobId', isAuthenticated, async (req, res) => {
     }
 });
 
+// Delete a job (owner-only)
+router.post('/jobManager/delete', isAuthenticated, async (req, res) => {
+    const db = req.app.locals.db;
+    const { jobId } = req.body;
+    const ownerId = req.session.fb_id;
+
+    if (!jobId) return res.status(400).send('Missing job id');
+
+    try {
+        const job = await new Promise((resolve, reject) => db.get('SELECT * FROM jobs WHERE id = ?', [jobId], (e, r) => e ? reject(e) : resolve(r)));
+        if (!job) return res.status(404).send('Job not found');
+
+        // Prevent deletion of in-progress or completed jobs
+        if (job.status === 'in_progress' || job.status === 'completed') {
+            return res.status(400).send('Cannot delete a job that is in progress or completed');
+        }
+
+        const company = await new Promise((resolve, reject) => db.get('SELECT * FROM companies WHERE name = ? COLLATE NOCASE', [job.company], (e, r) => e ? reject(e) : resolve(r)));
+        if (!company || company.owner_id !== ownerId) return res.status(403).send('You do not own this company');
+
+        // delete related job_application_files -> job_applications -> job row
+        db.serialize(() => {
+            db.run('BEGIN TRANSACTION');
+            // delete files for applications of this job
+            db.all('SELECT id FROM job_applications WHERE job_id = ?', [jobId], (ea, rows) => {
+                const appIds = (rows || []).map(r => r.id);
+                if (appIds.length > 0) {
+                    const ph = appIds.map(() => '?').join(',');
+                    db.run(`DELETE FROM job_application_files WHERE application_id IN (${ph})`, appIds, function(errf) {
+                        if (errf) console.error('Error deleting job_application_files', errf);
+                    });
+                }
+                db.run('DELETE FROM job_applications WHERE job_id = ?', [jobId], function(erra) {
+                    if (erra) console.error('Error deleting job_applications', erra);
+                });
+                db.run('DELETE FROM jobs WHERE id = ?', [jobId], function(errj) {
+                    if (errj) console.error('Error deleting job', errj);
+                });
+                db.run('COMMIT');
+                return res.redirect('/jobManager/' + encodeURIComponent(company.name));
+            });
+        });
+    } catch (err) {
+        console.error('Error deleting job:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 module.exports = router;
 
 

@@ -99,4 +99,45 @@ router.post('/jobPosts', isAuthenticated, async (req, res) => {
     }
 });
 
+router.post('/jobPosts/delete/:jobId', isAuthenticated, (req, res) => {
+    const db = req.app.locals.db;
+    const { jobId } = req.params;
+
+    if (!jobId) {
+        return res.status(400).json({ success: false, message: 'Job ID is required' });
+    }
+
+    // Get job and company info
+    db.get('SELECT jobs.*, companies.owner_id FROM jobs JOIN companies ON jobs.company = companies.name WHERE jobs.id = ?', [jobId], (err, job) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        }
+
+        if (!job) {
+            return res.status(404).json({ success: false, message: 'Job not found' });
+        }
+
+        // Check if user is owner
+        const ownerId = req.session && req.session.fb_id ? req.session.fb_id : null;
+        if (!ownerId) {
+            return res.status(403).json({ success: false, message: 'No owner ID in session' });
+        }
+
+        if (job.owner_id !== ownerId) {
+            return res.status(403).json({ success: false, message: 'You do not own this job' });
+        }
+
+        // Delete job
+        db.run('DELETE FROM jobs WHERE id = ?', [jobId], (err) => {
+            if (err) {
+                console.error('Database error:', err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+
+            return res.json({ success: true, message: 'Job deleted successfully' });
+        });
+    });
+});
+
 module.exports = router;
