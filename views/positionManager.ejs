@@ -57,6 +57,10 @@
                 
                 <div class="job-meta available">Available</div>
                 <button class="job-edit" onclick="location.href='/edit/job/<%= pos.id %>'">Edit</button>
+                <form action="/positionManager/delete" method="POST" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this position? This will remove all applications and uploaded files for the position.');">
+                  <input type="hidden" name="positionId" value="<%= pos.id %>">
+                  <button type="submit" class="delete">Delete</button>
+                </form>
               </article>
             <% }) %>
           <% } else { %>
@@ -137,6 +141,10 @@
                   <% } %>
                 </div>
                 <button class="job-edit" onclick="location.href='/edit/job/<%= pos.id %>'">Edit</button>
+                <form action="/positionManager/delete" method="POST" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this position? This will remove all applications and uploaded files for the position.');">
+                  <input type="hidden" name="positionId" value="<%= pos.id %>">
+                  <button type="submit" class="delete">Delete</button>
+                </form>
               </article>
             <% }) %>
           <% } else { %>

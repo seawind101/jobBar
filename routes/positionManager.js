@@ -200,4 +200,51 @@ router.post('/positionManager/fire/:positionId', isAuthenticated, async (req, re
   }
 });
 
+// Delete a position (owner-only) - only allowed when no employee is assigned and not in-progress/completed
+router.post('/positionManager/delete', isAuthenticated, async (req, res) => {
+  const db = req.app.locals.db;
+  const { positionId } = req.body;
+  const ownerId = req.session.fb_id;
+
+  if (!positionId) return res.status(400).send('Missing position id');
+
+  try {
+    const pos = await new Promise((resolve, reject) => db.get('SELECT * FROM company_positions WHERE id = ?', [positionId], (e, r) => e ? reject(e) : resolve(r)));
+    if (!pos) return res.status(404).send('Position not found');
+
+    // Prevent deletion if position has employee assigned or is in progress/completed
+    if (pos.employee_id || pos.status === 'in_progress' || pos.status === 'completed') {
+      return res.status(400).send('Cannot delete a position that has an employee or is in progress/completed');
+    }
+
+    const company = await new Promise((resolve, reject) => db.get('SELECT * FROM companies WHERE id = ?', [pos.company_id], (e, r) => e ? reject(e) : resolve(r)));
+    if (!company || company.owner_id !== ownerId) return res.status(403).send('You do not own this company');
+
+    // delete related application files -> applications -> position row
+    db.serialize(() => {
+      db.run('BEGIN TRANSACTION');
+      db.all('SELECT id FROM position_applications WHERE position_id = ?', [positionId], (ea, rows) => {
+        const appIds = (rows || []).map(r => r.id);
+        if (appIds.length > 0) {
+          const ph = appIds.map(() => '?').join(',');
+          db.run(`DELETE FROM job_application_files WHERE application_id IN (${ph})`, appIds, function(errf) {
+            if (errf) console.error('Error deleting job_application_files', errf);
+          });
+        }
+        db.run('DELETE FROM position_applications WHERE position_id = ?', [positionId], function(erra) {
+          if (erra) console.error('Error deleting position_applications', erra);
+        });
+        db.run('DELETE FROM company_positions WHERE id = ?', [positionId], function(errp) {
+          if (errp) console.error('Error deleting position', errp);
+        });
+        db.run('COMMIT');
+        return res.redirect('/positionManager/' + encodeURIComponent(company.name));
+      });
+    });
+  } catch (err) {
+    console.error('Error deleting position:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 module.exports = router;

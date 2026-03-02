@@ -17,11 +17,27 @@ router.get('/companies', isAuthenticated, (req, res) => {
             console.error('Database error:', err);
             return res.status(500).send('Internal Server Error');
         }
-        const normalized = (rows || []).map(r => ({
-            ...r,
-            verified: Number(r.verified) || 0
-        }));
-        res.render('companies', { companies: normalized, user: req.user });
+            const currentFb = req.session && req.session.fb_id ? String(req.session.fb_id) : null;
+
+            // compute manager list from environment as a fallback (keeps parity with app.js parsing)
+            const rawManagers = process.env.managers || process.env.MANAGERS || '';
+            let parsedManagers = [];
+            try {
+                const s = String(rawManagers).trim();
+                if (!s) parsedManagers = [];
+                else if (s.startsWith('[') && s.endsWith(']')) parsedManagers = JSON.parse(s).map(String);
+                else if (s.indexOf(',') !== -1) parsedManagers = s.split(',').map(x => x.trim()).filter(Boolean).map(String);
+                else parsedManagers = [s.replace(/\s+/g, '')].filter(Boolean).map(String);
+            } catch (err) { parsedManagers = (String(rawManagers).match(/\d+/g) || []).map(String); }
+
+            const isManager = currentFb ? parsedManagers.includes(String(currentFb)) : false;
+
+            const normalized = (rows || []).map(r => ({
+                ...r,
+                verified: Number(r.verified) || 0,
+                isOwner: currentFb && r.owner_id != null && String(r.owner_id) === currentFb
+            }));
+            res.render('companies', { companies: normalized, user: req.user, fb_id: currentFb, isManager });
     });
 });
 module.exports = router;
