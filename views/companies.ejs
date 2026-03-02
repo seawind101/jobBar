@@ -16,6 +16,9 @@
                         <% if (isManager) { %>
                             <button onclick="location.href='/post'">Create a Company</button>
                         <% } %>
+                            <% if (typeof fb_id !== 'undefined' && fb_id) { %>
+                                <button onclick="location.href='/profile'">Profile</button>
+                            <% } %>
                 </div>
                 <input type="text" id="searchbar" placeholder="Search...">
     </header>

@@ -126,11 +126,13 @@ const filesRouter = require('./routes/files');
 const allJobsRouter = require('./routes/allJobs');
 const editRouter = require('./routes/edit');
 const eformRouter = require('./routes/Eform');
+const profileRouter = require('./routes/profile');
 
 // Register routes
 app.use('/', editRouter);
 app.use('/', indexRouter);
 app.use('/', eformRouter);
+app.use('/', profileRouter);
 app.use('/', eJobRouter);
 app.use('/', ePostRouter);
 app.use('/', positionRouter);

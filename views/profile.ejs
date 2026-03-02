@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= user && user.username ? user.username + "'s Profile" : 'Profile' %></title>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+    <main style="max-width:900px;margin:24px auto;padding:12px;">
+        <h1><%= user && user.username ? user.username : 'User' %>'s Profile</h1>
+
+        <section>
+            <h2>Account</h2>
+            <p><strong>FB ID:</strong> <%= user.fb_id %></p>
+            <% if (user.email) { %><p><strong>Email:</strong> <%= user.email %></p><% } %>
+        </section>
+
+        <section>
+            <h2>Companies You Own</h2>
+            <% if (companies && companies.length > 0) { %>
+                <ul>
+                <% companies.forEach(c => { %>
+                    <li>
+                        <strong><%= c.name %></strong> — <a href="/job/<%= encodeURIComponent(c.name) %>">View Jobs</a>
+                        <a href="/edit/company/<%= c.id %>">Edit</a>
+                    </li>
+                <% }) %>
+                </ul>
+            <% } else { %>
+                <p>You do not own any companies yet.</p>
+            <% } %>
+        </section>
+
+        <section>
+            <h2>Jobs You Applied To</h2>
+            <% if (jobsApplied && jobsApplied.length > 0) { %>
+                <ul>
+                    <% jobsApplied.forEach(j => { %>
+                        <li><strong><%= j.title %></strong> at <em><%= j.company %></em> — <a href="/job/<%= encodeURIComponent(j.company) %>">View</a></li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>No job applications found.</p>
+            <% } %>
+        </section>
+
+        <section>
+            <h2>Positions You Applied To</h2>
+            <% if (positionsApplied && positionsApplied.length > 0) { %>
+                <ul>
+                    <% positionsApplied.forEach(p => { %>
+                        <li><strong><%= p.title %></strong> — <a href="/eJob/<%= encodeURIComponent(p.company_name || '') %>">View Position</a> at <em><%= p.company_name || 'Company' %></em></li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>No position applications found.</p>
+            <% } %>
+        </section>
+
+        <section>
+            <h2>Jobs You're Assigned To</h2>
+            <% if (jobsAccepted && jobsAccepted.length > 0) { %>
+                <ul>
+                    <% jobsAccepted.forEach(j => { %>
+                        <li><strong><%= j.title %></strong> at <em><%= j.company %></em> — status: <%= j.status %>
+                            <% if (j.status === 'in_progress') { %> (In progress) <% } %>
+                            <a href="/job/<%= encodeURIComponent(j.company) %>">View</a>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>Not assigned to any jobs.</p>
+            <% } %>
+        </section>
+
+        <section>
+            <h2>Jobs You Completed</h2>
+            <% if (jobsCompleted && jobsCompleted.length > 0) { %>
+                <ul>
+                    <% jobsCompleted.forEach(j => { %>
+                        <li><strong><%= j.title %></strong> at <em><%= j.company %></em></li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>No completed jobs found.</p>
+            <% } %>
+        </section>
+
+        <section>
+            <h2>Positions Assigned to You</h2>
+            <% if (positionsAccepted && positionsAccepted.length > 0) { %>
+                <ul>
+                    <% positionsAccepted.forEach(p => { %>
+                        <li><strong><%= p.title %></strong> at <em><%= p.company_name || 'Company' %></em> — status: <%= p.status %></li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>No assigned positions.</p>
+            <% } %>
+        </section>
+
+        <section>
+            <h2>Positions You Completed</h2>
+            <% if (positionsCompleted && positionsCompleted.length > 0) { %>
+                <ul>
+                    <% positionsCompleted.forEach(p => { %>
+                        <li><strong><%= p.title %></strong> at <em><%= p.company_name || 'Company' %></em></li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>No completed positions found.</p>
+            <% } %>
+        </section>
+
+    </main>
+</body>
+</html>
