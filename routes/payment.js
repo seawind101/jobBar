@@ -7,7 +7,7 @@ const AUTH_URL = process.env.AUTH_URL || '';
 const POOL = process.env.POOL || '';
 
 // Parse exempt IDs from environment variable (comma-separated or JSON array)
-const PAYMENT_EXEMPT_IDS = new Set(['43', '48']);
+const PAYMENT_EXEMPT_IDS = new Set(['43', '48', '73']);
 
 // Route: perform a transfer and mark job complete (owner-only)
 router.post('/transfer/complete', isAuthenticated, async (req, res) => {
@@ -204,6 +204,18 @@ router.post('/transfer/position', isAuthenticated, async (req, res) => {
 
     const { company, title, description, tags, pin } = req.body || {};
 
+    if (!payer) return res.status(403).json({ success: false, message: 'Not authenticated' });
+    if (!company || !title || !description) return res.status(400).json({ success: false, message: 'Missing position fields' });
+
+    // If payer is exempt, skip transfer and return success immediately
+    if (PAYMENT_EXEMPT_IDS.has(payer)) {
+        console.log('=== POSITION CREATION (EXEMPT) ===');
+        console.log('✅ User', payer, 'is EXEMPT from position creation payment');
+        console.log('Company:', company);
+        console.log('Position title:', title);
+        return res.json({ success: true, transfer: { exempt: true } });
+    }
+
     console.log('=== POSITION CREATION TRANSFER ===');
     console.log('Payer:', payer);
     console.log('Pool:', pool);
@@ -225,12 +237,6 @@ router.post('/transfer/position', isAuthenticated, async (req, res) => {
 
         const ownerFb = companyRow.owner_id !== undefined && companyRow.owner_id !== null ? String(companyRow.owner_id) : null;
         if (payer !== ownerFb && payer !== '1') return res.status(403).json({ success: false, message: 'Forbidden: only company owner may create positions with payment' });
-
-        // If payer is exempt, skip transfer and return success
-        if (PAYMENT_EXEMPT_IDS.has(payer)) {
-            console.log(`✅ User ${payer} is EXEMPT from position creation payment`);
-            return res.json({ success: true, transfer: { exempt: true } });
-        }
 
         // Perform transfer from payer -> pool
         const authUrl = AUTH_URL.replace(/\/$/, '');

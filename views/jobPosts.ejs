@@ -140,6 +140,7 @@
                             company: companyName,
                             title: fd.get('title'),
                             description: fd.get('description'),
+                            link: fd.get('link'),
                             pay: fd.get('pay'),
                             pin: pin
                         };
@@ -179,10 +180,11 @@
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'same-origin',
-                                body: JSON.stringify({
+                                    body: JSON.stringify({
                                     company: companyName,
                                     title: payload.title,
                                     description: payload.description,
+                                    link: payload.link,
                                     pay: payload.pay,
                                     status: 'available',
                                     paymentVerified: 'true' // Security token

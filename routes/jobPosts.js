@@ -41,10 +41,10 @@ router.post('/jobPosts', isAuthenticated, async (req, res) => {
         return res.status(403).json({ success: false, message: 'Forbidden: not a manager' });
     }
 
-    const { company, title, description, pay, status, paymentVerified } = body;
+    const { company, title, description, link, pay, status, paymentVerified } = body;
 
     // Validate required fields
-    if (!company || !title || !description || !pay) {
+    if (!company || !title || !description || !link || !pay) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
@@ -89,8 +89,8 @@ router.post('/jobPosts', isAuthenticated, async (req, res) => {
         // Insert job into database
         await new Promise((resolve, reject) => {
             db.run(
-                'INSERT INTO jobs (company, title, description, pay, status) VALUES (?, ?, ?, ?, ?)',
-                [company, title, description, pay, status || 'available'],
+                'INSERT INTO jobs (company, title, description, link, pay, status) VALUES (?, ?, ?, ?, ?, ?)',
+                [company, title, description, link, pay, status || 'available'],
                 function(err) {
                     if (err) return reject(err);
                     resolve({ id: this.lastID });

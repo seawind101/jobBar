@@ -59,6 +59,7 @@
                 <% } %>
             </section>
 
+<<<<<<< HEAD
             <section>
                 <h2>Issues You're Assigned To</h2>
                 <% if (jobsAccepted && jobsAccepted.length > 0) { %>
@@ -74,6 +75,20 @@
                     <p>Not assigned to any jobs.</p>
                 <% } %>
             </section>
+=======
+        <section>
+            <h2>Employment Status</h2>
+            <% if (positionsCompleted && positionsCompleted.length > 0) { %>
+                <ul>
+                    <% positionsCompleted.forEach(p => { %>
+                        <li><strong><%= p.title %></strong> at <em><%= p.company_name || 'Company' %></em></li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p>You are not a fulltime employee for any company.</p>
+            <% } %>
+        </section>
+>>>>>>> upstream/main
 
             <section>
                 <h2>Issues You Completed</h2>
