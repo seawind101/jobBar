@@ -133,10 +133,18 @@ router.post('/positionManager/accept', isAuthenticated, async (req, res) => {
     if (!company || company.owner_id !== ownerId) return res.status(403).send('You do not own this company');
 
   // mark position as filled and assign employee
-  await new Promise((resolve, reject) => db.run('UPDATE company_positions SET employee_id = ?, status = ? WHERE id = ?', [applicantId, 'filled', positionId], (e) => e ? reject(e) : resolve()));
 
-  // add to company_employees (avoid duplicates)
-  await new Promise((resolve, reject) => db.run('INSERT OR IGNORE INTO company_employees (company_id, fb_id) VALUES (?, ?)', [pos.company_id, applicantId], (e) => e ? reject(e) : resolve()));
+    // ensure the applicant is not employed at another company
+    const existingEmployment = await new Promise((resolve, reject) => db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [applicantId], (e, r) => e ? reject(e) : resolve(r)));
+    if (existingEmployment && Number(existingEmployment.company_id) !== Number(pos.company_id)) {
+      return res.status(400).send('Applicant is already employed at another company');
+    }
+
+    // mark position as filled and assign employee
+    await new Promise((resolve, reject) => db.run('UPDATE company_positions SET employee_id = ?, status = ? WHERE id = ?', [applicantId, 'filled', positionId], (e) => e ? reject(e) : resolve()));
+
+    // add to company_employees (avoid duplicates)
+    await new Promise((resolve, reject) => db.run('INSERT OR IGNORE INTO company_employees (company_id, fb_id) VALUES (?, ?)', [pos.company_id, applicantId], (e) => e ? reject(e) : resolve()));
 
   // remove other applications for this position
   await new Promise((resolve, reject) => db.run('DELETE FROM position_applications WHERE position_id = ?', [positionId], (e) => e ? reject(e) : resolve()));

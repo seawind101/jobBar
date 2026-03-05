@@ -111,7 +111,18 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
         }
 
         // Insert the application (or ignore if already exists)
-        db.run('INSERT OR IGNORE INTO job_applications (job_id, fb_id) VALUES (?, ?)', [jobId, fbId], function(insertErr) {
+            // prevent applying if user is already employed at any company
+            db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [fbId], (empErr, empRow) => {
+                if (empErr) {
+                    console.error('Error checking existing employment:', empErr);
+                    return res.status(500).send('Internal Server Error');
+                }
+                if (empRow) {
+                    // user is employed already
+                    return res.status(400).send('You are currently employed and cannot apply for jobs');
+                }
+
+                db.run('INSERT OR IGNORE INTO job_applications (job_id, fb_id) VALUES (?, ?)', [jobId, fbId], function(insertErr) {
             if (insertErr) {
                 console.error('Failed to insert application:', insertErr);
                 return res.status(500).send('Internal Server Error');
@@ -131,6 +142,7 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
                 const referer = req.get('Referer') || req.get('referer') || null;
                 if (referer) return res.redirect(referer);
                 return res.redirect(`/job/${encodeURIComponent(job.company)}`);
+            });
             });
         });
     });
