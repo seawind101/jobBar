@@ -32,6 +32,12 @@ body{
     overflow: hidden;
 }
 
+#info section .emptyTxt {
+    padding: 20px;
+    font-style: italic;
+    color: rgb(150, 150, 150);
+}
+
 #info #issuesSec {
     height: 400px;
 }
@@ -148,4 +154,95 @@ body{
 .accIssues a:hover {
     color: var(--accent-2);
     text-decoration: underline;
+}
+
+.accComp {
+    padding: 0px 20px 5px 20px;
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0 5px 0;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.accComp strong {
+    font-size: 1.4em;
+}
+
+.accComp .compBtnsCont {
+    display: flex;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.accComp .compBtnsCont .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.accComp .compBtnsCont .btn:hover .tooltip {
+    opacity: 1;
+}
+
+.accComp .compBtnsCont .btn .tooltip {
+    position: absolute;
+    right: 0;
+    transform: translateX(-50%);
+    background-color: rgba(36, 37, 43, 0.658);
+    color: var(--muted);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.accComp .compBtnsCont .btn .tooltip#edit {
+    right: 130%;
+}
+
+.accComp .compBtnsCont a {
+    text-decoration: none;
+    background: white;
+    padding: 8px 8px 8px 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.accComp .compBtnsCont a:hover {
+    scale: 1.05;
+}
+
+.accComp .compBtnsCont a:active {
+    scale: 0.95;
+}
+
+.accComp .compBtnsCont a#editCompany {
+    background: rgb(19, 95, 177);
+    border: 1px solid rgb(151, 196, 221);
+    color: rgb(228, 244, 255);
+    filter: invert(0) brightness(1.2);
+}
+
+.accComp .compBtnsCont a#editCompany img {
+    filter: brightness(0) saturate(100%) invert(68%) sepia(48%) saturate(376%) hue-rotate(187deg) brightness(105%) contrast(100%);
+}
+
+.accComp .compBtnsCont a#viewCompany {
+    background: rgb(177, 19, 95);
+    border: 1px solid rgb(221, 151, 196);
+    color: rgb(255, 228, 244);
+}
+
+.accComp .compBtnsCont a#viewCompany img {
+    filter: brightness(0) saturate(100%) invert(67%) sepia(29%) saturate(1100%) hue-rotate(285deg) brightness(103%) contrast(103%);
 }

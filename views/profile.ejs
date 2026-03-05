@@ -17,19 +17,33 @@
                 </section>
             </div>
             <div id="info">
-                <section>
-                    <div class="title">Companies You Own</div>
+                <section id="companiesSec">
+                    <div class="title">Owned Companies</div>
                     <% if (companies && companies.length > 0) { %>
                         <ul>
                         <% companies.forEach(c => { %>
-                            <li>
-                                <strong><%= c.name %></strong> — <a href="/job/<%= encodeURIComponent(c.name) %>">View Jobs</a>
-                                <a href="/edit/company/<%= c.id %>">Edit</a>
+                            <li class="accComp">
+                                <div class="compTtl"><strong><%= c.name.length > 30 ? c.name.substring(0, 30) + '...' : c.name %></strong></div>
+                                <div class="compBtnsCont">
+                                    <div class="btn">
+                                        <a id="viewCompany" href="/job/<%= encodeURIComponent(c.name) %>">
+                                            <img src="/icons/view.png" width="25" height="25">
+                                        </a>
+                                        <div class="tooltip">View Company</div>
+                                    </div>
+                                    <div class="btn">
+                                        <a id="editCompany" href="/edit/company/<%= c.id %>">
+                                            <img src="/icons/edit.png" width="25" height="25">
+                                        </a>
+                                        <div class="tooltip" id="edit">Edit Company</div>
+                                    </div>
+                                </div>
                             </li>
+                            <% if (companies.indexOf(c) < companies.length - 1) { %><hr><% } %>
                         <% }) %>
                         </ul>
                     <% } else { %>
-                        <p>You do not own any companies yet.</p>
+                        <p class="emptyTxt">You do not own any companies yet</p>
                     <% } %>
                 </section>
 
@@ -38,11 +52,15 @@
                     <% if (positionsApplied && positionsApplied.length > 0) { %>
                         <ul>
                             <% positionsApplied.forEach(p => { %>
-                                <li><strong><%= p.title %></strong> — <a href="/eJob/<%= encodeURIComponent(p.company_name || '') %>">View Position</a> at <em><%= p.company_name || 'Company' %></em></li>
+                                <li>
+                                    <strong><%= p.title %></strong>
+                                    <a href="/eJob/<%= encodeURIComponent(p.company_name || '') %>">View Position</a>
+                                    <em><%= p.company_name || 'Company' %></em>
+                                </li>
                             <% }) %>
                         </ul>
                     <% } else { %>
-                        <p>No position applications found.</p>
+                        <p class="emptyTxt">No position applications found</p>
                     <% } %>
                 </section>
 
@@ -53,9 +71,9 @@
                             <% jobsApplied.forEach((j, index) => { %>
                                 <li class="accIssues">
                                     <div class="issTtl"><strong><%= j.title.length > 30 ? j.title.substring(0, 30) + '...' : j.title %></strong><a href="/job/<%= encodeURIComponent(j.company) %>"><%= j.company %></a></div>
-                                    <div class="status <%= j.status %>"><% if (j.status === 'in_progress') { %> in progress <% } else { %><%= j.status %><% } %></div>
+                                    <div class="status <%= j.status %>"><% if (j.status === 'available') { %> applied <% } %></div>
                                 </li>
-                                <% if (index < jobsAccepted.length - 1 || index < jobsApplied.length - 1) { %><hr><% } %>
+                                <% if (index < jobsAccepted.length + jobsApplied.length - 1) { %><hr><% } %>
                             <% }) %>
                             <% jobsAccepted.forEach((j, index) => { %>
                                 <li class="accIssues">
@@ -66,7 +84,7 @@
                             <% }) %>
                         </ul>
                     <% } else { %>
-                        <p>Not assigned to any issues.</p>
+                        <p class="emptyTxt">Not assigned to any issues</p>
                     <% } %>
                 </section>
             <section>
@@ -78,7 +96,7 @@
                         <% }) %>
                     </ul>
                 <% } else { %>
-                    <p>You are not a fulltime employee for any company.</p>
+                    <p class="emptyTxt">You are not a fulltime employee for any company</p>
                 <% } %>
             </section>
             </div>
