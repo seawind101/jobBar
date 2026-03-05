@@ -59,7 +59,15 @@ router.get('/eJob/:companyName', isAuthenticated, (req, res) => {
                         });
                     }
                     (jobs || []).forEach(j => { j.tags = tagMap[j.id] || []; });
-                    return res.render('eJob', { company, jobs: jobs || [], fb_id: req.session && req.session.fb_id ? req.session.fb_id : null });
+                    // also check if current user is employed anywhere
+                    const fb = req.session && req.session.fb_id ? String(req.session.fb_id) : null;
+                    if (!fb) {
+                        return res.render('eJob', { company, jobs: jobs || [], fb_id: fb, isEmployed: false });
+                    }
+                    db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [fb], (eEmp, empRow) => {
+                        const isEmployed = !!(empRow && empRow.company_id);
+                        return res.render('eJob', { company, jobs: jobs || [], fb_id: fb, isEmployed });
+                    });
                 });
             });
         });

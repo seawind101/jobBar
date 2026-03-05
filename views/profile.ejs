@@ -101,6 +101,12 @@
                                     <strong><%= p.title %></strong>
                                     <a href="/job/<%= encodeURIComponent(p.company_name) %>"><%= p.company_name || 'Company' %></a>
                                 </div>
+                                <div class="empActions">
+                                    <form action="/profile/quit-position" method="POST" onsubmit="return confirm('Are you sure you want to quit this position?');">
+                                        <input type="hidden" name="positionId" value="<%= p.id %>">
+                                        <button type="submit" class="small-btn quit-btn">Quit</button>
+                                    </form>
+                                </div>
                             </li>
                             <% if (positionsAccepted.indexOf(p) < positionsAccepted.length - 1) { %><hr><% } %>
                         <% }) %>

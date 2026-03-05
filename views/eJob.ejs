@@ -95,6 +95,30 @@
       if (window.jobSearchInit) window.jobSearchInit('job-search-input');
     });
   </script>
+  <script>
+    // Client-side pre-check: prevent applying to positions if the user is already employed.
+    // `isEmployed` is provided by the server (boolean).
+    (function(){
+      try {
+  const isEmployed = <%= JSON.stringify(typeof isEmployed !== 'undefined' && isEmployed) %>;
+        if (!isEmployed) return; // nothing to do
+        // Find any apply buttons inside forms targeting position apply endpoints
+        const applyButtons = document.querySelectorAll('form[action^="/position/"] button.apply-btn');
+        applyButtons.forEach(btn => {
+          btn.addEventListener('click', function(ev){
+            // Prevent the default form submission and show a gentle alert.
+            ev.preventDefault();
+            // Use a simple popup; could be replaced with a nicer modal later.
+            alert('You are already employed');
+            return false;
+          });
+        });
+      } catch (err) {
+        // Fail silently — client-side check is UX-only; server-side checks remain.
+        console.error('pre-apply check failed', err);
+      }
+    })();
+  </script>
 </body>
 
 </html>

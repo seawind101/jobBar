@@ -126,6 +126,17 @@ router.post('/jobManager/accept', isAuthenticated, async (req, res) => {
         }
 
         // Assign the applicant to the job and change status to 'in_progress'
+        // ensure the applicant is not employed at another company
+        const companyRow = company; // fetched above
+        const existingEmployment = await new Promise((resolve, reject) => db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [applicantId], (e, r) => e ? reject(e) : resolve(r)));
+        if (existingEmployment) {
+            // find the id for this job's company
+            const thisCompanyId = companyRow.id;
+            if (Number(existingEmployment.company_id) !== Number(thisCompanyId)) {
+                return res.status(400).send('Applicant is already employed at another company');
+            }
+        }
+
         await new Promise((resolve, reject) => {
             db.run(
                 'UPDATE jobs SET employee_id = ?, status = ? WHERE id = ?',
@@ -136,6 +147,9 @@ router.post('/jobManager/accept', isAuthenticated, async (req, res) => {
                 }
             );
         });
+
+        // add to company_employees (avoid duplicates)
+        await new Promise((resolve, reject) => db.run('INSERT OR IGNORE INTO company_employees (company_id, fb_id) VALUES (?, ?)', [companyRow.id, applicantId], (e) => e ? reject(e) : resolve()));
 
         // Remove all applications for this job and any related files/details
         await new Promise((resolve, reject) => {
@@ -295,7 +309,13 @@ router.post('/jobManager/fire/:jobId', isAuthenticated, async (req, res) => {
             return res.status(400).send('Can only fire employees for in-progress jobs');
         }
 
-        // Fire the employee: return the job to available state and clear employee assignment
+        // Fire the employee: remove from company_employees, return the job to available state and clear employee assignment
+        try {
+            await new Promise((resolve, reject) => db.run('DELETE FROM company_employees WHERE company_id = ? AND fb_id = ?', [company.id, job.employee_id], (e) => e ? reject(e) : resolve()));
+        } catch (e) {
+            console.error('Error removing company_employee on job fire:', e);
+        }
+
         await new Promise((resolve, reject) => {
             db.run('UPDATE jobs SET status = ?, employee_id = NULL WHERE id = ?', ['available', jobId], (err) => {
                 if (err) reject(err);
