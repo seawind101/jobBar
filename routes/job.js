@@ -90,10 +90,7 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
     const jobId = req.params.jobId;
     const fbId = req.session.fb_id;
 
-    if (!fbId) {
-        return res.status(400).send('User not identified'); // Added return
-    }
-
+    if (!fbId) return res.status(400).send('User not identified');
 
     // Ensure the applications table exists and insert an application for this user/job.
     db.run(
@@ -110,19 +107,8 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
             return res.status(500).send('Internal Server Error');
         }
 
-        // Insert the application (or ignore if already exists)
-            // prevent applying if user is already employed at any company
-            db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [fbId], (empErr, empRow) => {
-                if (empErr) {
-                    console.error('Error checking existing employment:', empErr);
-                    return res.status(500).send('Internal Server Error');
-                }
-                if (empRow) {
-                    // user is employed already
-                    return res.status(400).send('You are currently employed and cannot apply for jobs');
-                }
-
-                db.run('INSERT OR IGNORE INTO job_applications (job_id, fb_id) VALUES (?, ?)', [jobId, fbId], function(insertErr) {
+        // Insert the application (or ignore if already exists). Employed users are allowed to apply for jobs.
+        db.run('INSERT OR IGNORE INTO job_applications (job_id, fb_id) VALUES (?, ?)', [jobId, fbId], function(insertErr) {
             if (insertErr) {
                 console.error('Failed to insert application:', insertErr);
                 return res.status(500).send('Internal Server Error');
@@ -135,18 +121,14 @@ router.post('/job/:jobId/apply', isAuthenticated, (req, res) => {
                     return res.redirect('/');
                 }
 
-                if (!job) {
-                    return res.redirect('/');
-                }
+                if (!job) return res.redirect('/');
 
                 const referer = req.get('Referer') || req.get('referer') || null;
                 if (referer) return res.redirect(referer);
                 return res.redirect(`/job/${encodeURIComponent(job.company)}`);
             });
-            });
         });
     });
-
 });
 
 module.exports = router;

@@ -58,10 +58,12 @@ router.post('/eform', isAuthenticated, upload.fields([
   if (!jobId && !positionId) return res.status(400).send('Missing jobId or positionId');
 
   try {
-    // prevent applying if the user is already employed at any company
-    const employed = await new Promise((resolve, reject) => db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [fb_id], (e, r) => e ? reject(e) : resolve(r))).catch((e) => { console.error('Error checking employment:', e); return null; });
-    if (employed) {
-      return res.status(400).send('You are currently employed and cannot apply for other positions');
+    // If applying to a position, prevent applying if the user is already employed at any company
+    if (positionId) {
+      const employed = await new Promise((resolve, reject) => db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [fb_id], (e, r) => e ? reject(e) : resolve(r))).catch((e) => { console.error('Error checking employment:', e); return null; });
+      if (employed) {
+        return res.status(400).send('You are currently employed and cannot apply for positions');
+      }
     }
     // Ensure job_applicant_details has portfolio_link column (non-destructive)
     await new Promise((resolve, reject) => {

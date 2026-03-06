@@ -146,72 +146,74 @@
             </div>
         </div>
     <style>
-                /* Popup to the left of the issue item */
-        #issuesSec .accIssues { position: relative; }
-        #issuesSec .accIssues .issue-popup {
-            position: absolute;
-            right: 100%;
-            top: 0;
-            margin-right: 12px;
-            min-width: 280px;
-            max-width: 460px;
-            background: #fff;
-            color: #000;
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
-            display: none;
-            z-index: 1200;
-        }
-        /* show on hover */
-        #issuesSec .accIssues:hover .issue-popup { display: block; }
+        /* hide embedded popups inside list items; we'll render a single floating popup attached to body */
+        #issuesSec .issue-popup { display: none; }
 
-        /* On small screens, show below instead of left */
-        @media (max-width: 700px) {
-            #issuesSec .accIssues .issue-popup { right: auto; left: 0; top: 100%; margin-right: 0; margin-top: 8px; }
-        }
-
-            /* Allow popup to overflow the section container and the inner list */
-            #info #issuesSec { overflow: visible; }
-            /* the UL inside the issues section is scrollable by default; allow popups to escape it */
-            #info #issuesSec ul { overflow: visible; }
-
-        .issue-popup .popup-title { font-weight: 700; margin-bottom: 6px; }
-        .issue-popup .popup-desc { margin-bottom: 8px; white-space: pre-wrap; }
-        .issue-popup .popup-link a { color: #0077cc; word-break: break-all; }
-        .issue-popup .popup-pay { margin-top: 6px; font-weight: 600; }
-                /* ensure locked popup remains visible */
-                #issuesSec .accIssues.locked .issue-popup { display: block; }
+        /* floating popup base styles (the element will be appended to body) */
+        #floating-issue-popup { position: absolute; display: none; z-index: 9999; min-width: 280px; max-width: 520px; background: #fff; color: #000; padding: 12px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        #floating-issue-popup .popup-title { font-weight:700; margin-bottom:6px; }
+        #floating-issue-popup .popup-desc { margin-bottom:8px; white-space: pre-wrap; }
+        #floating-issue-popup .popup-link a { color: #0077cc; word-break: break-all; }
+        #floating-issue-popup .popup-pay { margin-top:6px; font-weight:600; }
     </style>
 
     <script>
-        // Click the issue title to lock/unlock the left popup so links can be clicked.
+        // Floating popup: attach a single DOM node to body and position it left/right of hovered items.
         document.addEventListener('DOMContentLoaded', function(){
-            const items = document.querySelectorAll('#issuesSec .accIssues');
-            items.forEach(li => {
+            const popup = document.createElement('div');
+            popup.id = 'floating-issue-popup';
+            popup.innerHTML = '<div class="popup-inner"></div>';
+            document.body.appendChild(popup);
+
+            const popupInner = popup.querySelector('.popup-inner');
+            let lockedLi = null;
+
+            function showPopupFor(li){
+                const source = li.querySelector('.issue-popup');
+                if (!source) return;
+                popupInner.innerHTML = source.innerHTML;
+                popup.style.display = 'block';
+                positionPopup(li);
+            }
+
+            function hidePopup(){ if (lockedLi) return; popup.style.display = 'none'; }
+
+            function positionPopup(li){
+                const rect = li.getBoundingClientRect();
+                // temporarily show to measure
+                popup.style.left = '-9999px'; popup.style.top = '-9999px'; popup.style.display = 'block';
+                const pw = popup.offsetWidth, ph = popup.offsetHeight;
+                let left = rect.left + window.scrollX - pw - 12;
+                let top = rect.top + window.scrollY;
+                if (left < 8) left = rect.right + window.scrollX + 12;
+                const maxTop = window.scrollY + window.innerHeight - ph - 8;
+                if (top > maxTop) top = maxTop;
+                if (top < window.scrollY + 8) top = window.scrollY + 8;
+                popup.style.left = left + 'px'; popup.style.top = top + 'px';
+            }
+
+            document.querySelectorAll('#issuesSec .accIssues').forEach(li => {
+                li.addEventListener('mouseenter', () => { if (!lockedLi) showPopupFor(li); });
+                li.addEventListener('mouseleave', () => { if (!lockedLi) hidePopup(); });
                 const title = li.querySelector('.issue-title');
                 if (!title) return;
-
                 title.style.cursor = 'pointer';
                 title.addEventListener('click', function(ev){
                     ev.preventDefault();
-                    const locked = li.classList.toggle('locked');
-                    const popup = li.querySelector('.issue-popup');
-                    if (popup) popup.setAttribute('aria-hidden', locked ? 'false' : 'true');
-
-                    if (locked) {
-                        // close when clicking outside
-                        const handleOutside = function(e){
-                            if (!li.contains(e.target)) {
-                                li.classList.remove('locked');
-                                if (popup) popup.setAttribute('aria-hidden', 'true');
-                                document.removeEventListener('click', handleOutside);
-                            }
-                        };
-                        setTimeout(() => document.addEventListener('click', handleOutside), 0);
-                    }
+                    if (lockedLi === li) { lockedLi = null; hidePopup(); document.removeEventListener('click', outsideHandler); }
+                    else { lockedLi = li; showPopupFor(li); setTimeout(() => document.addEventListener('click', outsideHandler), 0); }
                 });
             });
+
+            function outsideHandler(e){
+                if (!lockedLi) return;
+                if (!lockedLi.contains(e.target) && !popup.contains(e.target)) {
+                    lockedLi = null; hidePopup(); document.removeEventListener('click', outsideHandler);
+                }
+            }
+
+            window.addEventListener('scroll', () => { if (!lockedLi) hidePopup(); });
+            window.addEventListener('resize', () => { if (!lockedLi) hidePopup(); });
         });
     </script>
 
