@@ -15,9 +15,23 @@
     max-width:1200px;
     margin:0 auto;
     padding:20px;
-    height:100vh; /* take full viewport */
+    height:80vh; /* take full viewport */
     box-sizing:border-box;
     overflow:hidden; /* prevent page scroll, allow inner box to scroll */
+}
+
+input#job-search-input{
+  display:block;
+  height: 50px;
+  min-width: 30%;
+  max-width: 100%;
+  margin:0.75rem 0 1.5rem;
+  padding:0.85rem 1rem;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color:var(--muted);
+  font-size:1rem;
 }
 
 .nav-row{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap}
@@ -30,8 +44,6 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.35);
     max-height: calc(100vh - 160px); /* allow for header/nav space */
     overflow-y: auto; /* only show scroll when content too tall */
-    -webkit-overflow-scrolling: touch;
-
     /* Grid layout inside the scroll box */
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

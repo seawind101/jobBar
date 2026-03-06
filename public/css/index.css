@@ -17,7 +17,7 @@ html,body{height:100%}
 body{
   margin:0;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(135deg,var(--bg-a) 0%, var(--bg-b) 60%);
+  background: rgb(31, 30, 36);
   background-size: cover;
   background-attachment: fixed;
   background-position: center;

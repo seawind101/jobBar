@@ -1,72 +1,64 @@
 .tophr {
     width: 100%;
     margin: 0 0 20px 0;
+    border: none;
+    border-top: 1px solid gray;
 }
 
 .tophead {
     display: flex;
     flex-direction: column;
-    position: sticky;
 }
 
 .topHead .contain {
     display: flex;
     flex-direction: row;
-    background: black;
-}
-
-.topHead .contain h1 {
-    padding: 3px 3px 3px 10px;
-    font-size: 1.7em;
-    margin: 10px 0 0 0;
+    background: rgba(0, 0, 0, 0.952);
 }
 
 .topHead .intC {
-    margin-top: 20px;
     display: flex;
-    gap: 10%;
     flex-direction: row;
     width: 100%;
-    justify-content: space-between;
 }
 
 
 .topHead .contain .buttonsCont {
     display: flex;
+    margin-left: 10px;
     flex-direction: row;
-    gap: 20%;
+    gap: 10px;
     height: 60px;
-    width: 40%;
-}
-
-input#searchbar{
-    display:block;
-    min-width:500px;
-    max-width:900px;
-    height: 50px;
-    margin:0.75rem auto 1.5rem;
-    padding:0.85rem 1rem;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.06);
-    background: rgba(255,255,255,0.02);
-    color:var(--muted);
-    font-size:1rem;
 }
 
 .redir {
-    padding:0.6rem 1.2rem;
+    padding:0.6rem 1.1rem;
     border-radius:8px;
     border:none;
     height: 35px;
     background: transparent;
     color:#fff;
     cursor:pointer;
-    font-weight:700;
+    font-weight:400;
     transition:all 0.2s ease;
     font-size: 0.9em;
-    margin-top: 45px;
+    margin-top: 15px;
+    white-space: nowrap;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.redir.active {
+    border-bottom: 3px solid rgb(180, 67, 84);
+}
+
+.redir img {
+    filter: invert(1);
+    opacity: 0.5;
 }
 
 .redir:hover {
-    background-color: rgba(128, 128, 128, 0.5);
+    background-color: rgba(128, 128, 128, 0.26);
 }

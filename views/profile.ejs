@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/profile.css">
 </head>
 <body>
+    <%- include("banner.ejs") %>
         <div id="parentCont">
             <div id="topInf">
                 <h1><%= user && user.username ? user.username : 'User' %>'s Profile</h1>

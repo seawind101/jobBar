@@ -21,6 +21,20 @@ body{
     margin-bottom:1rem;
 }
 
+input#job-search-input{
+  display:block;
+  height: 50px;
+  min-width: 30%;
+  max-width: 100%;
+  margin:0.75rem 0 1.5rem;
+  padding:0.85rem 1rem;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color:var(--muted);
+  font-size:1rem;
+}
+
 .jobs-header h1{
     margin:0;
 }
