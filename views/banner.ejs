@@ -1,0 +1,17 @@
+<header class="topHead">
+    <h1>Classroom Companies</h1>
+    <div class="buttonsCont">
+        <button onclick="location.href='/'">Home</button>
+        <button onclick="location.href='/allJobs'">All Issues</button>
+        <button onclick="location.href='/companies'">Companies</button>
+        <button onclick="location.href='/alljobs'">All Jobs</button>
+        <% if (isManager) { %>
+            <button onclick="location.href='/post'">Create a Company</button>
+        <% } %>
+            <% if (typeof fb_id !== 'undefined' && fb_id) { %>
+                <button onclick="location.href='/profile'">Profile</button>
+            <% } %>
+    </div>
+    <input type="text" id="searchbar" placeholder="Search...">
+    <hr class="tophr">
+</header>

@@ -6,22 +6,11 @@
     <title>Companies</title>
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/companies.css">
+    <link rel="stylesheet" href="/css/banner.css">
     <script defer src="/js/searchJobs.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Classroom Companies</h1>
-                <div>
-                        <button onclick="location.href='/allJobs'">All Issues</button>
-                        <% if (isManager) { %>
-                            <button onclick="location.href='/post'">Create a Company</button>
-                        <% } %>
-                            <% if (typeof fb_id !== 'undefined' && fb_id) { %>
-                                <button onclick="location.href='/profile'">Profile</button>
-                            <% } %>
-                </div>
-                <input type="text" id="searchbar" placeholder="Search...">
-    </header>
+    <%- include("banner.ejs") %>
     <section>
         <div id="resourceCont">
             <%  if (companies && companies.length > 0) { %>
