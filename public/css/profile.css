@@ -39,7 +39,7 @@ body{
 }
 
 #info #issuesSec {
-    height: 400px;
+    height: 300px;
 }
 
 #info #companiesSec {
@@ -51,7 +51,7 @@ body{
 }
 
 #info #empSec {
-    height: 400px;
+    height: 300px;
 }
 
 #info ul {
@@ -60,7 +60,7 @@ body{
     margin-left: 0;
     margin-top: 0;
     margin-bottom: 0;
-    max-height: 300px;
+    max-height: 235px;
     overflow-y: auto;
     position: relative;
 }
@@ -96,11 +96,37 @@ body{
 #parentCont {
     display: flex;
     gap: 24px;
-    flex-direction: row;
+    flex-direction: column;
     width: 100vw;
     height: 100vh;
     justify-content: center;
     align-items: center;
+}
+
+#topInf h1, p {
+    margin: 0;
+}
+
+#topInf #fid {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 3px;
+    background: linear-gradient(90deg, #00c8ff, #0018f1);
+    border-radius: 10px;
+    width: 100%;
+}
+
+#topInf #fid img {
+    filter: invert(1);
+}
+
+#topInf {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
 }
 
 .accIssues {
@@ -292,32 +318,6 @@ body{
     text-decoration: underline;
 }
 
-.accPos #posBtn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.accPos #posBtn .tooltip {
-    position: absolute;
-    right: 0;
-    transform: translateX(-50%);
-    background-color: rgba(36, 37, 43, 0.658);
-    color: var(--muted);
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-}
-
-.accPos #posBtn:hover .tooltip {
-    opacity: 1;
-}
-
 .empPos {
     padding: 0px 20px 5px 20px;
     display: flex;
@@ -349,4 +349,60 @@ body{
 .empPos a:hover {
     color: var(--accent-2);
     text-decoration: underline;
+}
+
+.empPos .quit-btn {
+    display: flex;
+    font-size: 0.9em;
+    padding: 2px 10px 2px 10px;
+    text-decoration: none;
+    background: white;
+    padding: 8px 8px 8px 8px;
+    border-radius: 4px;
+    justify-content: center;
+    transition: all 0.2s ease;
+    align-items: center;
+    background: rgb(128, 0, 0);
+    border: 1px solid rgb(255, 161, 161);
+    color: rgb(255, 231, 231);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.empPos .quit-btn img {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(60%) saturate(300%) hue-rotate(319deg) brightness(85%) contrast(100%);
+}
+
+.empPos .quit-btn:hover {
+    scale: 1.05;
+}
+
+.empPos .quit-btn:active {
+    scale: 0.95;    
+}
+
+.empPos .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.empPos .btn #quit {
+    position: absolute;
+    right: 20px;
+    transform: translateX(-50%);
+    background-color: rgba(36, 37, 43, 0.658);
+    color: var(--muted);
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.empPos .btn:hover #quit {
+    opacity: 1;
 }
