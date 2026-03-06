@@ -70,25 +70,48 @@
 
                 <section id="issuesSec">
                     <div class="title">Issues</div>
-                    <% if (jobsAccepted && jobsAccepted.length > 0 && jobsApplied && jobsApplied.length > 0) { %>
+                    <% if ((jobsApplied && jobsApplied.length > 0) || (jobsAccepted && jobsAccepted.length > 0)) { %>
                         <ul>
-                            <% jobsApplied.forEach((j, index) => { %>
-                                <li class="accIssues">
-                                    <div class="issTtl"><strong><%= j.title.length > 30 ? j.title.substring(0, 30) + '...' : j.title %></strong><a href="/job/<%= encodeURIComponent(j.company) %>"><%= j.company %></a></div>
-                                    <div class="status <%= j.status %>"><% if (j.status === 'available') { %> applied <% } %></div>
-                                </li>
-                                <% if (index < jobsAccepted.length + jobsApplied.length - 1) { %><hr><% } %>
-                            <% }) %>
-                            <% jobsAccepted.forEach((j, index) => { %>
-                                <li class="accIssues">
-                                    <div class="issTtl"><strong><%= j.title.length > 30 ? j.title.substring(0, 30) + '...' : j.title %></strong><a href="/job/<%= encodeURIComponent(j.company) %>"><%= j.company %></a></div>
-                                    <div class="status <%= j.status %>"><% if (j.status === 'in_progress') { %> in progress <% } else { %><%= j.status %><% } %></div>
-                                </li>
-                                <% if (index < jobsAccepted.length - 1) { %><hr><% } %>
-                            <% }) %>
+                            <% if (jobsApplied && jobsApplied.length > 0) { %>
+                                <% jobsApplied.forEach((j, index) => { %>
+                                    <li class="accIssues" style="position:relative;" data-job-id="<%= j.id %>">
+                                        <div class="issTtl"><strong class="issue-title"><%= j.title.length > 30 ? j.title.substring(0, 30) + '...' : j.title %></strong><a href="/job/<%= encodeURIComponent(j.company) %>"><%= j.company %></a></div>
+                                        <div class="status <%= j.status %>"><% if (j.status === 'available') { %> applied <% } %></div>
+
+                                        <div class="issue-popup" aria-hidden="true">
+                                            <div class="popup-title"><%= j.title %></div>
+                                            <div class="popup-desc"><%= j.description %></div>
+                                            <% if (j.link) { %>
+                                                <div class="popup-link">Link: <a href="<%= j.link %>" target="_blank" rel="noopener noreferrer"><%= j.link %></a></div>
+                                            <% } %>
+                                            <div class="popup-pay">Pay: <%= typeof j.pay !== 'undefined' && j.pay !== null ? j.pay : 'N/A' %></div>
+                                        </div>
+                                    </li>
+                                    <% if (index < jobsApplied.length - 1 || (jobsAccepted && jobsAccepted.length > 0)) { %><hr><% } %>
+                                <% }) %>
+                            <% } %>
+
+                            <% if (jobsAccepted && jobsAccepted.length > 0) { %>
+                                <% jobsAccepted.forEach((j, index) => { %>
+                                    <li class="accIssues" style="position:relative;" data-job-id="<%= j.id %>">
+                                        <div class="issTtl"><strong class="issue-title"><%= j.title.length > 30 ? j.title.substring(0, 30) + '...' : j.title %></strong><a href="/job/<%= encodeURIComponent(j.company) %>"><%= j.company %></a></div>
+                                        <div class="status <%= j.status %>"><% if (j.status === 'in_progress') { %> in progress <% } else { %><%= j.status %><% } %></div>
+
+                                        <div class="issue-popup" aria-hidden="true">
+                                            <div class="popup-title"><%= j.title %></div>
+                                            <div class="popup-desc"><%= j.description %></div>
+                                            <% if (j.link) { %>
+                                                <div class="popup-link">Link: <a href="<%= j.link %>" target="_blank" rel="noopener noreferrer"><%= j.link %></a></div>
+                                            <% } %>
+                                            <div class="popup-pay">Pay: <%= typeof j.pay !== 'undefined' && j.pay !== null ? j.pay : 'N/A' %></div>
+                                        </div>
+                                    </li>
+                                    <% if (index < jobsAccepted.length - 1) { %><hr><% } %>
+                                <% }) %>
+                            <% } %>
                         </ul>
                     <% } else { %>
-                        <p class="emptyTxt">Not assigned to any issues</p>
+                        <p class="emptyTxt">No issues found</p>
                     <% } %>
                 </section>
             <section id="empSec">
@@ -122,5 +145,75 @@
             </section>
             </div>
         </div>
+    <style>
+                /* Popup to the left of the issue item */
+        #issuesSec .accIssues { position: relative; }
+        #issuesSec .accIssues .issue-popup {
+            position: absolute;
+            right: 100%;
+            top: 0;
+            margin-right: 12px;
+            min-width: 280px;
+            max-width: 460px;
+            background: #fff;
+            color: #000;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+            display: none;
+            z-index: 1200;
+        }
+        /* show on hover */
+        #issuesSec .accIssues:hover .issue-popup { display: block; }
+
+        /* On small screens, show below instead of left */
+        @media (max-width: 700px) {
+            #issuesSec .accIssues .issue-popup { right: auto; left: 0; top: 100%; margin-right: 0; margin-top: 8px; }
+        }
+
+            /* Allow popup to overflow the section container and the inner list */
+            #info #issuesSec { overflow: visible !important; }
+            /* the UL inside the issues section is scrollable by default; allow popups to escape it */
+            #info #issuesSec ul { overflow: visible !important; }
+
+        .issue-popup .popup-title { font-weight: 700; margin-bottom: 6px; }
+        .issue-popup .popup-desc { margin-bottom: 8px; white-space: pre-wrap; }
+        .issue-popup .popup-link a { color: #0077cc; word-break: break-all; }
+        .issue-popup .popup-pay { margin-top: 6px; font-weight: 600; }
+                /* ensure locked popup remains visible */
+                #issuesSec .accIssues.locked .issue-popup { display: block; }
+    </style>
+
+    <script>
+        // Click the issue title to lock/unlock the left popup so links can be clicked.
+        document.addEventListener('DOMContentLoaded', function(){
+            const items = document.querySelectorAll('#issuesSec .accIssues');
+            items.forEach(li => {
+                const title = li.querySelector('.issue-title');
+                if (!title) return;
+
+                title.style.cursor = 'pointer';
+                title.addEventListener('click', function(ev){
+                    ev.preventDefault();
+                    const locked = li.classList.toggle('locked');
+                    const popup = li.querySelector('.issue-popup');
+                    if (popup) popup.setAttribute('aria-hidden', locked ? 'false' : 'true');
+
+                    if (locked) {
+                        // close when clicking outside
+                        const handleOutside = function(e){
+                            if (!li.contains(e.target)) {
+                                li.classList.remove('locked');
+                                if (popup) popup.setAttribute('aria-hidden', 'true');
+                                document.removeEventListener('click', handleOutside);
+                            }
+                        };
+                        setTimeout(() => document.addEventListener('click', handleOutside), 0);
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>
