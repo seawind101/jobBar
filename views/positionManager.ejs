@@ -18,15 +18,7 @@
   --bsColor: <%= company.bsColor %>;
 ">
 <%- include("banner.ejs") %>
-  <main class="jobs-container">
-    <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
-      <button class="small-btn" onclick="location.href='/allJobs'">All Contracts</button>
-      <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'">Job Page</button>
-      <button class="small-btn" onclick="location.href='/eJob/<%= encodeURIComponent(company.name) %>'">View Positions</button>
-      <button class="small-btn" onclick="location.href='/ePost/<%= encodeURIComponent(company.name) %>'">Create Position</button>
-      <button class="small-btn" onclick="location.href='/edit/company/<%= company.id %>'">Edit Company</button>
-    </div>
+ 
 
     <div class="jobs-header">
       <h1>Manage Positions: <%= company ? company.name : 'Not found' %></h1>
@@ -175,6 +167,10 @@
                   <form action="/positionManager/fire/<%= pos.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Fire this employee?');">
                     <button type="submit" class="fire">Fire</button>
                   </form>
+                  <form action="/positionManager/delete" method="POST" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this position? This will remove all applications and uploaded files for the position.');">
+                  <input type="hidden" name="positionId" value="<%= pos.id %>">
+                  <button type="submit" class="delete">Delete</button>
+                </form>
                 </div>
               </article>
             <% }) %>

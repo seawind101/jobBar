@@ -233,15 +233,13 @@ router.post('/positionManager/delete', isAuthenticated, async (req, res) => {
     const pos = await new Promise((resolve, reject) => db.get('SELECT * FROM company_positions WHERE id = ?', [positionId], (e, r) => e ? reject(e) : resolve(r)));
     if (!pos) return res.status(404).send('Position not found');
 
-    // Prevent deletion if position has employee assigned or is in progress/filled/completed
-    if (pos.employee_id || pos.status === 'in_progress' || pos.status === 'filled' || pos.status === 'completed') {
-      return res.status(400).send('Cannot delete a position that has an employee or is in progress/completed');
-    }
+    // If a position has an assigned employee, remove that employment record so the user is no longer
+    // listed as an employee of this company. We allow deletion even when an employee is assigned.
 
     const company = await new Promise((resolve, reject) => db.get('SELECT * FROM companies WHERE id = ?', [pos.company_id], (e, r) => e ? reject(e) : resolve(r)));
     if (!company || company.owner_id !== ownerId) return res.status(403).send('You do not own this company');
 
-    // delete related application files -> applications -> position row
+    // delete related application files -> applications -> remove employee from company_employees -> delete position row
     db.serialize(() => {
       db.run('BEGIN TRANSACTION');
       db.all('SELECT id FROM position_applications WHERE position_id = ?', [positionId], (ea, rows) => {
@@ -252,12 +250,24 @@ router.post('/positionManager/delete', isAuthenticated, async (req, res) => {
             if (errf) console.error('Error deleting job_application_files', errf);
           });
         }
+
+        // remove position applications
         db.run('DELETE FROM position_applications WHERE position_id = ?', [positionId], function(erra) {
           if (erra) console.error('Error deleting position_applications', erra);
         });
+
+        // if there is an assigned employee, remove them from company_employees for this company
+        if (pos.employee_id) {
+          db.run('DELETE FROM company_employees WHERE company_id = ? AND fb_id = ?', [pos.company_id, pos.employee_id], function(errce) {
+            if (errce) console.error('Error deleting company_employees record for fired employee during position deletion', errce);
+          });
+        }
+
+        // finally delete the position row
         db.run('DELETE FROM company_positions WHERE id = ?', [positionId], function(errp) {
           if (errp) console.error('Error deleting position', errp);
         });
+
         db.run('COMMIT');
         return res.redirect('/positionManager/' + encodeURIComponent(company.name));
       });
