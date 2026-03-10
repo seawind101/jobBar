@@ -22,20 +22,25 @@
                             <strong><%= company.name %></strong>
                             <p><%= company.description %></p>
                             <div class="btc">
-                                <a href="<%= company.link %>" target="_blank" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;">
+                                <a id="v" href="<%= company.link %>" target="_blank" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;">
                                     <img src="/icons/redirect.png" width="15" height="15">
-                                    Visit</a>
-                                <a href="/Job/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;"> 
+                                    <div class="text">Visit</div></a>
+                                <a id="i" href="/Job/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;"> 
                                     <img src="/icons/issue.png" width="15" height="15">
-                                    Issues</a>
-                                <a href="/eJob/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;">
+                                    <div class="text">Issues</div></a>
+                                <a id="p" href="/eJob/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;">
                                     <img src="/icons/position.png" width="15" height="15">
-                                    Positions</a>
+                                    <div class="text">Positions</div></a>
                                 <% if (company.isOwner) { %>
-                                    <form method="POST" action="/companies/delete" onsubmit="return confirm('Are you sure you want to delete this company? This cannot be undone.');" style="display:inline;margin-left:8px;">
-                                        <input type="hidden" name="companyId" value="<%= company.id %>">
-                                        <button type="submit" class="delete-company-btn" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
-                                    </form>
+                                    <a id="dlt">
+                                        <form method="POST" action="/companies/delete" onsubmit="return confirm('Are you sure you want to delete this company? This cannot be undone.');">
+                                            <input type="hidden" name="companyId" value="<%= company.id %>">
+                                            <button type="submit" class="delete-company-btn">
+                                                <img src="/icons/delete.png" width="15" height="15">
+                                                <div class="text">Delete</div>
+                                            </button>
+                                        </form>
+                                    </a>
                                 <% } %>
                             </div>
 
