@@ -17,17 +17,11 @@
   --bpColor: <%= company.bpColor %>;
   --bsColor: <%= company.bsColor %>;
   " class="post-job-page">
-    <nav class="top-controls">
-        <button onclick="location.href='/companies'"
-            style="border: 1px solid <%= company.bsColor %>;">Companies</button>
-        <button onclick="location.href='/allJobs'" style="border: 1px solid <%= company.bsColor %>;">All Jobs</button>
-        <button onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'"
-            style="border: 1px solid <%= company.bsColor %>;">Job Page</button>
-    </nav>
+  <%- include("banner.ejs") %>
 
     <div class="container">
         <div class="post-card">
-            <h1>Post a Job for <%= company.name %>
+            <h1>Post an Issue for <%= company.name %>
             </h1>
             <form id="jobpost-form" action="/jobPosts" method="POST">
                 <input type="hidden" name="company" value="<%= company.name %>">

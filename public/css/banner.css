@@ -1,3 +1,64 @@
 .tophr {
     width: 100%;
+    margin: 0 0 20px 0;
+    border: none;
+    border-top: 1px solid gray;
+}
+
+.tophead {
+    display: flex;
+    flex-direction: column;
+}
+
+.topHead .contain {
+    display: flex;
+    flex-direction: row;
+    background: rgba(0, 0, 0, 0.952);
+}
+
+.topHead .intC {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+
+.topHead .contain .buttonsCont {
+    display: flex;
+    margin-left: 10px;
+    flex-direction: row;
+    gap: 10px;
+    height: 60px;
+}
+
+.redir {
+    padding:0.6rem 1.1rem;
+    border-radius:8px;
+    border:none;
+    height: 35px;
+    background: transparent;
+    color:#fff;
+    cursor:pointer;
+    font-weight:400;
+    transition:all 0.2s ease;
+    font-size: 0.9em;
+    margin-top: 15px;
+    white-space: nowrap;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.redir.active {
+    border-bottom: 3px solid rgb(180, 67, 84);
+}
+
+.redir img {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.redir:hover {
+    background-color: rgba(128, 128, 128, 0.26);
 }

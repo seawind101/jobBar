@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= company ? company.name : 'Company' %> — Jobs</title>
+    <title><%= company ? company.name : 'Company' %> | Positions</title>
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/job.css">
     <script defer src="/js/job.js"></script>
@@ -28,6 +28,7 @@
   --bpColor: <%= company.bpColor %>;
   --bsColor: <%= company.bsColor %>;
   ">
+  <%- include("banner.ejs") %>
   <main class="jobs-container">
     <% 
       // compute owner-based permissions and precompute URLs server-side
@@ -44,7 +45,7 @@
         <a class="small-btn" href="/ePost/<%= encodeURIComponent(company.name) %>">Create Position</a>
           <button class="small-btn" onclick="location.href='<%= positionManagerUrl %>'">Manage Positions</button>
       <% } %>
-      <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin-left:1rem;flex:1;min-width:180px;padding:0.4rem;border-radius:8px;border:1px solid var(--bpColor);background:transparent;color:var(--bpColor)"/>
+      <input id="job-search-input" type="text" placeholder="Search jobs..." style="margin: 0;"/>
     </div>
 
       <div class="jobs-header">
