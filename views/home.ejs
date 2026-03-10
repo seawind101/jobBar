@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/banner.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+        <%- include("banner.ejs") %>
+        <main class="home-main">
+            <% const ownerId = company && (company.owner_id !== undefined && company.owner_id !== null) ? String(company.owner_id) : null; %>
+            <% const requesterId = typeof fb_id !== 'undefined' && fb_id !== null ? String(fb_id) : null; %>
+            <% const canManage = requesterId && ownerId && requesterId === ownerId; %>
+
+            <section class="company-hero" style="padding:1rem;margin:0 1rem;border-radius:8px;background:rgba(255,255,255,0.04);">
+                <h1 style="margin:0 0 0.5rem 0;"><%= company ? company.name : 'Company' %></h1>
+                <p style="margin:0 0 0.6rem 0;"><%= company && company.description ? company.description : 'No description provided.' %></p>
+
+                <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+                    <div><strong>Owner:</strong> <%= owner ? (owner.username || owner.fb_id) : 'Unknown' %></div>
+                    <div><strong>Employees:</strong> <% if (employees && employees.length > 0) { %>
+                        <span><%= employees.map(e => e.username || e.fb_id).join(', ') %></span>
+                    <% } else { %>
+                        <span>None</span>
+                    <% } %></div>
+                    <div><strong>Open Contracts:</strong> <%= typeof openJobsCount !== 'undefined' ? openJobsCount : 0 %></div>
+                    <div><strong>Open Positions:</strong> <%= typeof openPositionsCount !== 'undefined' ? openPositionsCount : 0 %></div>
+                </div>
+            </section>
+
+        </main>
+</body>
+</html>

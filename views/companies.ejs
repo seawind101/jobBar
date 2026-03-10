@@ -19,6 +19,7 @@
                         <div class="company-item" style="background-color: <%= company.pColor %>; color: <%= company.bpColor %>; border: 2px solid <%= company.bpColor %>;">
                             <strong><%= company.name %></strong>
                             <p><%= company.description %></p>
+                            <a href="/home/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;"> Home</a>
                             <a href="<%= company.link %>" target="_blank" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;">Visit</a>
                             <a href="/Job/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;"> Contracts</a>
                             <a href="/eJob/<%= encodeURIComponent(company.name) %>" class="btn-jobs" style="background-color: <%= company.sColor %>; color: <%= company.bsColor %>; border: 2px solid <%= company.bsColor %>;"> Positions</a>
