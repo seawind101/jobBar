@@ -12,6 +12,7 @@
   background: <%= company ? 'linear-gradient(180deg, ' + company.pColor + ', ' + company.sColor + ')' : 'transparent' %>;
   color: <%= company ? company.bpColor : '#fff' %>;
   ">
+  <%- include("banner.ejs") %>
   <div class="container">
     <div class="post-card">
       <h1>Create Position for <%= company.name %></h1>

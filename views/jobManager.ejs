@@ -17,17 +17,11 @@
   --bpColor: <%= company.bpColor %>;
   --bsColor: <%= company.bsColor %>;
 ">
+<%- include("banner.ejs") %>
   <main class="jobs-container">
-    <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/companies'">All companies</button>
-      <button class="small-btn" onclick="location.href='/allJobs'">All Jobs</button>
-      <button class="small-btn" onclick="location.href='/job/<%= encodeURIComponent(company.name) %>'">Job Page</button>
-      <button class="small-btn" onclick="location.href='/jobPosts/<%= encodeURIComponent(company.name) %>'">Post a Job</button>
-      <button class="small-btn" onclick="location.href='/edit/company/<%= company.id %>'">Edit Company</button>
-    </div>
 
     <div class="jobs-header">
-      <h1>Manage Jobs: <%= company ? company.name : 'Not found' %></h1>
+      <h1>Manage Issues: <%= company ? company.name : 'Not found' %></h1>
       <% if (typeof message !== 'undefined' && message) { %>
         <div class="form-error" style="color:#ffd1d9;margin:0.5rem 0;padding:0.6rem;border-radius:6px;background:rgba(200,30,70,0.06);font-weight:700;">
           <%= message %>
@@ -58,7 +52,7 @@
               </article>
             <% }) %>
           <% } else { %>
-            <p>No available jobs</p>
+            <p>No available issues</p>
           <% } %>
         </div>
       </section>
@@ -141,7 +135,7 @@
               </article>
             <% }) %>
           <% } else { %>
-            <p>No jobs in progress</p>
+            <p>No issues in progress</p>
           <% } %>
         </div>
       </section>
@@ -165,7 +159,7 @@
               </article>
             <% }) %>
           <% } else { %>
-            <p>No completed jobs</p>
+            <p>No completed issues</p>
           <% } %>
         </div>
       </section>

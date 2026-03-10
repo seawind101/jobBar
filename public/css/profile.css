@@ -98,7 +98,7 @@ body{
     gap: 24px;
     flex-direction: column;
     width: 100vw;
-    height: 100vh;
+    height: 80vh;
     justify-content: center;
     align-items: center;
 }

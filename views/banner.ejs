@@ -1,17 +1,59 @@
+<link rel="stylesheet" href="/css/banner.css">
 <header class="topHead">
-    <h1>Classroom Companies</h1>
-    <div class="buttonsCont">
-        <button onclick="location.href='/'">Home</button>
-        <button onclick="location.href='/allJobs'">All Contracts</button>
-        <button onclick="location.href='/companies'">Companies</button>
-        <button onclick="location.href='/alljobs'">All Jobs</button>
-        <% if (isManager) { %>
-            <button onclick="location.href='/post'">Create a Company</button>
-        <% } %>
-            <% if (typeof fb_id !== 'undefined' && fb_id) { %>
-                <button onclick="location.href='/profile'">Profile</button>
-            <% } %>
+    <div class="contain">
+        <div class="intC">
+            <div class="buttonsCont">
+                <button class="redir" data-path="/allJobs" onclick="location.href='/allJobs'">
+                    <img src="/icons/banner/issue.png" alt="All Issues" width="20" height="20">
+                    <div>All Issues</div>
+                </button>
+                <button class="redir" data-path="/companies" data-match="/companies,/Job,/eJob,/jobPosts,/jobManager,/ePost" onclick="location.href='/companies'">
+                    <img src="/icons/banner/company.png" alt="Companies" width="18" height="18">
+                    <div>Companies
+                            <%= (typeof company !== 'undefined' && company.name) ? ` / ${company.name}` : '' %>
+                            <span id="page-type"></span>
+                    </div>
+                </button>
+                <% if (isManager) { %>
+                    <button class="redir" data-path="/post" onclick="location.href='/post'">
+                        <img src="/icons/banner/create.png" alt="Create a Company" width="18" height="18">
+                        <div>Create a Company</div>
+                    </button>
+                <% } %>
+                <% if (typeof fb_id !== 'undefined' && fb_id) { %>
+                    <button class="redir" data-path="/profile" onclick="location.href='/profile'">
+                        <img src="/icons/banner/profile.png" alt="Profile" width="20" height="20">
+                        <div>Profile</div>
+                    </button>
+                <% } %>
+            </div>
+        </div>
     </div>
-    <input type="text" id="searchbar" placeholder="Search...">
     <hr class="tophr">
 </header>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const path = window.location.pathname;
+
+        document.querySelectorAll(".redir").forEach(btn => {
+            const base = btn.dataset.path;
+            const matches = btn.dataset.match?.split(",") || [];
+
+            if (
+                path === base ||
+                path.startsWith(base + "/") ||
+                matches.some(m => path.startsWith(m))
+            ) {
+                btn.classList.add("active");
+            }
+        });
+    });
+    const path = window.location.pathname;
+    const pageTypeEl = document.getElementById('page-type');
+
+    if (path.includes('/eJob/')) pageTypeEl.textContent = ' / Positions';
+    else if (path.includes('/Job/')) pageTypeEl.textContent = ' / Issues';
+    else if (path.includes('jobPosts')) pageTypeEl.textContent = ' / Post Issue'
+    else if (path.includes('/jobManager')) pageTypeEl.textContent = ' / Manage Issues'
+    else if (path.includes('/ePost')) pageTypeEl.textContent = ' / Create Position'
+</script>

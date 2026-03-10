@@ -21,6 +21,20 @@ body{
     margin-bottom:1rem;
 }
 
+input#job-search-input{
+  display:block;
+  height: 50px;
+  min-width: 30%;
+  max-width: 100%;
+  margin:0.75rem 0 1.5rem;
+  padding:0.85rem 1rem;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color:var(--muted);
+  font-size:1rem;
+}
+
 .jobs-header h1{
     margin:0;
 }
@@ -147,22 +161,34 @@ body{
     font-weight:600;
     width: 30%;
 }
-.nav-row{display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap} 
+
+.nav-row {
+    display:flex;
+    gap:0.5rem;
+    margin-bottom:1rem;
+    flex-wrap:wrap;
+    align-items: center;
+}
 
 .small-btn{
-    display:inline-block;  /* Add this for <a> tags */
-    padding:0.4rem 0.8rem;
-    border-radius:6px;
-    border:1px solid var(--bsColor);
-    background:var(--sColor);
-    color:var(--bsColor);
-    cursor:pointer;
-    text-decoration:none;
-    font-size:1rem;
-    font-weight:600;
-    font-family:inherit;  /* Add this to match button font */
-    line-height:normal;  /* Add this for consistent height */
-    vertical-align:middle;  /* Add this for alignment */
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    background: rgb(31, 30, 36);
+    box-shadow: 0 0 3px black;
+    border-radius: 10px;
+    height: 50px;
+    width: 120px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.small-btn:hover {
+    scale: 1.05;
 }
 
 .apply-btn{
