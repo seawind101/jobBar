@@ -154,14 +154,18 @@ input#searchbar{
 
 .company-item .text {
   position: absolute;
-  background-color: rgb(20, 20, 20);
-  padding: 9px;
-  border-radius: 10px;
-  pointer-events: none;
+  background-color: rgb(36, 37, 43);
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
   white-space: nowrap;
-  right: 35px;
+  opacity: 0;
+  font-weight: 400;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  right: 30px;
   color: white;
-  box-shadow: 0 0 5px black;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.493);
   z-index: 50;
   opacity: 0;
   transform: translateX(-10px);
@@ -170,20 +174,16 @@ input#searchbar{
 
 .company-item #v:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
 .company-item #i:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
 .company-item #p:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
 .company-item .delete-company-btn:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }

@@ -241,11 +241,15 @@ body{
     transition: opacity 0.2s ease;
 }
 
-.accComp .compBtnsCont .btn .tooltip#edit {
+.accComp .compBtnsCont #edit .tooltip#edit {
     right: 130%;
 }
 
-.accComp .compBtnsCont a {
+.accComp .compBtnsCont #tran .tooltip {
+    right: 210%;
+}
+
+.accComp .compBtnsCont a, .transfer-btn {
     text-decoration: none;
     background: white;
     padding: 8px 8px 8px 8px;
@@ -254,13 +258,14 @@ body{
     justify-content: center;
     align-items: center;
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
-.accComp .compBtnsCont a:hover {
+.accComp .compBtnsCont a:hover, .transfer-btn:hover {
     scale: 1.05;
 }
 
-.accComp .compBtnsCont a:active {
+.accComp .compBtnsCont a:active, .transfer-btn:active {
     scale: 0.95;
 }
 
@@ -283,6 +288,16 @@ body{
 
 .accComp .compBtnsCont a#viewCompany img {
     filter: brightness(0) saturate(100%) invert(67%) sepia(29%) saturate(1100%) hue-rotate(285deg) brightness(103%) contrast(103%);
+}
+
+.accComp .compBtnsCont .transfer-btn {
+    background: rgb(19, 177, 53);
+    border: 1px solid rgb(151, 221, 163);
+    color: rgb(228, 255, 237);
+}
+
+.accComp .compBtnsCont .transfer-btn img {
+    filter: brightness(0) saturate(100%) invert(63%) sepia(18%) saturate(399%) hue-rotate(92deg) brightness(189%) contrast(90%);
 }
 
 .accPos {
