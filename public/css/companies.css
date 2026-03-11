@@ -72,9 +72,16 @@ input#searchbar{
   padding:1rem;
   position: relative;
   transition:transform .15s ease, box-shadow .15s ease;
+  background-color: rgba(255,255,255,0.03);
 }
 
-.company-item:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+.company-item:hover {
+  transform:translateY(-6px);
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,0.45), 
+    0 0 12px var(--hover-color);
+  
+}
 
 .company-item .nme {
   display: flex;
@@ -94,13 +101,37 @@ input#searchbar{
 }
 
 .company-item strong{display:block;color:var(--bpColor);margin: 0}
-.company-item p{color:var(--bpColor);margin:0 0 0.75rem}
+.company-item p{color:var(--bpColor);}
 .company-item button{color:var(--muted);border:1px solid rgba(255,255,255,0.06);padding:0.45rem 0.7rem;border-radius:8px}
 
 .btc {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+  bottom: 15px;
+  width: 100%;
+}
+
+.company-item .desc p {
+  margin-right: 5px;
+}
+
+.company-item .desc {
+  height: 100px;
+  overflow-y: auto;
+  margin:0 0 1rem
+}
+
+.desc::-webkit-scrollbar {
+    width: 8px;
+}
+
+.desc::-webkit-scrollbar-thumb {
+    background: rgb(55, 56, 65);
+}
+
+.desc::-webkit-scrollbar-track {
+    background: rgb(31, 30, 36);
 }
 
 .company-item a:not(#dlt){
@@ -117,9 +148,8 @@ input#searchbar{
   height: 40px;
   position: relative;
   background: white;
-  width: 40px;
-  height: 40px;
-  border: 2px solid black;
+  width: 35px;
+  height: 35px;
 }
 
 .company-item a:hover {

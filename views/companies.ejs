@@ -18,15 +18,16 @@
             <%  if (companies && companies.length > 0) { %>
                 <ul>
                     <% companies.forEach(company => { %>
-                        <div class="company-item" style="background:
-                        rgba(255,255,255,0.03); color: <%= company.bpColor %>;">
+                        <div class="company-item" style="--hover-color: <%= company.pColor %>">
                             <div class="nme">
                                 <strong><%= company.name %></strong>
                                 <% if (company.isOwner) { %>
                                     <div class="owned">Owner</div>
                                 <% } %>
                             </div>
-                            <p><%= company.description %></p>
+                            <div class="desc">
+                                <p><%= company.description %></p>
+                            </div>
                             <div class="btc">
                                 <a id="v" href="/home/<%= encodeURIComponent(company.name) %>">
                                     <img src="/icons/home.png" width="15" height="15">
@@ -61,9 +62,22 @@
         </div>
     </section>
 </body>
-        <script>
-            document.addEventListener('DOMContentLoaded', function(){
-                if (window.jobSearchInit) window.jobSearchInit('searchbar', { selector: '.company-item' });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.jobSearchInit) {
+            window.jobSearchInit('searchbar', { selector: '.company-item' });
+        }
+        // Move owned companies to the top
+        const container = document.querySelector("#resourceCont ul");
+        if (container) {
+            const companies = Array.from(container.querySelectorAll(".company-item"));
+            companies.sort((a, b) => {
+                const aOwner = a.querySelector(".owned") ? 1 : 0;
+                const bOwner = b.querySelector(".owned") ? 1 : 0;
+                return bOwner - aOwner; // owner first
             });
-        </script>
+            companies.forEach(company => container.appendChild(company));
+        }
+    });
+</script>
 </html>

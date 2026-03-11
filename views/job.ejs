@@ -37,8 +37,6 @@
       const jobManagerUrl = company ? ('/jobManager/' + encodeURIComponent(company.name)) : '/jobManager/Not%20found';
     %>
     <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/companies'">All Companies</button>
-      <button class="small-btn" onclick="location.href='/allJobs'">All Open Contracts</button>
       <button class="small-btn" onclick="location.href='/eJob/<%= company ? company.name : 'Not found' %>'">Open Positions</button>
       <% if (canManage) { %>
         <a class="small-btn" href="<%= jobPostsUrl %>">Post a Contract</a>
