@@ -28,21 +28,21 @@
                             <li class="accComp">
                                 <div class="compTtl"><strong><%= c.name.length > 30 ? c.name.substring(0, 30) + '...' : c.name %></strong></div>
                                 <div class="compBtnsCont">
-                                    <div class="btn">
+                                    <div class="btn" id="view">
                                         <a id="viewCompany" href="/job/<%= encodeURIComponent(c.name) %>">
                                             <img src="/icons/view.png" width="25" height="25">
                                         </a>
                                         <div class="tooltip">View Company</div>
                                     </div>
-                                    <div class="btn">
+                                    <div class="btn" id="edit">
                                         <a id="editCompany" href="/edit/company/<%= c.id %>">
                                             <img src="/icons/edit.png" width="25" height="25">
                                         </a>
                                         <div class="tooltip" id="edit">Edit Company</div>
                                     </div>
-                                    <div class="btn">
+                                    <div class="btn" id="tran">
                                         <button class="transfer-btn" type="button" data-company-id="<%= c.id %>" data-company-name="<%= c.name %>">
-                                            Transfer
+                                            <img src="/icons/transfer.png" width="25" height="25">
                                         </button>
                                         <div class="tooltip">Transfer Ownership</div>
                                     </div>

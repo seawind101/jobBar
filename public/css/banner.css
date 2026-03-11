@@ -5,15 +5,20 @@
     border-top: 1px solid gray;
 }
 
-.tophead {
+.topHead {
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 .topHead .contain {
     display: flex;
     flex-direction: row;
-    background: rgba(0, 0, 0, 0.952);
+    background: rgb(0, 0, 0);
 }
 
 .topHead .intC {

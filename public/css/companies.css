@@ -17,7 +17,7 @@ body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-section{max-width:1100px;margin:0 auto;}
+section{max-width:1200px;margin:0 auto;}
 
 #resourceCont ul{
   list-style:none;
@@ -60,100 +60,160 @@ input#searchbar{
   font-size:1rem;
 }
 
-.company-item{
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border-radius:12px;
-  padding:1rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-  transition:transform .15s ease, box-shadow .15s ease;
+#resourceCont {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.05));
+  border-radius:10px;
+  padding:20px 20px !important; /* more space top & bottom */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
 }
 
-.company-item strong{display:block;color:var(--bpColor);margin-bottom:0.4rem}
-.company-item p{color:var(--bpColor);margin:0 0 0.75rem}
+.company-item{
+  border-radius:12px;
+  padding:1rem;
+  position: relative;
+  transition:transform .15s ease, box-shadow .15s ease;
+  background-color: rgba(255,255,255,0.03);
+}
+
+.company-item:hover {
+  transform:translateY(-6px);
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,0.45), 
+    0 0 12px var(--hover-color);
+  
+}
+
+.company-item .nme {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 0.4em;
+}
+
+.company-item .owned {
+  background: rgb(180, 67, 84);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px 5px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+.company-item strong{display:block;color:var(--bpColor);margin: 0}
+.company-item p{color:var(--bpColor);}
 .company-item button{color:var(--muted);border:1px solid rgba(255,255,255,0.06);padding:0.45rem 0.7rem;border-radius:8px}
 
 .btc {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+  bottom: 15px;
+  width: 100%;
 }
 
-#resourceCont a:not(#dlt){
+.company-item .desc p {
+  margin-right: 5px;
+}
+
+.company-item .desc {
+  height: 100px;
+  overflow-y: auto;
+  margin:0 0 1rem
+}
+
+.desc::-webkit-scrollbar {
+    width: 8px;
+}
+
+.desc::-webkit-scrollbar-thumb {
+    background: rgb(55, 56, 65);
+}
+
+.desc::-webkit-scrollbar-track {
+    background: rgb(31, 30, 36);
+}
+
+.company-item a:not(#dlt){
   display:flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
   padding:0.3rem 0.6rem;
   border-radius:12px;
   text-decoration:none;
   font-weight:700;
   text-align:center;
   transition:all 0.2s ease;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
   color: black;
   height: 40px;
   position: relative;
+  background: white;
+  width: 35px;
+  height: 35px;
 }
 
-#resourceCont .delete-company-btn {
-  color: white;
-  background-color: #c81f1f;
+.company-item a:hover {
+  scale: 1.05;
+}
+
+.company-item form {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.company-item .delete-company-btn {
+  background: none;
+  border: none;
   display:flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
-  padding:0.3rem 0.6rem;
   border-radius:12px;
   text-decoration:none;
   font-weight:700;
   text-align:center;
   transition:all 0.2s ease;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
   height: 40px;
   cursor: pointer;
   position: relative;
 }
 
-#resourceCont .delete-company-btn:hover {
+.company-item .delete-company-btn:hover {
   scale: 1.05;
 }
 
-#resourceCont form {
-  min-width: 0;
-  min-height: 0;
-}
-
-#resourceCont .text {
+.company-item .text {
   position: absolute;
-  background-color: rgb(20, 20, 20);
-  padding: 7px;
-  border-radius: 10px;
+  background-color: rgb(36, 37, 43);
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  white-space: nowrap;
+  opacity: 0;
+  font-weight: 400;
   pointer-events: none;
-  right: 35px;
+  transition: opacity 0.2s ease;
+  right: 30px;
   color: white;
-  box-shadow: 0 0 5px black;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.493);
   z-index: 50;
   opacity: 0;
   transform: translateX(-10px);
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-#resourceCont #v:hover .text {
+.company-item #v:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
-#resourceCont #i:hover .text {
+.company-item #i:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
-#resourceCont #p:hover .text {
+.company-item #p:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }
 
-#resourceCont .delete-company-btn:hover .text {
+.company-item .delete-company-btn:hover .text {
   opacity: 1;
-  transform: translateX(0);
 }

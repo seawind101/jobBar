@@ -129,13 +129,7 @@ router.post('/jobManager/accept', isAuthenticated, async (req, res) => {
         // ensure the applicant is not employed at another company
         const companyRow = company; // fetched above
         const existingEmployment = await new Promise((resolve, reject) => db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [applicantId], (e, r) => e ? reject(e) : resolve(r)));
-        if (existingEmployment) {
-            // find the id for this job's company
-            const thisCompanyId = companyRow.id;
-            if (Number(existingEmployment.company_id) !== Number(thisCompanyId)) {
-                return res.status(400).send('Applicant is already employed at another company');
-            }
-        }
+
 
         await new Promise((resolve, reject) => {
             db.run(
