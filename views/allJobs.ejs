@@ -35,10 +35,15 @@
                         <div class="job-pay">Pay: <%= job.pay %></div>
                         <div style="margin-top:0.6rem">
                             <% if (job.you_applied) { %>
-                                <span class="job-meta taken">You applied</span>
+                                <span class="job-meta taken">
+                                    You applied
+                                </span>
                             <% } else { %>
                                 <form action="/job/<%= job.id %>/apply" method="POST" style="display:inline">
-                                    <button type="submit" class="apply-btn">Apply</button>
+                                    <button type="submit" class="apply-btn">
+                                        <img src="/icons/apply.png" width="20" height="20">
+                                        <div class="text">Apply</div>
+                                    </button>
                                 </form>
                             <% } %>
                         </div>
