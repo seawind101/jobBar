@@ -1,14 +1,15 @@
 {
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "express-session": "^1.18.2",
     "init": "^0.1.2",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^1.4.5-lts.1",
     "node": "^24.12.0",
     "node-fetch": "^3.3.2",
-  "multer": "^1.4.5-lts.1",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
     "sqlite3": "^5.1.7"

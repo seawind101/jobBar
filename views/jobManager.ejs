@@ -35,7 +35,7 @@
         <h2>Available</h2>
         <div class="jobs-scroll">
           <% if (jobs && jobs.length > 0) { %>
-            <% jobs.filter(job => !job.employee_id && !job.has_applications).forEach(function(job){ %>
+            <% jobs.filter(job => !job.employee_id && !job.has_applications && job.status !== 'completed' && job.status !== 'in_progress').forEach(function(job){ %>
               <article class="job-card">
                 <div class="job-title"><b><%= job.title %></b></div>
                 <div class="job-desc"><%= job.description %></div>
@@ -63,7 +63,7 @@
         <h2>Applied For</h2>
         <div class="jobs-scroll">
           <% if (jobs && jobs.length > 0) { %>
-            <% jobs.filter(job => job.has_applications && !job.employee_id).forEach(function(job){ %>
+            <% jobs.filter(job => job.has_applications && !job.employee_id && job.status !== 'completed' && job.status !== 'in_progress').forEach(function(job){ %>
               <article class="job-card">
                 <div class="job-title"><b><%= job.title %></b></div>
                 <div class="job-desc"><%= job.description %></div>

@@ -55,8 +55,11 @@
     <section aria-labelledby="jobs-list">
       <h2 id="jobs-list">Open Contracts</h2>
       <% 
-        // Filter for available jobs (no employee assigned)
-        const availableJobs = jobs ? jobs.filter(job => !job.employee_id) : [];
+        // Filter for available jobs (status === 'available')
+        const availableJobs = jobs ? jobs.filter(job => {
+          return job && job.status && String(job.status).toLowerCase() === 'available';
+        }) : [];
+      %>
       %>
       
       <% if (availableJobs.length === 0) { %>

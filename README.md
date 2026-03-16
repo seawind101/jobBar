@@ -60,6 +60,31 @@ EPOST=
 - `MANAGERS` is a comma-separated list (or JSON array) of fb_id values for manager/admin views.  
 - `CPOST` and `JPOST` are numeric defaults used by views for pricing (create-post / job-post amounts).
 
+### GitHub integration (auto-complete issues)
+
+This app can optionally check GitHub issue status for job postings whose `link` points to a GitHub issue. When the linked issue is closed on GitHub the app will automatically mark the corresponding job as `completed` so it no longer accepts applications.
+
+- `GITHUB_TOKEN` (optional) — a GitHub Personal Access Token (PAT). If provided in your `.env` the app will use it when calling the GitHub API, which increases rate limits and allows access to private repositories (if the token has the right scopes). If not provided the app will still attempt unauthenticated requests but those are heavily rate-limited.
+
+To create a token:
+
+1. Visit https://github.com/settings/tokens (you'll need to be signed into GitHub).
+2. Click "Generate new token" (classic) or "Generate new token (classic)" depending on your account UI.
+3. Give the token a short note like "jobBar auto-complete".
+4. For public repositories you can grant the `public_repo` scope. For private repositories grant the `repo` scope. If you only need to read issue state and your repos are public, `public_repo` is sufficient.
+5. Generate and copy the token value.
+6. Add it to your `.env` file as described below.
+
+Example `.env` entry:
+
+```
+GITHUB_TOKEN=ghp_yourPersonalAccessTokenHere
+```
+
+Notes:
+- If you are running locally and don't want to create a token, the auto-check will still work for public issues until you hit GitHub's unauthenticated rate limits (~60 requests/hour). Adding a PAT increases that limit dramatically.
+- Keep the token secret; do not commit it to the repository.
+
 ## What the app does (high level)
 
 - Hosts companies, job postings (issues) and full-time positions.

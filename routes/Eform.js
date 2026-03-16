@@ -169,6 +169,12 @@ router.post('/eform', isAuthenticated, upload.fields([
     }
 
     // job flow
+    // Prevent applying to a job that has been completed
+    const existingJob = await new Promise((resolve, reject) => db.get('SELECT status FROM jobs WHERE id = ?', [jobId], (e, r) => e ? reject(e) : resolve(r))).catch(e => { console.error('Error checking job status before application:', e); return null; });
+    if (existingJob && existingJob.status === 'completed') {
+      return res.status(400).send('Cannot apply to a completed job');
+    }
+
     await new Promise((resolve, reject) => db.run('INSERT OR IGNORE INTO job_applications (job_id, fb_id) VALUES (?, ?)', [jobId, fb_id], (e) => e ? reject(e) : resolve()));
     const jobAppRow = await new Promise((resolve, reject) => db.get('SELECT id FROM job_applications WHERE job_id = ? AND fb_id = ?', [jobId, fb_id], (e, r) => e ? reject(e) : resolve(r)));
     const applicationId = jobAppRow && jobAppRow.id ? jobAppRow.id : null;

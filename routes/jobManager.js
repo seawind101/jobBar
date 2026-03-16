@@ -1,8 +1,9 @@
 require('dotenv').config();
 const router = require('express').Router();
 const isAuthenticated = require('../middleware/isAuthenticated');
+const { isGitHubIssueClosed } = require('../modules/github');
 
-// Route: show a single company and its jobs by company name (same EJS page)
+ // Route: show a single company and its jobs by company name (same EJS page)
 router.get('/jobManager/:companyName', isAuthenticated, (req, res) => {
     const db = req.app.locals.db;
     const companyName = req.params.companyName;
@@ -38,11 +39,108 @@ router.get('/jobManager/:companyName', isAuthenticated, (req, res) => {
             ORDER BY j.id DESC
         `;
 
-        db.all(jobsQuery, [companyName], (err, jobs) => {
+        // make this callback async so we can await the GitHub checks
+        db.all(jobsQuery, [companyName], async (err, jobs) => {
             if (err) {
                 console.error('Database error:', err);
                 return res.status(500).send('Internal Server Error');
             }
+
+            // Auto-complete jobs whose linked GitHub issues are closed
+            const autoClosePromises = jobs.map(async (job) => {
+                try {
+                    console.log(`Checking job ${job.id} with status: ${job.status} and link: ${job.link}`);
+                    
+                    if (!job.link) return;
+                    if (job.status === "completed") return;
+
+                    const isClosed = await isGitHubIssueClosed(job.link);
+                    console.log(`Job ${job.id}: GitHub issue closed = ${isClosed}`);
+
+                    if (!isClosed) return;
+
+                    console.log(`Auto-completing job ${job.id} because GitHub issue is closed`);
+
+                    // Update all jobs for this company that share the same GitHub link
+                    await new Promise((resolve) => {
+                        db.run(
+                            "UPDATE jobs SET status = 'completed' WHERE link = ? AND company = ? AND status != 'completed'",
+                            [job.link, company.name],
+                            function(err) {
+                                if (err) {
+                                    console.error("Auto-complete DB error:", err);
+                                }
+                                return resolve();
+                            }
+                        );
+                    });
+
+                    // After marking all matching jobs completed, make the in-memory jobs reflect the change
+                    try {
+                        if (Array.isArray(jobs)) {
+                            jobs.forEach(j => {
+                                if (j && j.link === job.link && j.company === company.name) {
+                                    j.status = 'completed';
+                                }
+                            });
+                        }
+                    } catch (ie) {
+                        console.warn('Could not update in-memory jobs after auto-complete:', ie && ie.message ? ie.message : ie);
+                    }
+
+                    // Now detect and remove safe duplicates from DB and from the in-memory array
+                    const rows = await new Promise((resolve) => {
+                        db.all('SELECT id, employee_id FROM jobs WHERE link = ? AND company = ?', [job.link, company.name], (e, rows) => {
+                            if (e) {
+                                console.error('Error checking duplicate jobs:', e);
+                                return resolve(null);
+                            }
+                            resolve(rows);
+                        });
+                    });
+
+                    if (!rows || rows.length <= 1) {
+                        // nothing to dedupe
+                        return;
+                    }
+
+                    // Keep the smallest id as the canonical record
+                    const sorted = rows.slice().sort((a,b) => Number(a.id) - Number(b.id));
+                    const keeper = sorted[0].id;
+                    const candidates = sorted.slice(1);
+
+                    // Only delete duplicates that have no assigned employee
+                    const deletable = candidates.filter(r => !r.employee_id).map(r => r.id);
+                    if (deletable.length === 0) return;
+
+                    const ph = deletable.map(() => '?').join(',');
+
+                    await new Promise((resolve) => {
+                        db.run(`DELETE FROM jobs WHERE id IN (${ph})`, deletable, function(errj) {
+                            if (errj) console.error('Error deleting duplicate jobs:', errj);
+                            return resolve();
+                        });
+                    });
+
+                    // Remove deleted duplicates from the in-memory jobs array so they don't render in Available
+                    try {
+                        if (Array.isArray(jobs) && deletable.length > 0) {
+                            const delSet = new Set(deletable.map(String));
+                            for (let i = jobs.length - 1; i >= 0; i--) {
+                                const jid = jobs[i] && jobs[i].id ? String(jobs[i].id) : null;
+                                if (jid && delSet.has(jid)) jobs.splice(i, 1);
+                            }
+                        }
+                    } catch (mErr) {
+                        console.warn('Could not prune in-memory duplicate jobs:', mErr && mErr.message ? mErr.message : mErr);
+                    }
+                } catch (e) {
+                    console.error('Error during auto-complete check for job', job.id, e);
+                }
+            });
+
+            // Wait for GitHub checks to finish
+            await Promise.all(autoClosePromises);
 
             // Fetch applicant details for each job
             const jobPromises = jobs.map(job => {
@@ -90,6 +188,10 @@ router.get('/jobManager/:companyName', isAuthenticated, (req, res) => {
     });
 });
 
+
+
+            
+
 // Accept an applicant and assign them to the job (no PIN required)
 router.post('/jobManager/accept', isAuthenticated, async (req, res) => {
     const db = req.app.locals.db;
@@ -128,15 +230,7 @@ router.post('/jobManager/accept', isAuthenticated, async (req, res) => {
         // Assign the applicant to the job and change status to 'in_progress'
         // ensure the applicant is not employed at another company
         const companyRow = company; // fetched above
-        const existingEmployment = await new Promise((resolve, reject) => db.get('SELECT company_id FROM company_employees WHERE fb_id = ?', [applicantId], (e, r) => e ? reject(e) : resolve(r)));
-        if (existingEmployment) {
-            // find the id for this job's company
-            const thisCompanyId = companyRow.id;
-            if (Number(existingEmployment.company_id) !== Number(thisCompanyId)) {
-                return res.status(400).send('Applicant is already employed at another company');
-            }
-        }
-
+         
         await new Promise((resolve, reject) => {
             db.run(
                 'UPDATE jobs SET employee_id = ?, status = ? WHERE id = ?',
