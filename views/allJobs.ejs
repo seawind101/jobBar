@@ -20,20 +20,23 @@
                 <% jobs.forEach(function(job){ %>
                     <article class="job-card">
                         <div class="job-title">
-                            <b><%= job.title %></b>
-                            <span style="color:#f7d2df;font-weight:700;margin-left:8px">@
-                                <a href="/job/<%= encodeURIComponent(job.company_name || job.company) %>" style="color:#f7d2df;text-decoration:underline">
+                            <strong><%= job.title %></strong>
+                            <br>
+                            <span>
+                                <a href="/job/<%= encodeURIComponent(job.company_name || job.company) %>">
                                     <%= job.company_name || job.company %>
                                 </a>
                             </span>
                         </div>
-                        <% if (job.company_description) { %>
-                            <div class="company-desc" style="color:#ddd;margin:0.4rem 0;font-size:0.95rem"><%= job.company_description %></div>
-                        <% } %>
                         <div class="job-desc"><%= job.description %></div>
                         <div class="job-link"><a href="<%= job.link %>" target="_blank">View Issue</a></div>
-                        <div class="job-pay">Pay: <%= job.pay %></div>
-                        <div style="margin-top:0.6rem">
+                        <div class="job-pay">
+                            <div class="pay-cont">
+                                <img src="/icons/cost.png" width="20" height="20">
+                                <div class="title-text"><%= Number(job.pay).toLocaleString().length > 30 ? Number(job.pay).toLocaleString().substring(0, 30) + '...' : Number(job.pay).toLocaleString() %> %></div>
+                            </div>
+                        </div>
+                        <div class="job-status" style="margin-top:0.6rem">
                             <% if (job.you_applied) { %>
                                 <span class="job-meta taken">
                                     You applied
@@ -41,8 +44,7 @@
                             <% } else { %>
                                 <form action="/job/<%= job.id %>/apply" method="POST" style="display:inline">
                                     <button type="submit" class="apply-btn">
-                                        <img src="/icons/apply.png" width="20" height="20">
-                                        <div class="text">Apply</div>
+                                        Apply
                                     </button>
                                 </form>
                             <% } %>

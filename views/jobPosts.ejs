@@ -112,8 +112,8 @@
                         // Validate pay amount before showing modal
                         const payInput = document.getElementById('pay');
                         const payValue = Number(payInput.value);
-                        if (isNaN(payValue) || payValue < 10) {
-                            alert('Pay must be at least 10 DigiPogs');
+                        if (isNaN(payValue) || payValue < 10 || payValue > 100000) {
+                            alert('Invalid cost (100 - 100,000 digipogs)');
                             payInput.focus();
                             return;
                         }
