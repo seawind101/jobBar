@@ -5,9 +5,9 @@
             <div class="buttonsCont">
                 <button class="redir" data-path="/allJobs" onclick="location.href='/allJobs'">
                     <img src="/icons/banner/issue.png" alt="All Issues" width="20" height="20">
-                    <div>All Issues</div>
+                    <div>All Contracts</div>
                 </button>
-                <button class="redir" data-path="/companies" data-match="/companies,/Job,/eJob,/jobPosts,/jobManager,/ePost" onclick="location.href='/companies'">
+                <button class="redir" data-path="/companies" data-match="/companies,/Job,/eJob,/jobPosts,/jobManager,/ePost,/home,/positionManager" onclick="location.href='/companies'">
                     <img src="/icons/banner/company.png" alt="Companies" width="18" height="18">
                     <div>Companies
                             <%= (typeof company !== 'undefined' && company.name) ? ` / ${company.name}` : '' %>
@@ -56,4 +56,5 @@
     else if (path.includes('jobPosts')) pageTypeEl.textContent = ' / Post Issue'
     else if (path.includes('/jobManager')) pageTypeEl.textContent = ' / Manage Issues'
     else if (path.includes('/ePost')) pageTypeEl.textContent = ' / Create Position'
+    else if (path.includes('/positionManager')) pageTypeEl.textContent = ' / Manage Positions'
 </script>

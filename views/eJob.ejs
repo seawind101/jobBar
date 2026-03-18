@@ -39,8 +39,6 @@
         const positionManagerUrl = company ? ('/positionManager/' + encodeURIComponent(company.name)) : '/positionManager/Not%20found';
     %>
     <div class="nav-row">
-      <button class="small-btn" onclick="location.href='/companies'">All Companies</button>
-      <button class="small-btn" onclick="location.href='/allJobs'">All Open Contracts</button>
       <% if (canManage) { %>
         <a class="small-btn" href="/ePost/<%= encodeURIComponent(company.name) %>">Create Position</a>
           <button class="small-btn" onclick="location.href='<%= positionManagerUrl %>'">Manage Positions</button>

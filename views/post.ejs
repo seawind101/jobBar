@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Create a Company</title>
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/post.css">
 </head>
@@ -14,7 +14,6 @@
 
     <div class="container">
         <div class="post-card">
-            <h1>Post your Company</h1>
             <% if (typeof error !=='undefined' && error) { %>
                 <div class="form-error" style="color:#ffd1d9;margin-bottom:0.75rem;font-weight:700;">
                     <%= error %>
@@ -22,13 +21,13 @@
                 <% } %>
                     <form id="company-form" action="/post" method="POST">
                         <div class="form-row">
-                            <label for="name">Company Name:</label>
+                            <label for="name">Name:</label>
                             <input type="text" id="name" name="name" required
                                 value="<%= form && form.name ? form.name : '' %>">
                         </div>
                         <div class="form-row">
                             <label for="description">Description:</label>
-                            <textarea id="description" name="description"
+                            <textarea id="description" name="description" style="max-height: 300px;"
                                 required><%= form && form.description ? form.description : '' %></textarea>
                         </div>
                         <div class="form-row">
@@ -36,31 +35,49 @@
                             <input type="url" id="link" name="link" required
                                 value="<%= form && form.link ? form.link : '' %>">
                         </div>
-                        <div class="color-row">
-                            <label for="pColor">Primary Color:</label>
-                            <input type="color" id="pColor" name="pColor"
-                                value="<%= form && form.pColor ? form.pColor : '#000000' %>" class="color-input">
+                        <div class="btmr">
+                            <div class="ccont">
+                                <label for="sColor">Colors:</label>
+                                <div class="color-row">
+                                    <input type="color" id="pColor" name="pColor"
+                                        value="<%= form && form.pColor ? form.pColor : '#000000' %>" class="color-input">
+                                </div>
+                                <div class="color-row">
+                                    <input type="color" id="sColor" name="sColor"
+                                        value="<%= form && form.sColor ? form.sColor : '#ffffff' %>" class="color-input">
+                                </div>
+                            </div>
+                            <button type="submit">Submit</button>
                         </div>
-                        <div class="color-row">
-                            <label for="sColor">Secondary Color:</label>
-                            <input type="color" id="sColor" name="sColor"
-                                value="<%= form && form.sColor ? form.sColor : '#ffffff' %>" class="color-input">
+                        <div class="inf">
+                            <img src="/icons/info.png" height="15" width="15" style="filter: invert(1)">
+                            <p>These colors are used to uniquely identify your company, which will be visible across all instances of your company pages</p>
+                        </div>
+                        <div class="inf">
+                            <img src="/icons/info.png" height="15" width="15" style="filter: invert(1)">
+                            <p>You, the creator, are responsible for all hired employees and payments issued to them, managers or freelance</p>
                         </div>
                         <input type="hidden" name="owner_id" value="<%= fb_id %>">
                         <input type="hidden" id="bpColor" name="bpColor" value="#ffffff">
                         <input type="hidden" id="bsColor" name="bsColor" value="#000000">
-                        <button type="submit">Submit</button>
+                        
                     </form>
 
                     <!-- PIN modal -->
                     <div id="pin-modal">
                         <div class="pin-modal-content" role="dialog" aria-modal="true"
                             aria-labelledby="pin-modal-title">
-                            <h3 id="pin-modal-title">Cost: <%= typeof CPOST !=='undefined' ? CPOST : 300 %>
+                            <h3 id="pin-modal-title" style="display: flex; gap: 4px; align-items: center;">
+                                <img src="/icons/cost.png" width="20" height="20" style="filter: invert(1)">
+                                <%= typeof CPOST !=='undefined' ? CPOST : 300 %>
                             </h3>
                             <h3 id="pin-modal-title">Enter your PIN</h3>
                             <input id="pin-input" type="password" maxlength="10" inputmode="numeric" pattern="[0-9]*"
                                 placeholder="••••" autocomplete="one-time-code" />
+                            <div style="display: flex; gap: 3px; align-items: center; margin-bottom: 1em;">
+                                <input type="checkbox" name="terms" required></input>
+                                <p style="margin: 0; font-size: 13px;">I agree that I am responsible for all hires</p>
+                            </div>
                             <div class="pin-actions">
                                 <button id="pin-cancel" type="button">Cancel</button>
                                 <button id="pin-confirm" type="button">Confirm</button>
@@ -69,6 +86,16 @@
                     </div>
 
                     <script>
+                        //Get the colorpicker
+                        const colorPicker = document.querySelectorAll('.color-input');
+                        // Add an event listener to listen for change in color
+                        colorPicker.forEach(colorPicker => {
+                            //initial color set
+                            colorPicker.style.setProperty('--color', colorPicker.value);
+                            colorPicker.addEventListener('change', ()=> {
+                                colorPicker.style.setProperty('--color',colorPicker.value)
+                            });
+                        });
                         (function () {
                             const form = document.getElementById('company-form');
                             if (!form) return;

@@ -91,7 +91,10 @@
                                             <% if (j.link) { %>
                                                 <div class="popup-link">Link: <a href="<%= j.link %>" target="_blank" rel="noopener noreferrer"><%= j.link %></a></div>
                                             <% } %>
-                                            <div class="popup-pay">Pay: <%= typeof j.pay !== 'undefined' && j.pay !== null ? j.pay : 'N/A' %></div>
+                                            <div class="popup-pay">
+                                                <img src="/icons/cost.png" width="15" height="15">
+                                                <%= typeof j.pay !== 'undefined' && j.pay !== null ? j.pay : 'N/A' %>
+                                            </div>
                                         </div>
                                     </li>
                                     <% if (index < jobsApplied.length - 1 || (jobsAccepted && jobsAccepted.length > 0)) { %><hr><% } %>
@@ -110,7 +113,10 @@
                                             <% if (j.link) { %>
                                                 <div class="popup-link">Link: <a href="<%= j.link %>" target="_blank" rel="noopener noreferrer"><%= j.link %></a></div>
                                             <% } %>
-                                            <div class="popup-pay">Pay: <%= typeof j.pay !== 'undefined' && j.pay !== null ? j.pay : 'N/A' %></div>
+                                            <div class="popup-pay">
+                                                <img src="/icons/cost.png" width="15" height="15">
+                                                <%= typeof j.pay !== 'undefined' && j.pay !== null ? j.pay : 'N/A' %>
+                                            </div>
                                         </div>
                                     </li>
                                     <% if (index < jobsAccepted.length - 1) { %><hr><% } %>
@@ -161,7 +167,7 @@
         #floating-issue-popup .popup-title { font-weight:700; margin-bottom:6px; }
         #floating-issue-popup .popup-desc { margin-bottom:8px; white-space: pre-wrap; }
         #floating-issue-popup .popup-link a { color: #0077cc; word-break: break-all; }
-        #floating-issue-popup .popup-pay { margin-top:6px; font-weight:600; }
+        #floating-issue-popup .popup-pay { margin-top:6px; font-weight:600; display: flex; align-items: center; gap: 4px;}
     </style>
 
     <script>

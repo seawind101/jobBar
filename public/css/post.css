@@ -18,7 +18,7 @@ body{
 }
 
 .container{
-  max-width:900px;
+  max-width:1000px;
   margin:0 auto;
   padding:1.25rem;
   /* reserve space for fixed nav and center content vertically */
@@ -70,7 +70,13 @@ nav.top-controls button:hover{
 
 .post-card h1{margin-top:0;color:var(--bpColor)}
 
-.form-row{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:0.85rem;align-items:center}
+.form-row {
+  display:flex;
+  flex-direction:column;
+  gap:0.6rem;
+  margin-bottom:0.85rem;
+  align-items:baseline
+}
 label{font-weight:600;color:(--bpColor)}
 input[type="text"], input[type="url"], textarea{
   width:100%;
@@ -86,31 +92,49 @@ input[type="text"], input[type="url"], textarea{
 textarea{min-height:120px;resize:vertical;max-width:640px}
 
 button[type="submit"]{
-  margin-top:0.6rem;
-  border:0;
-  padding:0.75rem 1.1rem;
-  border-radius:999px;
-  background: var(--pColor);
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
+    display: flex;
+    font-size: 1em;
+    height: 40px;
+    padding: 7px 12px 7px 12px;
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgb(180, 67, 84);
+    border: none;
+    color: rgb(237, 255, 231);
+    margin-left: auto;
 }
 
-.post-card button[type="submit"]{
-  width:auto;  /* Changed from 100% */
-  padding:0.5rem 1.2rem;  /* Reduced from 0.65rem */
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:700;  /* Bold text */
-  font-size:0.95rem;  /* Reduced from 1rem */
-  transition:transform 0.2s ease;
-  margin:0 auto;  /* Center the button */
-  display:block;  /* Make margin auto work */
+button[type="submit"]:hover{
+  scale: 1.05;
 }
 
-.post-card button[type="submit"]:hover{
-  transform:translateY(-2px);
+.ccont {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btmr {
+  display: flex;
+  margin-bottom: 0.8em;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inf {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1em;
+}
+
+.inf p {
+  margin: 0;
+  font-size: 11px;
 }
 
 /* New color row class for color selection in post creation */
@@ -118,40 +142,43 @@ button[type="submit"]{
   display:flex;
   flex-direction:row;
   gap:0.6rem;
-  margin-bottom:1.5rem;  /* Increased from 0.85rem */
   align-items:center;
   justify-content: center;
   flex-wrap:wrap;
 }
 
-/* Responsive */
-@media (max-width:640px){
-  .container{margin:1.25rem;padding:1rem;padding-top:6rem} /* leave more space for fixed top controls on small screens */
-  .post-card{padding:1rem}
-  nav.top-controls{top:12px}
-  nav.top-controls button{font-size:1rem;padding:0.5rem 0.9rem}
+.color-input {
+  width: 30px;
+  height: 30px;
+  border: 2px solid white;
+  position: relative;
+  background: transparent;
+  --color: black;
+  padding: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Create the pseudo class and add styling */
+.color-input::before {
+  content: '';
+  /* Used to center it on top of the input. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* This allows you to click on the main input. */
+  pointer-events: none;
+  /* Set height and width more than that of input. */
+  width: 150%;
+  height: 150%;
+  background: var(--color);
+  /* All the above styles add basic functunality. We can add further styling below. */
+  border-radius: 50%;
 }
 
 /* Add top spacing to main content to avoid overlap with fixed nav */
 .container{padding-top:4.25rem}
-
-/* Default pink gradient for Create a Company page */
-.create-company-page nav.top-controls button,
-.create-company-page .post-card button[type="submit"]{
-  background:linear-gradient(180deg, var(--accent) 0%, var(--accent-2) 100%);
-  color:#fff;
-}
-
-/* Company colors for Post a Job page */
-.post-job-page nav.top-controls button{
-  background-color: var(--sColor);
-  color: var(--bsColor);
-}
-
-.post-job-page .post-card button[type="submit"]{
-  background-color: var(--sColor);
-  color: var(--bsColor);
-}
 
 /* PIN Modal Styles */
 #pin-modal {
@@ -165,7 +192,7 @@ button[type="submit"]{
 }
 
 .pin-modal-content {
-  background: linear-gradient(180deg, var(--bg-b), #3a1224);
+  background: rgb(14, 14, 14);
   padding: 1.25rem;
   border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
@@ -179,7 +206,7 @@ button[type="submit"]{
   margin: 0 0 0.5rem 0;
 }
 
-.pin-modal-content input {
+.pin-modal-content input:not(input[type="checkbox"]) {
   font-size: 1.15rem;
   padding: 0.6rem;
   width: 100%;
@@ -208,9 +235,19 @@ button[type="submit"]{
   background: transparent;
   color: var(--muted);
   border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.2s ease;
+}
+
+#pin-cancel:hover {
+  scale: 1.05;
 }
 
 #pin-confirm {
-  background: var(--accent);
+  background: rgb(180, 67, 84);
   color: #fff;
+  transition: all 0.2s ease;
+}
+
+#pin-confirm:hover {
+  scale: 1.05;
 }
