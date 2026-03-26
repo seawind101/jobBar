@@ -156,7 +156,8 @@ input#job-search-input{
 
 /* Job title (present in job.css) */
 .job-title {
-    color: var(--muted)
+    color: var(--muted);
+    width: 85%;
 }
 
 .job-title a {
