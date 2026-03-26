@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Manager - <%= company.name %></title>
+  <title><%= company.name %> | Job Manager</title>
   <link rel="stylesheet" href="/css/index.css">
   <link rel="stylesheet" href="/css/job.css">
-  <link rel="stylesheet" href="/css/jobManager.css"
+  <link rel="stylesheet" href="/css/jobManager.css">
   <link rel="icon" href="/icons/jobbar.png">
 </head>
 
@@ -33,17 +33,30 @@
               <article class="job-card">
                 <div class="job-title"><b><%= job.title %></b></div>
                 <div class="job-desc"><%= job.description %></div>
-                <div class="job-link"><a href="<%= job.link %>" target="_blank">View Contracts</a></div>
                 <div class="job-pay" style="display: flex; gap: 5px; align-items: center; justify-content: center;">
                   +<img src="/icons/cost.png" width="20" height="20" style="filter: invert(1);">
                   <div><%= job.pay %></div>
                 </div>
                 <div class="job-meta available">Available</div>
-                <button class="job-edit" onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
                 <% if (!job.status || (job.status !== 'in_progress' && job.status !== 'completed')) { %>
-                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                <form class="delf" method="POST" action="/jobManager/delete" style="display:flex;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
                   <input type="hidden" name="jobId" value="<%= job.id %>">
-                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                  <div class="jec">
+                    <button class="jedit" type="button" onclick="location.href='/edit/job/<%= job.id %>'">
+                      <img style="filter: invert(1)" src="/icons/edit.png" width="20" height="20">
+                      <div class="text">Edit Contract</div>
+                    </button>
+                  </div>
+                  <div class="job-link">
+                    <a href="<%= job.link %>" target="_blank">
+                      <img src="/icons/redirect.png" width="20" height="20">
+                      <div class="text">View in Repo</div>
+                    </a>
+                  </div>
+                  <button type="submit" class="delete-job">
+                    <img src="/icons/trash.png" width="20" height="20">
+                    <div class="text">Delete Contract</div>
+                  </button>
                 </form>
                 <% } %>
               </article>
@@ -69,28 +82,44 @@
                   <div><%= job.pay %></div>
                 </div>
                 <div class="job-meta taken">
-                  <%= job.applicants_count %> applicant(s)
                   <% if (job.applicants && job.applicants.length > 0) { %>
-                    <ul>
+                    <div class="list">
                       <% job.applicants.forEach(applicant => { %>
-                        <li>
-                          <%= applicant.name %>
-                          <form action="/jobManager/accept" method="POST" style="display:inline;"
+                        <li style="margin: 5px;">
+                          <strong style="display: flex; gap: 8px; align-items: center;">
+                            <div><%= applicant.name %></div>
+                            <div style="display: flex; align-items: center; gap: 3px;">
+                              <img src="/icons/fid.png" height="10" width="10" style="filter: invert(1)">
+                              <div style="color: gray; font-size: 0.7em;"><%= applicant.fb_id %></div>
+                            </div>
+                          </strong>
+                          <form action="/jobManager/accept" method="POST"
                             onsubmit="return confirm('Accept this applicant for the job?');">
                             <input type="hidden" name="jobId" value="<%= job.id %>">
                             <input type="hidden" name="applicantId" value="<%= applicant.fb_id %>">
-                            <button type="submit" class="accept">Accept</button>
+                            <div clas="accC">
+                              <button type="submit" class="accept">✓</button>
+                              <div class="text">Assign Contract</div>
+                            </div>
                           </form>
                         </li>
                       <% }) %>
-                    </ul>
+                      </div>
                   <% } %>
                 </div>
-                <button class="job-edit" onclick="location.href='/edit/job/<%= job.id %>'">Edit</button>
                 <% if (!job.status || (job.status !== 'in_progress' && job.status !== 'completed')) { %>
-                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                <form class="delf" method="POST" action="/jobManager/delete" style="display:flex;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
                   <input type="hidden" name="jobId" value="<%= job.id %>">
-                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                  <div class="jec">
+                    <button type="button" class="jedit" onclick="location.href='/edit/job/<%= job.id %>'" style="right: 0;">
+                      <img style="filter: invert(1)" src="/icons/edit.png" width="20" height="20">
+                      <div class="text">Edit Contract</div>
+                    </button>
+                  </div>
+                  <button type="submit" class="delete-job">
+                    <img src="/icons/trash.png" width="20" height="20">
+                    <div class="text">Delete Contract</div>
+                  </button>
                 </form>
                 <% } %>
               </article>
@@ -119,21 +148,27 @@
                   <div>Assigned to <strong style="color: rgb(180, 67, 84);"><%= job.employee_name %></strong></div>
                   <form class="fr" action="/jobManager/fire/<%= job.id %>" method="POST" style="display:inline; position: relative;" onsubmit="return confirm('Fire this employee?');">
                     <button type="submit" style="margin-left: 10px;" class="fire">🔥</button>
-                    <div class="text">Fire</div>
+                    <div class="text">Fire Worker</div>
                   </form>
-                  <button class="complete-button" 
-                    data-job-id="<%= job.id %>"
-                    data-employee-id="<%= job.employee_id %>"
-                    data-pay="<%= job.pay %>"
-                    data-status="<%= job.status || '' %>"
-                    data-title="<%= job.title %>">
-                    Mark As Complete
-                  </button>
+                  <div class="comc">
+                    <button class="complete-button" 
+                      data-job-id="<%= job.id %>"
+                      data-employee-id="<%= job.employee_id %>"
+                      data-pay="<%= job.pay %>"
+                      data-status="<%= job.status || '' %>"
+                      data-title="<%= job.title %>">
+                      ✓
+                    </button>
+                    <div class="text">Mark as Complete</div>
+                  </div>
                 </div>
                 <% if (!job.status || (job.status !== 'in_progress' && job.status !== 'completed')) { %>
-                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                <form class="delf" method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
                   <input type="hidden" name="jobId" value="<%= job.id %>">
-                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                  <button type="submit" class="delete-job">
+                    <img src="/icons/trash.png" width="20" height="20">
+                    <div class="text">Delete Contract</div>
+                  </button>
                 </form>
                 <% } %>
               </article>
@@ -159,9 +194,12 @@
                   <div><%= job.pay %></div>
                 </div>
                 <div class="job-meta completed">Completed by <%= job.employee_name %></div>
-                <form method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
+                <form class="delf" method="POST" action="/jobManager/delete" style="display:inline;margin-left:8px;" onsubmit="return confirm('Delete this job? This cannot be undone.');">
                   <input type="hidden" name="jobId" value="<%= job.id %>">
-                  <button type="submit" class="delete-job" style="background:#b33;color:#fff;border:0;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px;">Delete</button>
+                  <button type="submit" class="delete-job">
+                    <img src="/icons/trash.png" width="20" height="20">
+                    <div class="text">Delete Contract</div>
+                  </button>
                 </form>
               </article>
             <% }) %>

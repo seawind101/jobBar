@@ -141,7 +141,7 @@ input#job-search-input{
     margin:0 0 0.75rem 0;
 }
 
-.job-title{font-weight:600;color:var(--bpColor)}
+.job-title{font-weight:600;color:var(--bpColor); }
 
 .job-desc {
     height: 100px;

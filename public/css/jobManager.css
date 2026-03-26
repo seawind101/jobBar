@@ -23,6 +23,11 @@
     min-height: 60px;
 }
 
+.job-card:hover {
+    transform:translateY(0px);
+    box-shadow:0 0px 0px rgba(0, 0, 0, 0);
+}
+
 .job-meta .fire {
     display: flex;
     align-items: center;
@@ -40,7 +45,7 @@
     transition: all 0.2s ease;
 }
 
-.job-meta .text {
+.text {
     position: absolute;
     background-color: rgb(36, 37, 43);
     padding: 5px 8px;
@@ -66,4 +71,153 @@
 
 .job-meta .fr:hover {
     scale: 1.05;
+}
+
+.comc {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.comc .text {
+    right: 36px;
+}
+
+.complete-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 0 5px green;
+    transition: all 0.2s ease;
+    background: green;
+    border: 1px solid rgb(161, 255, 161);
+    color: rgb(237, 255, 231);
+    cursor: pointer;
+}
+
+.complete-button:hover {
+    scale: 1.05;
+}
+
+.comc:hover .text {
+    opacity: 1;
+}
+
+.delf {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.delf .delete-job {
+    background: none !important;
+    border: none;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:700;
+    text-align:center;
+    transition:all 0.2s ease;
+    height: 40px;
+    cursor: pointer;
+    position: relative;
+}
+
+.delf .delete-job:hover {
+    scale: 1.05;
+}
+
+.delete-job .text {
+    top: 10px;
+}
+
+.delete-job:hover .text {
+    opacity: 1;
+}
+
+.job-link {
+    right: 30px;
+}
+
+.job-link a {
+    position: relative;
+}
+
+.job-link .text {
+    font-size: 0.7em;
+    top: -8px;
+}
+
+.job-link:hover .text {
+    opacity: 1;
+}
+
+.jec {
+    position: relative;
+}
+
+.jec .jedit {
+    background: none !important;
+    border: none;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:700;
+    text-align:center;
+    transition:all 0.2s ease;
+    height: 40px;
+    cursor: pointer;
+    position: relative;
+    right: 35px;
+}
+
+.jec .jedit:hover {
+    scale: 1.05;
+}
+
+.jec .jedit:hover .text {
+    opacity: 1;
+}
+
+.jec .text {
+    top: 8px;
+}
+
+.job-meta .list {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+}
+
+.job-meta li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.397);
+    padding: 7px 7px 7px 20px;
+    border-radius: 10px 20px 20px 10px;
+    overflow-x: auto;
+}
+
+.accept {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 0 5px green;
+    transition: all 0.2s ease;
+    background: green;
+    border: 1px solid rgb(161, 255, 161);
+    color: rgb(237, 255, 231);
+    cursor: pointer;
 }
